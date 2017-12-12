@@ -148,6 +148,40 @@ The sequence only needs to mix and publish a hash of the event data into the eve
 
 Every node observing this sequence can determine the order at which all events have been inserted. Generating a reverse order would require an attacker to start the malicious sequence after the second event. This delay would allow any non malicious peer to peer nodes to communicate about the original order.\\
 
+\subsection{Timestamp for Events}
+\subsection{Verification}
+The sequence can be verified as correct in a multi core computer in less time than it took to generated it 
+
+Core1:
+sha256(“any random starting value”) -> hash1, 1
+...
+sha256(hash199) -> hash200, 200
+
+Core2:
+sha256(hash199) -> hash200, 200
+...
+sha256(hash299) -> hash300, 300
+
+So given some number of cores, like a modern GPU with 4000 cores, the verifier can split up the sequence of hashes and their indexes into 4000 slices, and in parallel make sure that each slice is correct from the starting hash to the last hash in the slice.  So if the expected time to produce the sequence is going to be 
+
+<number of hashes>/<hashes per second for 1 core>
+
+the expected time to verify that the sequence is correct is going to be 
+
+<number of hashes>/(<hashes per second per core> * <number of cores available to verify>)
+
+\begin{figure}
+  \begin{center}
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/fig_3.png}
+    \caption[Figure 3]{Verification using multiple cores\label{fig_3}}
+  \end{center}
+  \end{figure}
+
+In the example in Figure 3, each core is able to verify each slice of the sequence in parallel.  Since all input strings are recorded into the output, with the counter and state that they are appended to, the verifiers can replicate each slice in parallel.
+\subsection{Verification}
+
+
 \section{Results}\label{results}
 In this section we describe the results.
 
