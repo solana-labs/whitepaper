@@ -296,10 +296,6 @@ PoRep and PoH together provide a defense of both space and time against a forged
 \section{Proof of Stake Consensus}
 \subsection{Description}
 This specific instance of Proof of Stake is designed for quick confirmation of the current sequence produced by the Proof of History generator, for voting and selecting the next Proof of History generator, and for slashing any misbehaving validators.  This algorithm depends on messages eventually arriving to all participating nodes within a certain timeout.
-\subsection{Background}
-https://tendermint.com/static/docs/tendermint.pdf
-Slasher, https://blog.ethereum.org/2014/01/15/slasher-a-punitive-proof-of-stake-algorithm/
-“BitShares Delegated Proof of Stake,” 2014. [Online]. Available: https: //github.com/BitShares/bitshares/wiki/Delegated-Proof-of-Stake
 \subsection{Bonding}
 A bonding transaction takes a user specified amount of coin and moves it to a bonding account under the user’s identity.  Coins in the bonding account cannot be spent, and have to remain in the account until the user removes them.  The user can only remove stale coins that have timed out. 
 \subsection{Voting}
@@ -483,13 +479,14 @@ This trampoline requires no native Operating System thread context switches, sin
 
 eBPF backend has been included in LLVM since 2015, so any LLVM frontend language can be used to write smart contracts.  It’s been in the linux kernel since 2015, and the first iterations of the bytecode have been around since 1992.  A single pass can check eBPF for correctness, ascertain its runtime and memory requirements and convert it to x86 instructions.
 
-\section{Results}\label{results}
-In this section we describe the results.
-
-\section{Conclusions}\label{conclusions}
-We worked hard, and achieved very little.
-
 \bibliographystyle{abbrv}
+* Liskov, practical use of Clocks, http://www.dainf.cefetpr.br/~tacla/SDII/PracticalUseOfClocks.pdf
+* Google Spanner TrueTime consistency, https://cloud.google.com/spanner/docs/true-time-external-consistency
+* Solving Agreement with Ordering Oracles, http://www.inf.usi.ch/faculty/pedone/Paper/2002/2002EDCCb.pdf
+* https://tendermint.com/static/docs/tendermint.pdf
+* Filecoin, proof of replication, https://filecoin.io/proof-of-replication.pdf
+* Slasher, https://blog.ethereum.org/2014/01/15/slasher-a-punitive-proof-of-stake-algorithm/
+* “BitShares Delegated Proof of Stake,” 2014. [Online]. Available: https: //github.com/BitShares/bitshares/wiki/Delegated-Proof-of-Stake
 \bibliography{simple}
 
 \end{document}
