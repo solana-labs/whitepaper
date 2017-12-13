@@ -44,7 +44,6 @@ In the figure above, messages are sent by users into the Loom node, which orders
 Looms are elected by the network via its configured consensus algorithm, such as Proof of Stake or Proof of Work.  More on elections here.
 
 Proof of History sequence guarantees global read consistency for the network that would require an attacker an investment of time to reverse.  A Proof of Stake algorithm is proposed for electing Looms and posting confirmations of the order.  A fast Proof of Replication is proposed for ledger and state availability, and as a defense against forgery attacks.
-\section{Design}
 
 \section{Proof of History}\label{proof_of_history}
 
@@ -167,7 +166,6 @@ The sequence only needs to mix and publish a hash of the event data into the eve
 
 Every node observing this sequence can determine the order at which all events have been inserted. Generating a reverse order would require an attacker to start the malicious sequence after the second event. This delay would allow any non malicious peer to peer nodes to communicate about the original order.\\
 
-\subsection{Timestamp for Events}
 \subsection{Verification}
 The sequence can be verified as correct in a multi core computer in less time than it took to generated it 
 
@@ -201,7 +199,6 @@ the expected time to verify that the sequence is correct is going to be
   \end{figure}
 
 In the example in Figure 3, each core is able to verify each slice of the sequence in parallel.  Since all input strings are recorded into the output, with the counter and state that they are appended to, the verifiers can replicate each slice in parallel.
-\subsection{Verification}
 
 \subsection{Horizontal Scaling}
 It’s possible to synchronize multiple Proof of History generators by mixing the sequence state from each generator to each other generator, and thus achieve horizontal scaling of the Proof of History generator.
@@ -237,7 +234,6 @@ The high speed sequence would create a secondary sequence of data that an attack
 In the figure above, the two generators insert each other’s output state and record the operation.  
 
 The synchronization is transitive.  A ⇔ B ⇔ C  There is a provable order of events between A and C through B.  Two generators can double bandwidth at the cost of availability.  10x1gbps connections with availability of 0.999 would have 0.999**10 -> 0.99 availability.
-\subsection{Horizontal Scaling}
 \subsection{Consistency}
 Users can enforce consistency of the generated sequence and make it resilient to attacks by inserting the last observed output of the sequence they consider valid into their input.
 
@@ -289,7 +285,6 @@ Verify:
   \end{figure}
 
 The above example, user supplied input is dependent on hash 0xdeadbeef existing in the generated sequence sometime before it’s inserted.
-\subsection{Consistency}
 \subsection{Advantages}
 
 Proof of history provides some protection against long range attacks.  A malicious user that gains access to old private keys would have to recreate a historical record that takes as much time as the original one they are trying to forge.  This would require access to a faster processor than the network is currently using, otherwise the attacker would never catch up in history length.
