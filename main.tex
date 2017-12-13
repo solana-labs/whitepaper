@@ -172,17 +172,17 @@ Every node observing this sequence can determine the order at which all events h
 The sequence can be verified as correct in a multi core computer in less time than it took to generated it 
 
 \noindent For example: \\\\\noindent
-\texttt{
-Core1:
-sha256(\char`\"any random starting value\char`\") $\rightarrow$ hash1, 1\\
-...\\
-sha256(hash199) $\rightarrow$ hash200, 200\\
 
-Core2:\\
-sha256(hash199) $\rightarrow$ hash200, 200\\
-...\\
-sha256(hash299) $\rightarrow$ hash300, 300\\
-}
+Core1:
+sha256(\char`\"any random starting value\char`\") $\rightarrow$ hash1, 1
+...
+sha256(hash199) $\rightarrow$ hash200, 200
+
+Core2:
+sha256(hash199) $\rightarrow$ hash200, 200
+...
+sha256(hash299) $\rightarrow$ hash300, 300
+
 
 So given some number of cores, like a modern GPU with 4000 cores, the verifier can split up the sequence of hashes and their indexes into 4000 slices, and in parallel make sure that each slice is correct from the starting hash to the last hash in the slice.  So if the expected time to produce the sequence is going to be 
 
