@@ -50,13 +50,8 @@ Proof of History sequence guarantees global read consistency for the network tha
 Proof of History provides a way to cryptographically verify passage of time between two events. It uses a cryptographically secure function whose output cannot be predicted from the input, and must be completely executed to generate the output. The function is run in a sequence, it’s previous output as the current input, periodically recording the current output, and how many times it’s been called. The output can then be recomputed and verified by external computers in parallel by checking each period in parallel on a separate core. Data can be timestamped into this sequence by recording the data and the index it was mixed into the sequence. The timestamp then guarantees that the data was created sometime before this hash was generated in the sequence. Multiple generators can synchronize amongst each other by mixing their state into each others sequences. \\
 
 \subsection{Description}
-
-With a cryptographic function, like a cryptographic hash (sha256, md5,
-sha-1), whose output cannot be predicted without running the function,
-run the function from some random starting value and take its output
-and pass it as the input into the same function again. And record the
-number of times the function has been called and the output at each
-call. \\\\
+With a cryptographic function, like a cryptographic hash (sha256, md5, sha-1), whose output cannot be predicted without running the function, run the function from some random starting value and take its output and pass it as the input into the same function again.  And record the number of times the function has been called and the output at each call.  The starting random value chosen could be any string, like the headline of the New York times for the day.
+\\\\
 \noindent For example: \\\\\noindent
 \texttt{
   sha256(\char`\"any random starting value\char`\") $\rightarrow$
@@ -167,20 +162,21 @@ The sequence only needs to mix and publish a hash of the event data into the eve
 Every node observing this sequence can determine the order at which all events have been inserted. Generating a reverse order would require an attacker to start the malicious sequence after the second event. This delay would allow any non malicious peer to peer nodes to communicate about the original order.\\
 
 \subsection{Verification}
-The sequence can be verified as correct in a multi core computer in less time than it took to generated it 
+The sequence can be verified as correct in a multi core computer in less time than it took to generated it \\
 
 \noindent For example: \\\\\noindent
 
-Core1:
-sha256(\char`\"any random starting value\char`\") $\rightarrow$ hash1, 1
-...
-sha256(hash199) $\rightarrow$ hash200, 200
+\noindent Core1: \\\\\noindent
+\texttt{
+sha256(\char`\"any random starting value\char`\") $\rightarrow$ hash1, 1\\
+\ldots\\
+sha256(hash199) $\rightarrow$ hash200, 200\\
+}
 
 Core2:
 sha256(hash199) $\rightarrow$ hash200, 200
 ...
 sha256(hash299) $\rightarrow$ hash300, 300
-
 
 So given some number of cores, like a modern GPU with 4000 cores, the verifier can split up the sequence of hashes and their indexes into 4000 slices, and in parallel make sure that each slice is correct from the starting hash to the last hash in the slice.  So if the expected time to produce the sequence is going to be 
 
