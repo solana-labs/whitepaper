@@ -203,19 +203,19 @@ In the example in Figure 4, each core is able to verify each slice of the sequen
 It’s possible to synchronize multiple Proof of History generators by mixing the sequence state from each generator to each other generator, and thus achieve horizontal scaling of the Proof of History generator.
 
 \texttt{
-Generator A
-Hash1a
-Hash2a
-Hash3a hash(Hash2b, hash1a)
-Hash4a
+Generator A\\
+Hash1a\\
+Hash2a\\
+Hash3a hash(Hash2b, hash1a)\\
+Hash4a\\
 }
 
 \texttt{
-Generator B
-Hash1b
-Hash2b
-Hash3b hash(Hash2a, hash1b)
-Hash4b
+Generator B\\
+Hash1b\\
+Hash2b\\
+Hash3b hash(Hash2a, hash1b)\\
+Hash4b\\
 }
 
 GeneratorA receives a data packet from Generator B, which contains the last state from Generator B, and the last state generator b observed from GeneratorA.  The next state hash in Generator A then depends on the state from Generator B, so we can derive that hash2b happened sometime before hash4a.  This property can be transitive, so if three generators are synchronized through a single common generator A ⇔ B ⇔ C, we can trace the dependency between A and C even though they were not synchronized directly.
