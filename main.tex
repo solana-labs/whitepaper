@@ -453,12 +453,12 @@ A naive hash table addressed by the user’s address.  Each cell contains the fu
 \texttt{
 [<20 byte ripemd-160(sha256(users public key))><8 byte account value><4 byte unused>]\\
 }
-For a total of 32 bytes.
+For a total of 32 bytes.\\
 \noindent Proof of Stake bond’s table contains:\\\\\noindent
 \texttt{
 [<20 byte ripemd-160(sha256(users public key))><64 bits bond value><Last cast vote 8 bytes><20 byte, list of uncast votes><20 bytes unused>]\\
 }
-For a total of 64 bytes.
+For a total of 64 bytes.\\
 These nodes replicate the blockchain state and provide high availability of the blockchain state. The replication target is selected by the consensus algorithm, and the validators in the consensus algorithm select and vote the Proof of Replication nodes they approve of based on of-chain defined criteria.
 
 The network could be configured with a minimum Proof of Stake bond size, and a requirement for a single replicator identity per bond.
@@ -486,13 +486,13 @@ The minimal payload that can be supported would be 1 destination account
 \texttt{
 [<to 20 byte ripemd-160 hash>, <amount 4 byte>]\\
 }
-Minimum size: \(24 bytes\)\\
+Minimum size: 24 bytes\\
 The Proof of History sequence adds an additional hash and counter to the output. 
 \noindent Minimum Output:\\\\\noindent
 \texttt{
 [<current hash, 20 byte>, <8 byte counter>, <last valid hash, 20 bytes, 8 byte counter>, <unused, 6 bits>, <size, 10 bits>, <payload>, <fee, 8 bytes> <from, 32 bytes>, <signature, 32 bytes>]
 }
-Minimum size of the output packet is: \(116 + 24 + 28 = 168\) bytes 
+Minimum size of the output packet is: \(116 + 24 + 28 = 168\) bytes \\
 Multiple transactions could be batched on the same hash.  On a 1gbps network connection the maximum number of transactions possible is \(1 gigabit per second / 168 bytes = 744k tps\) max.  Some loss \( 1-4\%\) is expected due to Ethernet framing.  The spare capacity over the target amount for the network can be used to increase availability by coding the output with Reed-Solomon codes and striping it to the available downstream Spools.
 \subsubsection{Computational Limits}
 Each transaction requires a digest verification.  This operation doesn’t use any memory outside of the transaction message itself, and can be parallelized independent of all the other transactions.  Thus throughput is going to be limited by the number of cores available on the system.
