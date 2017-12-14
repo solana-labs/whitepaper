@@ -402,7 +402,7 @@ Rotation needs to be slow enough that it’s practical to verify replication pro
 
 Proof of History generator publishes a hash to be used by the entire network for encrypting Proofs of Replication, and for using as the pseudorandom number generator for byte selection in fast proofs.
 
-Hash is published at a periodic counter that is roughly equal to \(frac{1}{2}\) the time it takes to encrypt the data set.  Each replication identity must use the same hash, and use the signed result of the hash as the seed for byte selection, or the encryption key.
+Hash is published at a periodic counter that is roughly equal to \(\frac{1}{2}\) the time it takes to encrypt the data set.  Each replication identity must use the same hash, and use the signed result of the hash as the seed for byte selection, or the encryption key.
 
 A malicious generator could inject data into the sequence prior to this hash to generate a specific hash.  Since every identity is using the same hash, a malicious generator could only benefit a single identity, as output of each signature signed with a unique private key using a cryptographic algorithm that is collision resistant.
 
