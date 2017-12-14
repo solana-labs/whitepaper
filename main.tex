@@ -267,10 +267,10 @@ Event3 = sign(append(event3 data, hash25a), client Private Key)\\
 Event3, hash30a\\
 }
 
-The mapping from the event hash or signature to event data and client’s public key can be published in a separate database for all the clients of the service to verify.  For Loom the entire signed message is sequenced into the stream.
+The mapping from the event hash or signature to event data and client’s public key can be published in a separate database for all the clients of the service to verify.  For Loom the entire signed message is sequenced into the stream.\\
 
+Verify:\\
 \texttt{
-Verify\\
     (Public Key, hash25a, event3 data) <- lookup Event3 \\
     Verify Event3 signature with Public Key\\
     Verify hash25a exists prior to hash31a in the sequence\\
