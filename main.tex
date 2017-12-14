@@ -230,14 +230,14 @@ In Figure~\ref{fig:poh_scale}, the two generators insert each other’s output s
 
 The synchronization is transitive.  \(A \leftrightarrow B \leftrightarrow C\)  There is a provable order of events between A and C through B.  Two generators can double bandwidth at the cost of availability.  10x1gbps connections with availability of 0.999 would have \(0.999^{10} = 0.99 \) availability.
 \subsection{Consistency}
-Users can enforce consistency of the generated sequence and make it resilient to attacks by inserting the last observed output of the sequence they consider valid into their input.\\
+Users can enforce consistency of the generated sequence and make it resilient to attacks by inserting the last observed output of the sequence they consider valid into their input.
 \texttt{
 hash9a\\
 Event1, hash10a\\
 Event2, hash20a\\
 Event3, hash30a\\
 }
-If the events were all available to insert at the same time, or the service has a hidden clock that's slightly faster, the service could produce a second hidden sequence with the events in reverse order.\\ 
+If the events were all available to insert at the same time, or the service has a hidden clock that's slightly faster, the service could produce a second hidden sequence with the events in reverse order.
 \texttt{
 hash9a\\
 Event3, hash10b\\
@@ -357,7 +357,7 @@ Censorship or denial of service could occur when \(\frac{1}{3}\)rd of the bond h
 
 \section{Streaming Proof of Replication}\label{porep}
 \subsection{Description}
-Filecoin proposed a version of Proof of Replication \cite{filecoinporep}.  The goal of this version is to have fast and streaming verifications of Proof of Replication which are enabled by keeping track of time in Proof of History generated sequence.  Replication is not useful as a consensus algorithm, but is a useful tool to distribute the cost of storing the blockchain history or state at a high availability.
+Filecoin proposed a version of Proof of Replication \cite{filecoinporep}.  The goal of this version is to have fast and streaming verifications of Proof of Replication which are enabled by keeping track of time in Proof of History generated sequence.  Replication is not used as a consensus algorithm, but is a useful tool to account for the cost of storing the blockchain history or state at a high availability.
 \subsection{Algorithm}
 As shown in Figure~\ref{fig:encrypt} CBC encryption encrypts each block of data in sequence, using the previously encrypted block to XOR the input data.
 
