@@ -1,4 +1,4 @@
-\title{Loom: High performance blockchain (WIP) }
+\title{Loom: High throughput fault tolerant Operating System (WIP) }
 
 \author{
         Anatoly Yakovenko \\
@@ -43,7 +43,7 @@ Proof of History sequence guarantees global read consistency for the network.  A
 
 \section{Proof of History}\label{proof_of_history}
 
-Proof of History provides a way to cryptographically verify passage of time between two events. It uses a cryptographically secure function whose output cannot be predicted from the input, and must be completely executed to generate the output. The function is run in a sequence, it’s previous output as the current input, periodically recording the current output, and how many times it’s been called. The output can then be recomputed and verified by external computers in parallel by checking each period in parallel on a separate core. Data can be timestamped into this sequence by recording the data and the index it was mixed into the sequence. The timestamp then guarantees that the data was created sometime before this hash was generated in the sequence. Multiple generators can synchronize amongst each other by mixing their state into each others sequences. \\
+Proof of History provides a way to cryptographically verify passage of time between two events. It uses a cryptographically secure function whose output cannot be predicted from the input, and must be completely executed to generate the output. The function is run in a sequence, it’s previous output as the current input, periodically recording the current output, and how many times it’s been called. The output can then be re-computed and verified by external computers in parallel by checking each period in parallel on a separate core. Data can be timestamped into this sequence by recording the data and the index it was mixed into the sequence. The timestamp then guarantees that the data was created sometime before this hash was generated in the sequence. Multiple generators can synchronize amongst each other by mixing their state into each others sequences. \\
 
 \subsection{Description}
 With a cryptographic function, like a cryptographic hash (sha256, md5, sha-1), whose output cannot be predicted without running the function, run the function from some random starting value and take its output and pass it as the input into the same function again.  And record the number of times the function has been called and the output at each call.  The starting random value chosen could be any string, like the headline of the New York times for the day.
@@ -79,7 +79,7 @@ This set of events can only be computed in sequence by a single computer thread,
     \caption[Fig 2]{Figure description \label{fig_2}}
   \end{center}
   \end{figure}
-%A much longer \LaTeXe{} example was written by Gil~\cite{Gil:02}.
+
 In the example in Figure 1, hash \texttt{62f51643c1} was produced on
 count $510144806912$ and hash \texttt{c43d862d88} was produced on
 count $510146904064$. Real time passed between count $510144806912$
@@ -149,11 +149,11 @@ The sequence only needs to mix and publish a hash of the event data into the eve
   \begin{center}
     \centering
     \includegraphics[width=0.9\textwidth]{figures/fig_3.png}
-    \caption[Fig 3]{Figure description \label{fig_3}}
+    \caption[Fig 3]{Figure description \label{fig:poh_insert}}
   \end{center}
   \end{figure}
 
-  In the example in Figure 2, input \texttt{cfd40df8\ldots} was inserted into the Proof of History sequence. The count at which it was inserted is $510145855488$ and the state at which it was inserted it is \texttt{3d039eef3}.\\
+  In the example in Figure~\ref{fig:poh_insert}, input \texttt{cfd40df8\ldots} was inserted into the Proof of History sequence. The count at which it was inserted is $510145855488$ and the state at which it was inserted it is \texttt{3d039eef3}.\\
 
 Every node observing this sequence can determine the order at which all events have been inserted. Generating a reverse order would require an attacker to start the malicious sequence after the second event. This delay would allow any non malicious peer to peer nodes to communicate about the original order.\\
 
@@ -176,24 +176,20 @@ sha256(hash299) $\rightarrow$ hash300, 300\\
 }
 
 So given some number of cores, like a modern GPU with 4000 cores, the verifier can split up the sequence of hashes and their indexes into 4000 slices, and in parallel make sure that each slice is correct from the starting hash to the last hash in the slice.  So if the expected time to produce the sequence is going to be\\
-\texttt{
-<number of hashes>/<hashes per second for 1 core>
-}
+[Total number of hashes/Hashes per second for 1 core]
 
 \noindent The expected time to verify that the sequence is correct is going to be \\\\\noindent
-\texttt{
-<number of hashes>/(<hashes per second per core> * <number of cores available to verify>)
-}
+[Total number of hashes/(Hashes per second per core * Number of cores available to verify)]
 
 \begin{figure}
   \begin{center}
     \centering
     \includegraphics[width=0.9\textwidth]{figures/fig_4.png}
-    \caption[Figure 4]{Verification using multiple cores\label{fig_4}}
+    \caption[Figure 4]{Verification using multiple cores\label{fig:poh_verify}}
   \end{center}
   \end{figure}
 
-In the example in Figure 4, each core is able to verify each slice of the sequence in parallel.  Since all input strings are recorded into the output, with the counter and state that they are appended to, the verifiers can replicate each slice in parallel.
+In the example in Figure~\ref{fig:poh_verify}, each core is able to verify each slice of the sequence in parallel.  Since all input strings are recorded into the output, with the counter and state that they are appended to, the verifiers can replicate each slice in parallel.
 
 \subsection{Horizontal Scaling}
 It’s possible to synchronize multiple Proof of History generators by mixing the sequence state from each generator to each other generator, and thus achieve horizontal scaling of the Proof of History generator.
@@ -226,11 +222,11 @@ The high speed sequence would create a secondary sequence of data that an attack
   \begin{center}
     \centering
     \includegraphics[width=0.9\textwidth]{figures/fig_5.png}
-    \caption[Fig 5]{Two generators synchronizing\label{fig_5}}
+    \caption[Fig 5]{Two generators synchronizing\label{fig:poh_scale}}
   \end{center}
   \end{figure}
 
-In Figure 5, the two generators insert each other’s output state and record the operation.  
+In Figure~\ref{fig:poh_scale}, the two generators insert each other’s output state and record the operation.  
 
 The synchronization is transitive.  \(A \leftrightarrow B \leftrightarrow C\)  There is a provable order of events between A and C through B.  Two generators can double bandwidth at the cost of availability.  10x1gbps connections with availability of 0.999 would have \(0.999^{10} = 0.99 \) availability.
 \subsection{Consistency}
@@ -271,7 +267,7 @@ Event3 = sign(append(event3 data, hash25a), client Private Key)\\
 Event3, hash30a\\
 }
 
-The mapping from the event hash or signature to event data and client’s public key can be published in a separate database for all the clients of the service to verify.
+The mapping from the event hash or signature to event data and client’s public key can be published in a separate database for all the clients of the service to verify.  For Loom the entire signed message is sequenced into the stream.
 
 \texttt{
 Verify\\
@@ -284,24 +280,28 @@ Verify\\
   \begin{center}
     \centering
     \includegraphics[width=0.6\textwidth]{figures/fig_6.png}
-    \caption[Fig 6]{Input with a back reference.\label{fig_6}}
+    \caption[Fig 6]{Input with a back reference.\label{fig:poh_consistency}}
   \end{center}
   \end{figure}
 
-The above example, user supplied input is dependent on hash 0xdeadbeef existing in the generated sequence sometime before it’s inserted.
+In Figure~\ref{fig:poh_consistency}, the user supplied input is dependent on hash 0xdeadbeef existing in the generated sequence sometime before it’s inserted.
 \subsection{Advantages}
 
 Proof of history provides some protection against long range attacks.  A malicious user that gains access to old private keys would have to recreate a historical record that takes as much time as the original one they are trying to forge.  This would require access to a faster processor than the network is currently using, otherwise the attacker would never catch up in history length.
 
-Additionally, a single source of time allows for construction of a simper Proof of Replication (more on that later).  Since all the participants in the network can rely on a single historical record of events.  
+Additionally, a single source of time allows for construction of a simper Proof of Replication (more on that in Section~\ref{porep}).  Since all the participants in the network can rely on a single historical record of events.
 
 PoRep and PoH together provide a defense of both space and time against a forged ledger.
+
+\subsection{Overhead}
+4000 hashes per second would generate an additional 160 kilobytes of data, and would require access to a GPU with 4000 cores and roughly 0.75-0.25 milliseconds of time to verify.
 
 \section{Proof of Stake Consensus}\label{proof_of_stake}
 \subsection{Description}
 This specific instance of Proof of Stake is designed for quick confirmation of the current sequence produced by the Proof of History generator, for voting and selecting the next Proof of History generator, and for slashing any misbehaving validators.  This algorithm depends on messages eventually arriving to all participating nodes within a certain timeout.
 \subsection{Bonding}
-A bonding transaction takes a user specified amount of coin and moves it to a bonding account under the user’s identity.  Coins in the bonding account cannot be spent, and have to remain in the account until the user removes them.  The user can only remove stale coins that have timed out. 
+A bonding transaction takes a user specified amount of coin and moves it to a bonding account under the user’s identity.  Coins in the bonding account cannot be spent, and have to remain in the account until the user removes them.  The user can only remove stale coins that have timed out. Bonds are valid after \(\frac{2}{3}\)rds of the current stakeholders have confirmed the sequence.
+
 \subsection{Voting}
 Proof of History generator will publish a hash at a predefined period.  Each bonded identity must vote to approve the hash, and all the ordered transactions before it.  The vote is a simple Yes vote, without a no.
 
@@ -352,25 +352,27 @@ To avoid this condition, the PoH generator should generate an invalid hash with 
 
 \subsubsection{Collusion with the PoH generator}\label{subsubsec:collusion}
 A verifier that is colluding with the PoH generator would know in advance when the invalid hash is going to be produced and not vote for it.  This scenario is really no different than the PoH identity having a larger verifier stake.  The PoH generator still has to do all the work to produce the state hash.
+\subsubsection{Censorship}\label{subsubsec:collusion}
+This area needs more exploration, but \(\frac{1}{3}\)rd of the bond holders could cause a denial of service by refusing to validate any sequences with new bonds.
 \section{Streaming Proof of Replication}\label{porep}
 \subsection{Description}
-Filecoin proposed a version of Proof of Replication (https://filecoin.io/proof-of-replication.pdf).  The goal of this version is to have fast and streaming verifications of Proof of Replication which are enabled by keeping track of time in Proof of History generated sequence.  Replication is not useful as a consensus algorithm, but is a useful tool to distribute the cost of storing the blockchain history or state at a high availability.
+Filecoin proposed a version of Proof of Replication \cite{filecoinporep}.  The goal of this version is to have fast and streaming verifications of Proof of Replication which are enabled by keeping track of time in Proof of History generated sequence.  Replication is not useful as a consensus algorithm, but is a useful tool to distribute the cost of storing the blockchain history or state at a high availability.
 \subsection{Algorithm}
-CBC encryption encrypts each block of data in sequence, using the previously encrypted block to XOR the input data.
+As shown in Figure~\ref{fig:encrypt} CBC encryption encrypts each block of data in sequence, using the previously encrypted block to XOR the input data.
 
 \begin{figure}
   \begin{center}
     \centering
     \includegraphics[width=0.6\textwidth]{figures/fig_7.png}
-    \caption[Fig 7]{Figure description \label{fig_7}}
+    \caption[Fig 7]{Figure description \label{fig:encrypt}}
   \end{center}
   \end{figure}
 
-Each replication identity generates a key by signing a hash that has been generated Proof of History sequence.  This ties the key to a replicators identity, and to a specific Proof of History sequence.  Only specific hashes can be selected.  (See Hash Selection)
+Each replication identity generates a key by signing a hash that has been generated Proof of History sequence.  This ties the key to a replicators identity, and to a specific Proof of History sequence.  Only specific hashes can be selected.  (See Section~\ref{hashselection} on Hash Selection)
 
-The data set is fully encrypted block by block.  Then to generate a proof, the key is used to seed a pseudorandom number generator that selects a random 32 byte slice from each block.
+The data set is fully encrypted block by block.  Then to generate a proof, the key is used to seed a pseudorandom number generator that selects a random 32 bytes from each block.
 
-A merkle hash is computed with the selected hash prepended to the each slice.
+A merkle hash is computed with the selected PoH hash prepended to the each slice.
 
 \begin{figure}
   \begin{center}
@@ -380,9 +382,9 @@ A merkle hash is computed with the selected hash prepended to the each slice.
   \end{center}
   \end{figure}
 
-The root is published, along with the key, and the selected hash that was generated.  The replication node is required to publish another proof in N hashes as they are generated by Proof of History generator, where N is approximately ½ the time it takes to encrypt the data.  The Proof of History generator will publish specific hashes for Proof of Replication at a predefined periods.  The replicator node must select the next published hash for generating the proof.  Again, the hash is signed, and random slices are selected from the blocks to create the merkle root.
+The root is published, along with the key, and the selected hash that was generated.  The replication node is required to publish another proof in N hashes as they are generated by Proof of History generator, where N is approximately (\frac{1}{2}) the time it takes to encrypt the data.  The Proof of History generator will publish specific hashes for Proof of Replication at a predefined periods.  The replicator node must select the next published hash for generating the proof.  Again, the hash is signed, and random slices are selected from the blocks to create the merkle root.
 
-After a period of N proofs, the data is re-encrypted with a new key.
+After a period of N proofs, the data is re-encrypted with a new CBC key.
 \subsection{Verification}
 
 With N cores, each core can stream encryption for each identity.  Total space required is \(2 blocks * N cores\), since the previous encrypted block is necessary to generate the next one. Each core can then be used to generate all the proofs that derived from the current encrypted block.
@@ -395,7 +397,7 @@ Without key rotation the same encrypted replication can generate cheap proofs fo
 
 Rotation needs to be slow enough that it’s practical to verify replication proofs on GPU hardware, which is slower per core than CPUs.
 
-\subsection{Hash Selection}
+\subsection{Hash Selection}\label{hashselection}
 
 Proof of History generator publishes a hash to be used by the entire network for encrypting Proofs of Replication, and for using as the pseudorandom number generator for byte selection in fast proofs.
 
@@ -411,7 +413,7 @@ The verifications are collected by the replicator via p2p gossip network, and su
 \subsubsection{Spam}
 A malicious user could create many replicator identities and spam the network with bad proofs.  To facilitate faster verification, nodes are required to provide the encrypted data and the entire merkle tree to the rest of the network when they request verification.
 
-The Proof of Replication that is designed in this paper allows for cheap verification of any additional proofs, as they take no additional space.  But each identity would consume 1 core of encryption time.  The replication target should be set to a maximum size of readily available cores.  Modern GPUs ship with 3500 cores.
+The Proof of Replication that is designed in this paper allows for cheap verification of any additional proofs, as they take no additional space.  But each identity would consume 1 core of encryption time.  The replication target should be set to a maximum size of readily available cores.  Modern GPUs ship with 3500+ cores.
 
 \subsubsection{Partial Erasure}
 
