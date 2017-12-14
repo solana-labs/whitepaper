@@ -271,11 +271,12 @@ When the sequence is published, Event3 would be referencing hash25a, and if itâ€
 
 To prevent a malicious clock service from rewriting the client Event hashes, the clients can submit a signature of the event data and the last observed hash instead of just a hash\\
 \texttt{
-Event3 = sign(append(event3 data, hash25a), client Private Key)
+Event3 = sign(append(event3 data, hash25a), client Private Key)\\
 Event3, hash30a\\
 }
 
 The mapping from the event hash or signature to event data and clientâ€™s public key can be published in a separate database for all the clients of the service to verify.
+
 \texttt{
 Verify\\
 (Public Key, hash25a, event3 data) <- lookup Event3 \\
