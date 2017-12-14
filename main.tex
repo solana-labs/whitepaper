@@ -180,13 +180,11 @@ sha256(hash299) $\rightarrow$ hash300, 300\\
 }
 
 So given some number of cores, like a modern GPU with 4000 cores, the verifier can split up the sequence of hashes and their indexes into 4000 slices, and in parallel make sure that each slice is correct from the starting hash to the last hash in the slice.  So if the expected time to produce the sequence is going to be\\
-
 \texttt{
 <number of hashes>/<hashes per second for 1 core>
 }
 
 \noindent The expected time to verify that the sequence is correct is going to be \\\\\noindent
-
 \texttt{
 <number of hashes>/(<hashes per second per core> * <number of cores available to verify>)
 }
@@ -199,22 +197,26 @@ So given some number of cores, like a modern GPU with 4000 cores, the verifier c
   \end{center}
   \end{figure}
 
-In the example in Figure 3, each core is able to verify each slice of the sequence in parallel.  Since all input strings are recorded into the output, with the counter and state that they are appended to, the verifiers can replicate each slice in parallel.
+In the example in Figure 4, each core is able to verify each slice of the sequence in parallel.  Since all input strings are recorded into the output, with the counter and state that they are appended to, the verifiers can replicate each slice in parallel.
 
 \subsection{Horizontal Scaling}
 It’s possible to synchronize multiple Proof of History generators by mixing the sequence state from each generator to each other generator, and thus achieve horizontal scaling of the Proof of History generator.
 
+\texttt{
 Generator A
 Hash1a
 Hash2a
 Hash3a hash(Hash2b, hash1a)
 Hash4a
+}
 
+\texttt{
 Generator B
 Hash1b
 Hash2b
 Hash3b hash(Hash2a, hash1b)
 Hash4b
+}
 
 GeneratorA receives a data packet from Generator B, which contains the last state from Generator B, and the last state generator b observed from GeneratorA.  The next state hash in Generator A then depends on the state from Generator B, so we can derive that hash2b happened sometime before hash4a.  This property can be transitive, so if three generators are synchronized through a single common generator A ⇔ B ⇔ C, we can trace the dependency between A and C even though they were not synchronized directly.
 
@@ -232,7 +234,7 @@ The high speed sequence would create a secondary sequence of data that an attack
   \end{center}
   \end{figure}
 
-In the figure above, the two generators insert each other’s output state and record the operation.  
+In Figure 5, the two generators insert each other’s output state and record the operation.  
 
 The synchronization is transitive.  A ⇔ B ⇔ C  There is a provable order of events between A and C through B.  Two generators can double bandwidth at the cost of availability.  10x1gbps connections with availability of 0.999 would have 0.999**10 -> 0.99 availability.
 \subsection{Consistency}
