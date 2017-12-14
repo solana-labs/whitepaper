@@ -479,7 +479,7 @@ Loom takes incoming user packets, orders them the most efficient way possible, a
 
 \noindent Incoming packet format:\\\\\noindent
 \texttt{
-[<last valid hash, 20 bytes, 8 byte counter>, <unused, 6 bits>, <payload size, 10 bits>, <payload>, <fee, 8 bytes> <from, 32 bytes>, <signature, 32 bytes>]
+[<last valid hash, 20 bytes, 8 byte counter>, <unused, 6 bits>, <payload size, 10 bits>, <payload>, <fee, 8 bytes> <from, 32 bytes>, <signature, 32 bytes>]\\
 }
 Size \(20 + 8 + 16 + 8 + 32 + 32 = 116\) bytes.  The minimal payload that can be supported would be 1 destination account
 \noindent Payload:\\\\\noindent
