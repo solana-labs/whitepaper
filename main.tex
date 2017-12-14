@@ -485,9 +485,8 @@ Multiple transactions could be batched on the same hash.  On a 1gbps network con
 Each transaction requires a digest verification.  This operation doesn’t use any memory outside of the transaction message itself, and can be parallelized independent of all the other transactions.  Thus throughput is going to be limited by the number of cores available on the system.
 
 GPU based ECDSA verification servers have had experimental results of 900k operations per second~\cite{gpuecc}.  This is inline with our estimate based on single NVidia 1080ti GPU. 
-Memory Limits
+\subsubsection{Memory Limits}
 A naive implementation of the state as a \(50\%\) full hashtable with 32 byte entries for each account, would provide 16 billion accounts.  Steady state random access to this table is measured at \(1.1 * 10^7\) writes or reads per second.  Based on 2 reads and two writes per transaction, memory throughput can handle 2.75m transactions per second.  This was measured on AWS 1tb x1.16xlarge instance.
-
 \subsection{High Performance Smart Contracts}\label{sec:smartcontracts}
 
 Smart contracts are a generalized form of transactions.  These are programs that run on each node and modify the state.  This design takes advantage of extended Berkeley Packet Filter bytecode as fast and easy to analyze and JIT bytecode as the smart contracts language.
