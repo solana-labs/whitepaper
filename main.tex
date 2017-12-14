@@ -353,7 +353,7 @@ To avoid this condition, the PoH generator should generate an invalid hash with 
 \subsubsection{Collusion with the PoH generator}\label{subsubsec:collusion}
 A verifier that is colluding with the PoH generator would know in advance when the invalid hash is going to be produced and not vote for it.  This scenario is really no different than the PoH identity having a larger verifier stake.  The PoH generator still has to do all the work to produce the state hash.
 \subsubsection{Censorship}\label{subsubsec:censorship}
-Censorship or denial of service could occur when \(\frac{1}{3}\)rd of the bond holders refusing to validate any sequences with new bonds. The protocol can defend against this form of attack by dynamically adjusting how fast bonds become stale.  In the event of a denial of service, the larger partition can fork censor the Byzantine bond holders and recover as their coins become stale with time. The smaller partition would not be able to move forward for a longer period of time.  This area needs more exploration.
+Censorship or denial of service could occur when \(\frac{1}{3}\)rd of the bond holders refusing to validate any sequences with new bonds. The protocol can defend against this form of attack by dynamically adjusting how fast bonds become stale.  In the event of a denial of service, the larger partition can fork and censor the Byzantine bond holders.  The larger network will recover as the Byzantine bonds become stale with time. The smaller Byzantine partition would not be able to move forward for a longer period of time. This area needs more exploration.
 
 \section{Streaming Proof of Replication}\label{porep}
 \subsection{Description}
