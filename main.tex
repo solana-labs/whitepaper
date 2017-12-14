@@ -1,4 +1,4 @@
-\title{Loom: High performance blockchain }
+\title{Loom: High performance blockchain (WIP) }
 
 \author{
         Anatoly Yakovenko \\
@@ -19,14 +19,12 @@ A new Proof of History algorithm is proposed for global read consistency which c
 \end{abstract}
 
 \section{Introduction}
-This is time for all good men to come to the aid of their party!
+TBD
+\section{Outline}
+The remainder of this article is organized as follows. Overall system design is described in Secion~\ref{design}. In depth description of Proof of History is described in Secion~\ref{proof_of_history}. In depth description of the proposed Proof of Stake consensus algorithm is described in Section~\ref{proof_of_stake}.  In depth description of the proposed fast Proof of Replicatin is described in Section~\ref{porep}. System Architecture and performance limits are analyzed in Section~\ref{system_architecture}.
 
-%\paragraph{Outline}
-%The remainder of this article is organized as follows.
-%Section~\ref{previous work} gives account of previous work.
-%Our new and exciting results are described in Section~\ref{results}.
-%Finally, Section~\ref{conclusions} gives the conclusions.
-
+\section{Previous Work}\label{previous work}
+TBD
 \section{Design}\label{design}
 
 Loom is a Proof of History generator.  It takes a sequence of arbitrary user transactions.  It orders them in the most efficient way to process them, by maximizing memory throughput.  Executes the transactions on the current state that is stored in RAM.  Publishes the transactions and a signature of the state stored in RAM to the replications nodes.  Spools replicate the operations on their copies of the state, and publish their computed hash as confirmations via consensus algorithm.
@@ -301,7 +299,7 @@ Additionally, a single source of time allows for construction of a simper Proof 
 
 PoRep and PoH together provide a defense of both space and time against a forged ledger.
 
-\section{Proof of Stake Consensus}
+\section{Proof of Stake Consensus}\label{proof_of_stake}
 \subsection{Description}
 This specific instance of Proof of Stake is designed for quick confirmation of the current sequence produced by the Proof of History generator, for voting and selecting the next Proof of History generator, and for slashing any misbehaving validators.  This algorithm depends on messages eventually arriving to all participating nodes within a certain timeout.
 \subsection{Bonding}
@@ -356,7 +354,7 @@ To avoid this condition, the PoH generator should generate an invalid hash with 
 
 \subsubsection{Collusion with the PoH generator}\label{subsubsec:collusion}
 A verifier that is colluding with the PoH generator would know in advance when the invalid hash is going to be produced and not vote for it.  This scenario is really no different than the PoH identity having a larger verifier stake.  The PoH generator still has to do all the work to produce the state hash.
-\section{Streaming Proof of Replication}
+\section{Streaming Proof of Replication}\label{porep}
 \subsection{Description}
 Filecoin proposed a version of Proof of Replication (https://filecoin.io/proof-of-replication.pdf).  The goal of this version is to have fast and streaming verifications of Proof of Replication which are enabled by keeping track of time in Proof of History generated sequence.  Replication is not useful as a consensus algorithm, but is a useful tool to distribute the cost of storing the blockchain history or state at a high availability.
 \subsection{Algorithm}
@@ -432,7 +430,7 @@ The cost of adding an additional replicator identity is equal to the cost of sto
 This creates an opportunity for a denial of service attack on the network by creating a large number of valid replicator identities.
 
 To limit this attack, the consensus protocol chosen for the network can select a replication target, and award the replication proofs that meet the desired characteristics, like availability on the network, bandwidth, geolocation etc...
-\section{System Architecture}
+\section{System Architecture}\label{system_architecture}
 
 \begin{figure}
   \begin{center}
