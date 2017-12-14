@@ -31,11 +31,11 @@ TBD
   \begin{center}
     \centering
     \includegraphics[width=0.9\textwidth]{figures/fig_1.png}
-    \caption[Fig 1]{Transaction flow throught the network.\label{fig_design}}
+    \caption[Fig 1]{Transaction flow throught the network.\label{fig:design}}
   \end{center}
   \end{figure}
 
-As shown in Figure~\ref{fig:fig_design}, Loom is a Proof of History generator.  It takes a sequence of arbitrary user transactions.  It orders them in the most efficient way to process them, by maximizing memory throughput.  Executes the transactions on the current state that is stored in RAM.  Publishes the transactions and a merkle of the state stored in RAM to the replications nodes.  Spools execute the same transactions on their copies of the state, and publish their computed merkle of the state as confirmations via consensus algorithm.
+As shown in Figure~\ref{fig:design}, Loom is a Proof of History generator.  It takes a sequence of arbitrary user transactions.  It orders them in the most efficient way to process them, by maximizing memory throughput.  Executes the transactions on the current state that is stored in RAM.  Publishes the transactions and a merkle of the state stored in RAM to the replications nodes.  Spools execute the same transactions on their copies of the state, and publish their computed merkle of the state as confirmations via consensus algorithm.
 
 Looms are elected by the network via its configured consensus algorithm, such as Proof of Stake or Proof of Work.  Elections are covered in depth in Section~\ref{subsec:elections}.
 
