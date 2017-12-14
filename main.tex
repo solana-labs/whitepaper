@@ -451,12 +451,12 @@ The Loom is an elected Proof of History generator.  It consumes arbitrary user t
 A naive hash table addressed by the user’s address.  Each cell contains the full users address and the memory required for this computation.  For example\\
 \noindent Transaction table contains:\\\\\noindent
 \texttt{
-[<20 byte ripemd-160(sha256(users public key))><8 byte account value><4 byte unused>]
+[<20 byte ripemd-160(sha256(users public key))><8 byte account value><4 byte unused>]\\
 }
 For a total of 32 bytes.
 \noindent Proof of Stake bond’s table contains:\\\\\noindent
 \texttt{
-[<20 byte ripemd-160(sha256(users public key))><64 bits bond value><Last cast vote 8 bytes><20 byte, list of uncast votes><20 bytes unused>]
+[<20 byte ripemd-160(sha256(users public key))><64 bits bond value><Last cast vote 8 bytes><20 byte, list of uncast votes><20 bytes unused>]\\
 }
 For a total of 64 bytes.
 These nodes replicate the blockchain state and provide high availability of the blockchain state. The replication target is selected by the consensus algorithm, and the validators in the consensus algorithm select and vote the Proof of Replication nodes they approve of based on of-chain defined criteria.
@@ -476,19 +476,18 @@ These nodes are consuming bandwidth from Spools.  They are virtual nodes, and ca
   \end{figure}
 
 Loom takes incoming user packets, orders them the most efficient way possible, and sequences them into a Proof of History sequence that is published to downstream Spools.  Efficiency is based on memory access patterns of the transactions, so the transactions are ordered to minimize faults and to maximize prefetching.\\
-
 \noindent Incoming packet format:\\\\\noindent
 \texttt{
 [<last valid hash, 20 bytes, 8 byte counter>, <unused, 6 bits>, <payload size, 10 bits>, <payload>, <fee, 8 bytes> <from, 32 bytes>, <signature, 32 bytes>]\\
 }
-Size \(20 + 8 + 16 + 8 + 32 + 32 = 116\) bytes.  The minimal payload that can be supported would be 1 destination account
+Size \(20 + 8 + 16 + 8 + 32 + 32 = 116\) bytes.\\
+The minimal payload that can be supported would be 1 destination account
 \noindent Payload:\\\\\noindent
 \texttt{
-[<to 20 byte ripemd-160 hash>, <amount 4 byte>]
+[<to 20 byte ripemd-160 hash>, <amount 4 byte>]\\
 }
-Minimum size: \(24 bytes\)
+Minimum size: \(24 bytes\)\\
 The Proof of History sequence adds an additional hash and counter to the output. 
-
 \noindent Minimum Output:\\\\\noindent
 \texttt{
 [<current hash, 20 byte>, <8 byte counter>, <last valid hash, 20 bytes, 8 byte counter>, <unused, 6 bits>, <size, 10 bits>, <payload>, <fee, 8 bytes> <from, 32 bytes>, <signature, 32 bytes>]
