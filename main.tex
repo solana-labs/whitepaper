@@ -165,14 +165,14 @@ Every node observing this sequence can determine the order at which all events h
 The sequence can be verified as correct in a multi core computer in less time than it took to generated it \\
 
 \noindent For example: \\\\\noindent
-\noindent Core1: \\\\\noindent
+\noindent Core 1: \\\\\noindent
 \texttt{
 sha256(\char`\"any random starting value\char`\") $\rightarrow$ hash1, 1\\
 \ldots\\
 sha256(hash199) $\rightarrow$ hash200, 200\\
 }
 
-\noindent Core2 \\\\\noindent
+\noindent Core 2: \\\\\noindent
 \texttt{
 sha256(hash199) $\rightarrow$ hash200, 200\\
 \ldots\\
@@ -240,44 +240,53 @@ The synchronization is transitive.  A ⇔ B ⇔ C  There is a provable order of 
 \subsection{Consistency}
 Users can enforce consistency of the generated sequence and make it resilient to attacks by inserting the last observed output of the sequence they consider valid into their input.
 
-hash9a
-Event1, hash10a
-Event2, hash20a
-Event3, hash30a
+\texttt{
+hash9a\\
+Event1, hash10a\\
+Event2, hash20a\\
+Event3, hash30a\\
+}
 
 If the events were all available to insert at the same time, or the service has a hidden clock that's slightly faster, the service could produce a second hidden sequence with the events in reverse order.  
 
-hash9a
-Event3, hash10b
-Event2, hash20b
-Event1, hash30b
+\texttt{
+hash9a\\
+Event3, hash10b\\
+Event2, hash20b\\
+Event1, hash30b\\
+}
 
 Both sequences start at hash9a, so they are equal in length.  But as clients of this service, we want only a single valid sequence to exist. 
 
 To prevent this attack, each client generated Event should contain within itself the latest hash that the client observed from what it considers to be a valid sequence.  So when a client creates the “Event1” hash, they should append the last hash they have observed.
 
-Hash5a
-Event1 = hash(append(event1 data, hash5a))
-Event1, hash10a
-hash15a
-Event2 = hash(append(event2 data, hash15a))
-Event2, hash20a
-hash25a
-Event3 = hash(append(event3 data, hash25a))
-Event3, hash30a
+\texttt{
+\noindent Hash5a\\\\\noindent
+Event1 = hash(append(event1 data, hash5a))\\
+Event1, hash10a\\
+hash15a\\
+Event2 = hash(append(event2 data, hash15a))\\
+Event2, hash20a\\
+hash25a\\
+Event3 = hash(append(event3 data, hash25a))\\
+Event3, hash30a\\
+}
 
 When the sequence is published, Event3 would be referencing hash25a, and if it’s not in the sequence prior to this Event, the consumers of the sequence know that it’s an invalid sequence.  The partial reordering attack would then be limited to the number of hashes produced while the client has observed an event and when the event was entered.  Clients can then write software that doesn’t assume the order is correct for the short period of hashes between the last observed and inserted hash.
 
 To prevent a malicious clock service from rewriting the client Event hashes, the clients can submit a signature of the event data and the last observed hash instead of just a hash
-
-Event3 = sign(append(event3 data, hash25a), client Private Key)
-Event3, hash30a
+\texttt{
+\noindent Event3 = sign(append(event3 data, hash25a), client Private Key)\\\\\noindent
+Event3, hash30a\\
+}
 
 The mapping from the event hash or signature to event data and client’s public key can be published in a separate database for all the clients of the service to verify.
-Verify:
-	(Public Key, hash25a, event3 data) <- lookup Event3 
-      Verify Event3 signature with Public Key
-      Verify hash25a exists prior to hash31a in the sequence
+\texttt{
+Verify\\
+(Public Key, hash25a, event3 data) <- lookup Event3 \\
+Verify Event3 signature with Public Key\\
+Verify hash25a exists prior to hash31a in the sequence\\
+}
 
 \begin{figure}
   \begin{center}
@@ -304,7 +313,7 @@ A bonding transaction takes a user specified amount of coin and moves it to a bo
 \subsection{Voting}
 Proof of History generator will publish a hash at a predefined period.  Each bonded identity must vote to approve the hash, and all the ordered transactions before it.  The vote is a simple Yes vote, without a no.
 
-If 2/3rds of the bonded identities have voted within a timeout, that implies that either this history is valid, or a 1/3rd have voted duplicity.
+If \frac{2}{3}rds of the bonded identities have voted within a timeout, that implies that either this history is valid, or a \frac{1}{3}rd have voted duplicity.
 
 \subsection{Unbonding}
 
@@ -312,9 +321,9 @@ Missing N number of votes marks the coins as stale and no longer eligible for vo
 \subsection{Elections}
 Election for a new PoH generator occur when the PoH generator failure is detected.  The validator with the largest voting power, or highest public key address if there is a tie is picked as the new PoH generator.
 
-2/3rds of confirmations are required on the new sequence.  If the new leader fails before 2/3rds confirmations are available, the next highest validator is selected, and new set of conformations is required.
+\frac{2}{3}rds of confirmations are required on the new sequence.  If the new leader fails before \frac{2}{3}rds confirmations are available, the next highest validator is selected, and new set of conformations is required.
 
-To switch votes, a validator needs to vote at a higher PoH sequence counter, and the new vote needs to contain the votes it wants to switch.  Otherwise the second vote will be slashable. Vote switching can only occur at a height that doesn’t have 2/3rds majority.
+To switch votes, a validator needs to vote at a higher PoH sequence counter, and the new vote needs to contain the votes it wants to switch.  Otherwise the second vote will be slashable. Vote switching can only occur at a height that doesn’t have \frac{2}{3}rds majority.
 
 Once a PoH generator is established, a Secondary can be elected to take over the transactional processing duties.  If a Secondary exists, it will be considered as the next leader during a Primary failure.
 
@@ -338,7 +347,7 @@ A vote that includes a previous vote on a contending sequence is not eligible as
 
 Slashing also occurs if a vote is cast for an invalid hash generated by the PoH generator.  The generator is expected to randomly generate an invalid state which would trigger a fallback to Secondary.
 Secondary Elections
-Secondary and lower ranked Proof of History generators can be proposed and approved.  A proposal is cast on the primary generators sequence.  The proposal contains a timeout, if the motion is approved by 2/3rds of the vote before the timeout, the Secondary is considered elected, and will take over duties as scheduled.  Primary can do a soft handover to secondary by inserting a message into the generated sequence indicating that a handover will occur, or inserting an invalid state and forcing the network to fallback to Secondary.
+Secondary and lower ranked Proof of History generators can be proposed and approved.  A proposal is cast on the primary generators sequence.  The proposal contains a timeout, if the motion is approved by \frac{2}{3}rds of the vote before the timeout, the Secondary is considered elected, and will take over duties as scheduled.  Primary can do a soft handover to secondary by inserting a message into the generated sequence indicating that a handover will occur, or inserting an invalid state and forcing the network to fallback to Secondary.
 
 If a Secondary is elected, and the primary fails, the secondary will be considered as the first fallback during an election.
 
@@ -391,7 +400,7 @@ After a period of N proofs, the data is re-encrypted with a new key.
 
 With N cores, each core can stream encryption for each identity.  Total space required is 2 blocks * N cores, since the previous encrypted block is necessary to generate the next one. Each core can then be used to generate all the proofs that derived from the current encrypted block.
 
-Total time to verify proofs is equal to the time it takes to encrypt.  The number of replication identities that can be verified at the same time is equal to the number of available cores.  Modern GPUs have 3500+ cores available to them, albeit at ½-1/3rd the clock speed of a CPU.
+Total time to verify proofs is equal to the time it takes to encrypt.  The number of replication identities that can be verified at the same time is equal to the number of available cores.  Modern GPUs have 3500+ cores available to them, albeit at \frac{1}{2}-\frac{1}{3}rd the clock speed of a CPU.
 
 \subsection{Key Rotation}
 
@@ -408,9 +417,9 @@ Hash is published at a periodic counter that is roughly equal to ½ the time it 
 A malicious generator could inject data into the sequence prior to this hash to generate a specific hash.  Since every identity is using the same hash, a malicious generator could only benefit a single identity, as output of each signature signed with a unique private key using a cryptographic algorithm that is collision resistant.
 
 \subsection{Proof Validation}
-The Proof of History node doesn’t validate the submitted Proof of Replication proofs.  It only keep track of number of pending and verified proofs submitted by an identity.  A proof becomes verified when the replicator is able to sign the proof by 2/3rds of the validators in the network.  
+The Proof of History node doesn’t validate the submitted Proof of Replication proofs.  It only keep track of number of pending and verified proofs submitted by an identity.  A proof becomes verified when the replicator is able to sign the proof by \frac{2}{3}rds of the validators in the network.  
 
-The verifications are collected by the replicator via p2p gossip network, and submitted as one packet that contains 2/3rds of the validators in the network.  This packet verifies all the proofs prior to a specific hash generated by the Proof of History sequence, and can contain multiple replicator identities at once.
+The verifications are collected by the replicator via p2p gossip network, and submitted as one packet that contains \frac{2}{3}rds of the validators in the network.  This packet verifies all the proofs prior to a specific hash generated by the Proof of History sequence, and can contain multiple replicator identities at once.
 \subsection{Attacks}
 \subsubsection{Spam}
 A malicious user could create many replicator identities and spam the network with bad proofs.  To facilitate faster verification, nodes are required to provide the encrypted data and the entire merkle tree to the rest of the network when they request verification.
