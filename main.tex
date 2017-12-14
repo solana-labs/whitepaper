@@ -21,7 +21,7 @@ A new Proof of History algorithm is proposed for global read consistency which c
 \section{Introduction}
 TBD
 \section{Outline}
-The remainder of this article is organized as follows. Overall system design is described in Secion~\ref{design}. In depth description of Proof of History is described in Secion~\ref{proof_of_history}. In depth description of the proposed Proof of Stake consensus algorithm is described in Section~\ref{proof_of_stake}.  In depth description of the proposed fast Proof of Replicatin is described in Section~\ref{porep}. System Architecture and performance limits are analyzed in Section~\ref{system_architecture}.
+The remainder of this article is organized as follows. Overall system design is described in Section~\ref{design}. In depth description of Proof of History is described in Section~\ref{proof_of_history}. In depth description of the proposed Proof of Stake consensus algorithm is described in Section~\ref{proof_of_stake}.  In depth description of the proposed fast Proof of Replication is described in Section~\ref{porep}. System Architecture and performance limits are analyzed in Section~\ref{system_architecture}. A high performance GPU friendly smart contracts engine is described in Section~\ref{sec:smartcontracts}
 
 \section{Previous Work}\label{previous work}
 TBD
@@ -488,7 +488,7 @@ GPU based ECDSA verification servers have had experimental results of 900k opera
 Memory Limits
 A naive implementation of the state as a 50% full hashtable with 32 byte entries for each account, would provide 16 billion accounts.  Steady state random access to this table is measured at 1.1 * 10^7 writes or reads per second.  Based on 2 reads and two writes per transaction, memory throughput can handle 2.75m transactions per second.  This was measured on AWS 1tb x1.16xlarge instance.
 
-\subsection{High Performance Smart Contracts}
+\subsection{High Performance Smart Contracts}\label{sec:smartcontracts}
 
 Smart contracts are a generalized form of transactions.  These are programs that run on each node and modify the state.  This design takes advantage of extended Berkeley Packet Filter bytecode as fast and easy to analyze and JIT bytecode as the smart contracts language.
 
