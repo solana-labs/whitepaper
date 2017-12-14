@@ -257,9 +257,8 @@ Event1, hash30b\\
 
 Both sequences start at hash9a, so they are equal in length.  But as clients of this service, we want only a single valid sequence to exist. 
 
-To prevent this attack, each client generated Event should contain within itself the latest hash that the client observed from what it considers to be a valid sequence.  So when a client creates the “Event1” hash, they should append the last hash they have observed.
+To prevent this attack, each client generated Event should contain within itself the latest hash that the client observed from what it considers to be a valid sequence.  So when a client creates the “Event1” hash, they should append the last hash they have observed.\\
 \texttt{
-
 Hash5a
 Event1 = hash(append(event1 data, hash5a))\\
 Event1, hash10a\\
