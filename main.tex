@@ -404,7 +404,7 @@ Proof of History generator publishes a hash to be used by the entire network for
 
 Hash is published at a periodic counter that is roughly equal to \(\frac{1}{2}\) the time it takes to encrypt the data set.  Each replication identity must use the same hash, and use the signed result of the hash as the seed for byte selection, or the encryption key.
 
-A malicious generator could inject data into the sequence prior to this hash to generate a specific hash.  This attack is discussed more in ~\ref{sec:collusion}.
+A malicious generator could inject data into the sequence prior to this hash to generate a specific hash.  This attack is discussed more in ~\ref{subsec:collusion}.
 
 \subsection{Proof Validation}
 The Proof of History node doesn’t validate the submitted Proof of Replication proofs.  It only keep track of number of pending and verified proofs submitted by an identity.  A proof becomes verified when the replicator is able to sign the proof by \(\frac{2}{3}\)rds of the validators in the network.  
