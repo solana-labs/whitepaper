@@ -472,21 +472,21 @@ These nodes are consuming bandwidth from Spools.  They are virtual nodes, and ca
 
 Loom takes incoming user packets, orders them the most efficient way possible, and sequences them into a Proof of History sequence that is published to downstream Spools.  Efficiency is based on memory access patterns of the transactions, so the transactions are ordered to minimize faults and to maximize prefetching.
 Incoming packet format:
-[<last valid hash, 20 bytes, 8 byte counter>, <unused, 6 bits>, <payload size, 10 bits>, <payload>, <fee, 8 bytes> <from, 32 bytes>, <signature, 32 bytes>]
-Size 20 + 8 + 16 + 8 + 32 + 32 = 116 bytes.  The minimal payload that can be supported would be 1 destination account
+\[<last valid hash, 20 bytes, 8 byte counter>, <unused, 6 bits>, <payload size, 10 bits>, <payload>, <fee, 8 bytes> <from, 32 bytes>, <signature, 32 bytes>\]
+Size \(20 + 8 + 16 + 8 + 32 + 32 = 116 bytes\).  The minimal payload that can be supported would be 1 destination account
 Payload: 
-[<to 20 byte ripemd-160 hash>, <amount 4 byte>]
-Minimum size: 24 bytes
+\[<to 20 byte ripemd-160 hash>, <amount 4 byte>\]
+Minimum size: \(24 bytes\)
 The Proof of History sequence adds an additional hash and counter to the output: 
-[<current hash, 20 byte>, <8 byte counter>, <last valid hash, 20 bytes, 8 byte counter>, <unused, 6 bits>, <size, 10 bits>, <payload>, <fee, 8 bytes> <from, 32 bytes>, <signature, 32 bytes>]
-Minimum size of the output packet is: 116 + 24 + 28 = 168
-Multiple transactions could be batched on the same hash.  On a 1gbps network connection the maximum number of transactions possible is 1 gigabit per second / 168 bytes = 744k tps max.  Some loss (1-4%) is expected due to ethernet framing.  The spare capacity over the target amount for the network can be used to increase availability by coding the output with Reed-Solomon codes and striping it to the available downstream Spools.
+\[<current hash, 20 byte>, <8 byte counter>, <last valid hash, 20 bytes, 8 byte counter>, <unused, 6 bits>, <size, 10 bits>, <payload>, <fee, 8 bytes> <from, 32 bytes>, <signature, 32 bytes>\]
+Minimum size of the output packet is: \(116 + 24 + 28 = 168 bytes\)
+Multiple transactions could be batched on the same hash.  On a 1gbps network connection the maximum number of transactions possible is \(1 gigabit per second / 168 bytes = 744k tps max\).  Some loss \(1-4%\) is expected due to Ethernet framing.  The spare capacity over the target amount for the network can be used to increase availability by coding the output with Reed-Solomon codes and striping it to the available downstream Spools.
 \subsubsection{Computational Limits}
 Each transaction requires a digest verification.  This operation doesn’t use any memory outside of the transaction message itself, and can be parallelized independent of all the other transactions.  Thus throughput is going to be limited by the number of cores available on the system.
 
-GPU based ECDSA verification servers have had experimental results of 900k operations per second.  This is inline with our estimate based on single NVidia 1080ti GPU. 
+GPU based ECDSA verification servers have had experimental results of 900k operations per second~\cite{gpuecc}.  This is inline with our estimate based on single NVidia 1080ti GPU. 
 Memory Limits
-A naive implementation of the state as a 50% full hashtable with 32 byte entries for each account, would provide 16 billion accounts.  Steady state random access to this table is measured at 1.1 * 10^7 writes or reads per second.  Based on 2 reads and two writes per transaction, memory throughput can handle 2.75m transactions per second.  This was measured on AWS 1tb x1.16xlarge instance.
+A naive implementation of the state as a \(50%\) full hashtable with 32 byte entries for each account, would provide 16 billion accounts.  Steady state random access to this table is measured at \(1.1 * 10^7\) writes or reads per second.  Based on 2 reads and two writes per transaction, memory throughput can handle 2.75m transactions per second.  This was measured on AWS 1tb x1.16xlarge instance.
 
 \subsection{High Performance Smart Contracts}\label{sec:smartcontracts}
 
