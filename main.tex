@@ -91,10 +91,7 @@ and count $510146904064$.
 
 \subsection{Timestamp for Events}
 
-This sequence of hashes can also be used to record that some piece of data was created before a particular hash index was generated. Using a `combine` function to combine the piece of data with the current hash at the current index. The `data` can simply be a cryptographically unique hash of arbitrary event data. The combine function can be a simple append of data, or any operation that is collision resistant.\\
-
-Arithmetic operations like addition, multiplication etc... wouldn’t work because an attacker could have precomputed a separate sequence in parallel, and could join the two by inserting a piece of data that would add up to the starting value of the parallel sequence. Append would force the attacker to try to create a collision between a hash, and the data they are trying to append.\\
-
+This sequence of hashes can also be used to record that some piece of data was created before a particular hash index was generated. Using a `combine` function to combine the piece of data with the current hash at the current index. The `data` can simply be a cryptographically unique hash of arbitrary event data. The combine function can be a simple append of data, or any operation that is collision resistant. The next generated hash represents a “timestamp” of the data, because it could have only been generated after that specific piece of data was inserted.\\
 
 \noindent For example:\\\\\noindent
 \texttt{
