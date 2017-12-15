@@ -472,17 +472,23 @@ To limit this attack, the consensus protocol chosen for the network can select a
 The Loom is an elected Proof of History generator. It consumes arbitrary user transactions and outputs a Proof of History sequence of all the transactions that guarantees a unique global order in the system. After each batch of transactions the Loom outputs the merkle of the state that is the result of running the transactions in that order. This merkle, and the last transactions hash is signed signed with the identity of the Loom.
 
 \subsubsection{State}
-
 A naive hash table addressed by the user’s address. Each cell contains the full users address and the memory required for this computation. For example\\
 \noindent Transaction table contains:\\\\\noindent
-\texttt{
-[<20 byte ripemd-160(sha256(users public key))><8 byte account value><4 byte unused>]\\
-}
+\begin{bytefield}[bitwidth=.1em]{256}
+\bitheader{0,31,63,95,127,159,191,223,255} \\
+\bitbox{160}{Ripemd of Users Public Key}
+& \bitbox{64}{Account Value} \\
+& \bitbox{32}{unused}
+\end{bytefield}
 For a total of 32 bytes.\\
 \noindent Proof of Stake bond’s table contains:\\\\\noindent
-\texttt{
-[<20 byte ripemd-160(sha256(users public key))><64 bits bond value><Last cast vote 8 bytes><20 byte, list of uncast votes><20 bytes unused>]\\
-}
+\begin{bytefield}[bitwidth=.1em]{256}
+\bitheader{0,31,63,95,127,159,191,223,255} \\
+\bitbox{160}{Ripemd of Users Public Key}
+& \bitbox{64}{Bond Value} \\
+& \bitbox{64}{Last Cast Vote} \\
+& \bitbox{320}{unused}
+\end{bytefield}
 For a total of 64 bytes.\\
 These nodes replicate the blockchain state and provide high availability of the blockchain state. The replication target is selected by the consensus algorithm, and the validators in the consensus algorithm select and vote the Proof of Replication nodes they approve of based on of-chain defined criteria.
 
