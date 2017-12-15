@@ -489,7 +489,8 @@ For a total of 32 bytes.\\
 & \bitbox{64}{Last Vote} \\
 & \bitbox{224}{unused}
 \end{bytefield}\\
-For a total of 64 bytes.\\
+For a total of 64 bytes.
+\subsubsection{Spool, State Replication}
 The Spool nodes replicate the blockchain state and provide high availability of the blockchain state. The replication target is selected by the consensus algorithm, and the validators in the consensus algorithm select and vote the Proof of Replication nodes they approve of based on of-chain defined criteria.
 
 The network could be configured with a minimum Proof of Stake bond size, and a requirement for a single replicator identity per bond.
