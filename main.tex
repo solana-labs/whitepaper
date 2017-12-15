@@ -242,6 +242,7 @@ In Figure~\ref{fig:poh_scale}, the two generators insert each other’s output s
 The synchronization is transitive. \(A \leftrightarrow B \leftrightarrow C\)  There is a provable order of events between A and C through B. Two generators can double bandwidth at the cost of availability. 10x1gbps connections with availability of 0.999 would have \(0.999^{10} = 0.99 \) availability.
 \subsection{Consistency}
 Users can enforce consistency of the generated sequence and make it resilient to attacks by inserting the last observed output of the sequence they consider valid into their input.\\
+
 \texttt{
 hash9a\\
 Event1, hash10a\\
@@ -249,6 +250,7 @@ Event2, hash20a\\
 Event3, hash30a\\
 }
 If the events were all available to insert at the same time, or the service has a hidden clock that's slightly faster, the service could produce a second hidden sequence with the events in reverse order.\\
+
 \texttt{
 hash9a\\
 Event3, hash10b\\
@@ -258,6 +260,7 @@ Event1, hash30b\\
 Both sequences start at hash9a, so they are equal in length. But as clients of this service, we want only a single valid sequence to exist. 
 
 To prevent this attack, each client generated Event should contain within itself the latest hash that the client observed from what it considers to be a valid sequence. So when a client creates the “Event1” hash, they should append the last hash they have observed.\\
+
 \texttt{
 Hash5a
 Event1 = hash(append(event1 data, hash5a))\\
@@ -269,15 +272,14 @@ hash25a\\
 Event3 = hash(append(event3 data, hash25a))\\
 Event3, hash30a\\
 }
-
 When the sequence is published, Event3 would be referencing hash25a, and if it’s not in the sequence prior to this Event, the consumers of the sequence know that it’s an invalid sequence. The partial reordering attack would then be limited to the number of hashes produced while the client has observed an event and when the event was entered. Clients can then write software that doesn’t assume the order is correct for the short period of hashes between the last observed and inserted hash.
 
 To prevent a malicious clock service from rewriting the client Event hashes, the clients can submit a signature of the event data and the last observed hash instead of just a hash\\
+
 \texttt{
 Event3 = sign(append(event3 data, hash25a), client Private Key)\\
 Event3, hash30a\\
 }
-
 The mapping from the event hash or signature to event data and client’s public key can be published in a separate database for all the clients of the service to verify. For Loom the entire signed message is sequenced into the stream.\\
 
 \noindent Verify:\\\\\noindent
