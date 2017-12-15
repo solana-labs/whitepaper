@@ -45,6 +45,8 @@ Looms are elected by the network via its configured consensus algorithm, such as
 
 Proof of History sequence guarantees global read consistency for the network. A Proof of Stake algorithm is proposed for electing Looms and posting confirmations of the sequence. A fast Proof of Replication is proposed for ledger and state availability, and as a defense against forgery attacks.
 
+With regards to CAP theory we always pick Consistency over Availability in an event of a network partition.
+
 \section{Proof of History}\label{proof_of_history}
 
 Proof of History provides a way to cryptographically verify passage of time between two events. It uses a cryptographically secure function whose output cannot be predicted from the input, and must be completely executed to generate the output. The function is run in a sequence, it’s previous output as the current input, periodically recording the current output, and how many times it’s been called. The output can then be re-computed and verified by external computers in parallel by checking each period in parallel on a separate core. Data can be timestamped into this sequence by recording the data and the index it was mixed into the sequence. The timestamp then guarantees that the data was created sometime before this hash was generated in the sequence. Multiple generators can synchronize amongst each other by mixing their state into each others sequences. \\
