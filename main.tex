@@ -492,9 +492,9 @@ Loom takes incoming user packets, orders them the most efficient way possible, a
 \bitheader{0,31,63,95,127,159,191,223,255} \\
 \begin{rightwordgroup}{Signed}
 \bitbox{160}{Last Valid Hash} \\
-& \bitbox{64}{Counter} \\
-& \bitbox{6}{u} \\
-& \bitbox{10}{s} \\
+& \bitbox{64}{Counter}
+& \bitbox{6}{u} 
+& \bitbox{10}{s}
 & \bitbox{64}{Fee} \\
 & \bitbox{256}{From} \\
 \end{rightwordgroup} \\
@@ -509,12 +509,12 @@ The minimal payload that can be supported would be 1 destination account.
 \bitheader{0,31,63,95,127,159,191,223,255} \\
 \begin{rightwordgroup}{Signed}
 \bitbox{160}{Last Valid Hash}
-& \bitbox{64}{Counter} \\
-& \bitbox{6}{u} \\
-& \bitbox{10}{s} \\
+& \bitbox{64}{Counter}
+& \bitbox{6}{u}
+& \bitbox{10}{s} 
 & \bitbox{160}{To} \\
 & \bitbox{64}{Amount} \\
-& \bitbox{64}{Counter}
+& \bitbox{64}{Counter} \\
 & \bitbox{64}{Fee} \\
 & \bitbox{256}{From} \\
 \end{rightwordgroup} \\
@@ -531,8 +531,8 @@ The Proof of History sequence adds an additional hash and counter to the output.
 & \bitbox{64}{Counter} \\
 \begin{rightwordgroup}{Signed}
 & \bitbox{160}{Last Valid Hash} \\
-& \bitbox{64}{Counter} \\
-& \bitbox{6}{u} \\
+& \bitbox{64}{Counter}
+& \bitbox{6}{u} 
 & \bitbox{10}{s} \\
 & \bitbox{160}{To}
 & \bitbox{64}{Amount} \\
