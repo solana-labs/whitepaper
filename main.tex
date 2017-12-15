@@ -477,7 +477,7 @@ A naive hash table addressed by the user’s address. Each cell contains the ful
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
 \bitbox{160}{Ripemd of Users Public Key}
-& \bitbox{64}{Account Value}
+& \bitbox{64}{Account}
 & \bitbox{32}{unused}
 \end{bytefield}\\
 For a total of 32 bytes.\\
@@ -485,8 +485,8 @@ For a total of 32 bytes.\\
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
 \bitbox{160}{Ripemd of Users Public Key}
-& \bitbox{64}{Bond Value} \\
-& \bitbox{64}{Last Cast Vote}
+& \bitbox{64}{Bond} \\
+& \bitbox{64}{Last Vote} \\
 & \bitbox{224}{unused}
 \end{bytefield}\\
 For a total of 64 bytes.\\
