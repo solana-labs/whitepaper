@@ -488,7 +488,6 @@ These nodes are consuming bandwidth from Spools. They are virtual nodes, and can
 Loom takes incoming user packets, orders them the most efficient way possible, and sequences them into a Proof of History sequence that is published to downstream Spools. Efficiency is based on memory access patterns of the transactions, so the transactions are ordered to minimize faults and to maximize prefetching.\\\\
 
 \noindent Incoming packet format:\\\\\noindent
-testing bytefield
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
 \begin{rightwordgroup}{Signed}
@@ -502,28 +501,51 @@ testing bytefield
 & \bitbox{256}{Signature} \\
 \end{bytefield}
 
-\texttt{
-[<last valid hash, 20 bytes, 8 byte counter>, <unused, 6 bits>, <payload size, 10 bits>, <payload>, <fee, 8 bytes> <from, 32 bytes>, <signature, 32 bytes>]\\
-}\\
-
 \noindent Size \(20 + 8 + 16 + 8 + 32 + 32 = 116\) bytes.\\\\
-The minimal payload that can be supported would be 1 destination account
-\noindent Payload:\\\\\noindent
-\texttt{
-[<to 20 byte ripemd-160 hash>, <amount 4 byte>]\\
-}\\
 
-\noindent Minimum size: 24 bytes\\\\
+The minimal payload that can be supported would be 1 destination account.
+\noindent With Payload:\\\\\noindent
+\begin{bytefield}[bitwidth=.1em]{256}
+\bitheader{0,31,63,95,127,159,191,223,255} \\
+\begin{rightwordgroup}{Signed}
+\bitbox{160}{Last Valid Hash}
+& \bitbox{64}{Counter}
+& \bitbox{6}{u}
+& \bitbox{10}{s} \\
+& \bitbox{160}{To}
+& \bitbox{64}{Amount} \\
+& \bitbox{64}{Counter}
+& \bitbox{64}{Fee} \\
+& \bitbox{256}{From} \\
+\end{rightwordgroup} \\
+& \bitbox{256}{Signature} \\
+\end{bytefield}
+
+\noindent With payload the minimum size: 144 bytes\\\\
 
 The Proof of History sequence adds an additional hash and counter to the output. 
 \noindent Minimum Output:\\\\\noindent
-\texttt{
-[<current hash, 20 byte>, <8 byte counter>, <last valid hash, 20 bytes, 8 byte counter>, <unused, 6 bits>, <size, 10 bits>, <payload>, <fee, 8 bytes> <from, 32 bytes>, <signature, 32 bytes>]
-}\\\\
+\begin{bytefield}[bitwidth=.1em]{256}
+\bitheader{0,31,63,95,127,159,191,223,255} \\
+\bitbox{160}{Current Hash}
+& \bitbox{64}{Counter}
+\begin{rightwordgroup}{Signed}
+$ \bitbox{160}{Last Valid Hash}
+& \bitbox{64}{Counter}
+& \bitbox{6}{u}
+& \bitbox{10}{s} \\
+& \bitbox{160}{To}
+& \bitbox{64}{Amount} \\
+& \bitbox{64}{Counter}
+& \bitbox{64}{Fee} \\
+& \bitbox{256}{From} \\
+\end{rightwordgroup} \\
+& \bitbox{256}{Signature} \\
+\end{bytefield}
 
-\noindent Minimum size of the output packet is: \(116 + 24 + 28 = 168\) bytes \\\\
+\noindent Minimum size of the output packet is: 172 bytes \\\\
 
-Multiple transactions could be batched on the same hash. On a 1gbps network connection the maximum number of transactions possible is $1$~gigabit per second / $168$~bytes = $744$k tps max. Some loss $1-4\%$ is expected due to Ethernet framing. The spare capacity over the target amount for the network can be used to increase availability by coding the output with Reed-Solomon codes and striping it to the available downstream Spools.
+Multiple transactions could be batched on the same hash. On a 1gbps network connection the maximum number of transactions possible is $1$~gigabit per second / $172$~bytes = $726$k tps max. Some loss $1-4\%$ is expected due to Ethernet framing. The spare capacity over the target amount for the network can be used to increase availability by coding the output with Reed-Solomon codes and striping it to the available downstream Spools.
 \subsubsection{Computational Limits}
 Each transaction requires a digest verification. This operation doesn’t use any memory outside of the transaction message itself, and can be parallelized independent of all the other transactions. Thus throughput is going to be limited by the number of cores available on the system.
 
