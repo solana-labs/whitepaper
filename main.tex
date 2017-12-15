@@ -46,7 +46,7 @@ Looms are elected by the network via its configured consensus algorithm, such as
 
 The Loom generates a Proof of History sequence, which along with global read consistency also provides a verifiable passage of time for the network.
 
-With regards to CAP theory we always pick Consistency over Availability in an event of a network partition.
+In terms of CAP theorem, Consistency is always picked over Availability in an event of a network partition.
 
 \section{Proof of History}\label{proof_of_history}
 
@@ -488,24 +488,24 @@ These nodes are consuming bandwidth from Spools. They are virtual nodes, and can
 Loom takes incoming user packets, orders them the most efficient way possible, and sequences them into a Proof of History sequence that is published to downstream Spools. Efficiency is based on memory access patterns of the transactions, so the transactions are ordered to minimize faults and to maximize prefetching.\\\\
 
 \noindent Incoming packet format:\\\\\noindent
-%testing bytefield
-%\begin{bytefield}[bitwidth=1.1em]{32}
-%\bitheader{0-31} \\
-%\begin{rightwordgroup}{RTP \\ Header}
-%\bitbox{2}{V=2} & \bitbox{1}{P} & \bitbox{1}{X}
-%& \bitbox{4}{CC} & \bitbox{1}{M} & \bitbox{7}{PT}
-%& \bitbox{16}{sequence number} \\
-%\bitbox{32}{timestamp}
-%\end{rightwordgroup} \\
-%\bitbox{32}{synchronization source (SSRC) identifier} \\
-%\wordbox[tlr]{1}{contributing source (CSRC) identifiers} \\
-%\wordbox[blr]{1}{$\cdots$} \\
-%\begin{rightwordgroup}{RTP \\ Payload}
-%\wordbox[tlr]{3}{MPEG-4 Visual stream (byte aligned)} \\
-%\bitbox[blr]{16}{}
-%& \bitbox{16}{\dots\emph{optional} RTP padding}
-%\end{rightwordgroup}
-%\end{bytefield}
+testing bytefield
+\begin{bytefield}[bitwidth=1.1em]{32}
+\bitheader{0-31} \\
+\begin{rightwordgroup}{RTP \\ Header}
+\bitbox{2}{V=2} & \bitbox{1}{P} & \bitbox{1}{X}
+& \bitbox{4}{CC} & \bitbox{1}{M} & \bitbox{7}{PT}
+& \bitbox{16}{sequence number} \\
+\bitbox{32}{timestamp}
+\end{rightwordgroup} \\
+\bitbox{32}{synchronization source (SSRC) identifier} \\
+\wordbox[tlr]{1}{contributing source (CSRC) identifiers} \\
+\wordbox[blr]{1}{$\cdots$} \\
+\begin{rightwordgroup}{RTP \\ Payload}
+\wordbox[tlr]{3}{MPEG-4 Visual stream (byte aligned)} \\
+\bitbox[blr]{16}{}
+& \bitbox{16}{\dots\emph{optional} RTP padding}
+\end{rightwordgroup}
+\end{bytefield}
 
 
 \texttt{
