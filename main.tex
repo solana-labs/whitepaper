@@ -489,24 +489,18 @@ Loom takes incoming user packets, orders them the most efficient way possible, a
 
 \noindent Incoming packet format:\\\\\noindent
 testing bytefield
-\begin{bytefield}[bitwidth=1.1em]{32}
-\bitheader{0-31} \\
-\begin{rightwordgroup}{RTP \\ Header}
-\bitbox{2}{V=2} & \bitbox{1}{P} & \bitbox{1}{X}
-& \bitbox{4}{CC} & \bitbox{1}{M} & \bitbox{7}{PT}
-& \bitbox{16}{sequence number} \\
-\bitbox{32}{timestamp}
+\begin{bytefield}[bitwidth=1.1em]{256}
+\bitheader{0-255} \\
+\begin{rightwordgroup}{Input Packet}
+\bitbox{160}{Last Valid Hash}
+& \bitbox{64}{Counter}
+& \bitbox{6}{Unused}
+& \bitbox{10}{Payload size} \\
+& \bitbox{64}{Fee} \\
 \end{rightwordgroup} \\
-\bitbox{32}{synchronization source (SSRC) identifier} \\
-\wordbox[tlr]{1}{contributing source (CSRC) identifiers} \\
-\wordbox[blr]{1}{$\cdots$} \\
-\begin{rightwordgroup}{RTP \\ Payload}
-\wordbox[tlr]{3}{MPEG-4 Visual stream (byte aligned)} \\
-\bitbox[blr]{16}{}
-& \bitbox{16}{\dots\emph{optional} RTP padding}
-\end{rightwordgroup}
+& \bitbox{256}{From} \\
+\end{rightwordgroup} \\
 \end{bytefield}
-
 
 \texttt{
 [<last valid hash, 20 bytes, 8 byte counter>, <unused, 6 bits>, <payload size, 10 bits>, <payload>, <fee, 8 bytes> <from, 32 bytes>, <signature, 32 bytes>]\\
