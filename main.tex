@@ -479,7 +479,7 @@ A naive hash table addressed by the user’s address. Each cell contains the ful
 \bitbox{160}{Ripemd of Users Public Key}
 & \bitbox{64}{Account Value} \\
 & \bitbox{32}{unused}
-\end{bytefield}
+\end{bytefield}\\
 For a total of 32 bytes.\\
 \noindent Proof of Stake bond’s table contains:\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
@@ -487,8 +487,8 @@ For a total of 32 bytes.\\
 \bitbox{160}{Ripemd of Users Public Key}
 & \bitbox{64}{Bond Value} \\
 & \bitbox{64}{Last Cast Vote} \\
-& \bitbox{320}{unused}
-\end{bytefield}
+& \bitbox{224}{unused}
+\end{bytefield}\\
 For a total of 64 bytes.\\
 These nodes replicate the blockchain state and provide high availability of the blockchain state. The replication target is selected by the consensus algorithm, and the validators in the consensus algorithm select and vote the Proof of Replication nodes they approve of based on of-chain defined criteria.
 
