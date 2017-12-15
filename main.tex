@@ -491,15 +491,12 @@ Loom takes incoming user packets, orders them the most efficient way possible, a
 testing bytefield
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
-\begin{rightwordgroup}{Input Packet}
 \bitbox{160}{Last Valid Hash}
 & \bitbox{64}{Counter}
 & \bitbox{6}{Unused}
 & \bitbox{10}{Payload size} \\
 & \bitbox{64}{Fee} \\
-\end{rightwordgroup} \\
 & \bitbox{256}{From} \\
-\end{rightwordgroup} \\
 \end{bytefield}
 
 \texttt{
