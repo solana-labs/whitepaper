@@ -44,7 +44,7 @@ As shown in Figure~\ref{fig:design}, Loom is a Proof of History generator. It ta
 
 Looms are elected by the network via its configured consensus algorithm, such as Proof of Stake or Proof of Work. Elections are covered in depth in Section~\ref{subsec:elections}.
 
-Proof of History sequence guarantees global read consistency for the network. A Proof of Stake algorithm is proposed for electing Looms and posting confirmations of the sequence. A fast Proof of Replication is proposed for ledger and state availability, and as a defense against forgery attacks.
+The Loom generates a Proof of History sequence, which along with global read consistency also provides a verifiable passage of time for the network.
 
 With regards to CAP theory we always pick Consistency over Availability in an event of a network partition.
 
