@@ -372,7 +372,18 @@ PoRep and PoH together provide a defense of both space and time against a forged
 
 \section{Proof of Stake Consensus}\label{proof_of_stake}
 \subsection{Description}
-This specific instance of Proof of Stake is designed for quick confirmation of the current sequence produced by the Proof of History generator, for voting and selecting the next Proof of History generator, and for slashing any misbehaving validators. This algorithm depends on messages eventually arriving to all participating nodes within a certain timeout.
+This specific instance of Proof of Stake is designed for quick confirmation of the current sequence produced by the Proof of History generator, for voting and selecting the next Proof of History generator, and for punishing any misbehaving validators. This algorithm depends on messages eventually arriving to all participating nodes within a certain timeout.
+\subsection{Terminology}
+\begin{description}
+
+\item[bonds]
+Bonds are equivalent to a capital expense in Proof of Work. A miner buys hardware and electricity, and commits it to a single branch in a Proof of Work blockchain.
+
+\item[slashing]
+
+The solution to the nothing at stake problem in Proof of Stake systems~\cite{slasher}.  When a proof of voting for a different branch is published, that branch can destroy the validator's bond.  This is an economic incentive designed to discourage validators from confirming multiple branches.
+\end{description}
+
 \subsection{Bonding}
 A bonding transaction takes a user specified amount of coin and moves it to a bonding account under the user’s identity. Coins in the bonding account cannot be spent, and have to remain in the account until the user removes them. The user can only remove stale coins that have timed out. Bonds are valid after \(\frac{2}{3}\)rds of the current stakeholders have confirmed the sequence.
 
