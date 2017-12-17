@@ -35,14 +35,14 @@
 \maketitle
 
 \begin{abstract}
-This paper proposes a Proof of History (PoH) - a proof for verifying passage of time between events. PoH is used to create global read consistency which can be used alongside a consensus algorithm to minimize messaging overhead in a Byzantine Fault Tolerant replicated state machine.  It achieves performance by creating a single globally agreed upon order of events that is confirmed with minimal messaging overhead. Any consensus algorithm can be used, such as Proof of Work (PoW) or Proof of Stake (PoS).  This paper proposes two algorithms that leverage the time keeping properties of the PoH ledger - a simple PoS consensus algorithm and an efficient streaming Proof of Replication (PoRep).  The combination of PoRep and PoH provides a defense against forgery of the ledger with respect to time and storage.  The protocol is analyzed on a 1gbps network, and this paper shows that throughput up to 720k transactions per second is possible with today's hardware.
+This paper proposes a Proof of History (PoH) - a proof for verifying passage of time between events. PoH is used to create global read consistency which can be used alongside a consensus algorithm to minimize messaging overhead in a Byzantine Fault Tolerant replicated state machine.  It achieves performance by creating a single globally agreed upon order of events that is confirmed with minimal messaging overhead. Any consensus algorithm can be used, such as Proof of Work (PoW) or Proof of Stake (PoS).  This paper proposes two algorithms that leverage the time keeping properties of the PoH ledger - a simple Proof of Stake consensus algorithm and an efficient streaming Proof of Replication (PoRep).  The combination of PoRep and PoH provides a defense against forgery of the ledger with respect to time and storage.  The protocol is analyzed on a 1gbps network, and this paper shows that throughput up to 720k transactions per second is possible with today's hardware.
 \end{abstract}
 
 \section{Work In Progress}
 This is a work in progress, for comments and suggestions please contact Anatoly Yakovenko aeyakovenko@gmail.com
 
 \section{Introduction}
-Blockchain is an implementation of a fault tolerant replicated state machine.  Current publicly available blockchains do not rely on time, or make a weak assumption about the participant’s abilities to keep time~\cite{tendermint}.  Each node in the network usually relies on their own local clock without knowledge of any other participants clocks in the network.  The lack of a trusted source of time means that when a message timestamp is used to accept or reject a message, there is no deterministic guarantee that every other participant in the network will make the exact same choice.  The Proof of History presented here creates a single verifiable passage of time that every node in the network can rely on without trust for duration between events and message ordering.  Based on Proof of History, several algorithms are proposed, streaming Proof of Replication (Section ~\ref{porep}) and a Proof of Stake algorithm that can recover from denial of service by a \(\frac{N}{2} - 1\) minority (Section~\ref{censorship}).
+Blockchain is an implementation of a fault tolerant replicated state machine.  Current publicly available blockchains do not rely on time, or make a weak assumption about the participant’s abilities to keep time~\cite{tendermint}.  Each node in the network usually relies on their own local clock without knowledge of any other participants clocks in the network.  The lack of a trusted source of time means that when a message timestamp is used to accept or reject a message, there is no deterministic guarantee that every other participant in the network will make the exact same choice.  The PoH presented here creates a single verifiable passage of time that every node in the network can rely on without trust for duration between events and message ordering.  Based on Proof of History, this paper proposes two algorithms, streaming Proof of Replication (Section ~\ref{porep}) and a Proof of Stake algorithm that can recover from denial of service by a \(\frac{N}{2} - 1\) minority (Section~\ref{censorship}).
 
 \section{Outline}
 The remainder of this article is organized as follows. Overall system design is described in Section~\ref{design}. In depth description of Proof of History is described in Section~\ref{proof_of_history}. In depth description of the proposed Proof of Stake consensus algorithm is described in Section~\ref{proof_of_stake}. In depth description of the proposed fast Proof of Replication is described in Section~\ref{porep}. System Architecture and performance limits are analyzed in Section~\ref{system_architecture}. A high performance GPU friendly smart contracts engine is described in Section~\ref{sec:smartcontracts}
@@ -59,20 +59,20 @@ TBD
   \end{center}
   \end{figure}
 
-As shown in Figure~\ref{fig:design}, Loom generates a Proof of History. It sequences user messages. It orders them such that they can be efficiently processed by maximizing throughput.  It executes the transactions on the current state that is stored in RAM. It publishes the transactions and a signature of the state to the replications nodes called Spools. Spools execute the same transactions on their copies of the state, and publish their computed signatures of the state as confirmations via consensus algorithm.
+As shown in Figure~\ref{fig:design}, Loom generates a Proof of History. It sequences user messages. It orders them such that they can be efficiently processed by maximizing throughput.  It executes the transactions on the current state that is stored in RAM. It publishes the transactions and a signature of the state to the replications nodes called Spools. Spools execute the same transactions on their copies of the state, and publish their computed signatures of the state as confirmations. The published confirmations serve as votes for the consensus algorithm.
 
 There are many Looms in the network, and each Spool node has the same capabilities as a Loom.  A Primary and lower ranked Looms are elected via a consensus algorithm. Elections for the proposed PoS algorithm are covered in depth in Section~\ref{subsec:elections}.
 
 The Loom generates a Proof of History sequence, which along with global read consistency also provides a verifiable passage of time for the network.
 
-In terms of CAP theorem, Consistency is always picked over Availability in an event of a network partition.
+In terms of CAP theorem, Consistency is always picked over Availability in an event of a Partition.
 
 \section{Proof of History}\label{proof_of_history}
 
-Proof of History provides a way to cryptographically verify passage of time between two events. It uses a cryptographically secure function whose output cannot be predicted from the input, and must be completely executed to generate the output. The function is run in a sequence, its previous output as the current input, periodically recording the current output, and how many times it’s been called. The output can then be re-computed and verified by external computers in parallel by checking each period in parallel on a separate core. Data can be timestamped into this sequence by recording the data and the index it was mixed into the sequence. The timestamp then guarantees that the data was created sometime before this hash was generated in the sequence. Multiple generators can synchronize amongst each other by mixing their state into each others sequences. \\
+Proof of History provides a way to cryptographically verify passage of time between two events. It uses a cryptographically secure function whose output cannot be predicted from the input, and must be completely executed to generate the output. The function is run in a sequence, its previous output as the current input, periodically recording the current output, and how many times it’s been called. The output can then be re-computed and verified by external computers in parallel by checking each period in parallel on a separate core. Data can be timestamped into this sequence by appending the data into the state of the function.  The recording of the state, index and data as it was appended into the sequences provides a timestamp that guarantees that the data was created sometime before the next hash was generated in the sequence. Horizontal scaling is also possible as multiple generators can synchronize amongst each other by mixing their state into each others sequences.  Horizontal scaling is discussed in depth in Section~\ref{poh:scale}\\
 
 \subsection{Description}
-With a cryptographic function, like a cryptographic hash (\texttt{sha256}, \texttt{md5}, \texttt{sha-1}), whose output cannot be predicted without running the function, run the function from some random starting value and take its output and pass it as the input into the same function again. And record the number of times the function has been called and the output at each call. The starting random value chosen could be any string, like the headline of the New York times for the day.
+With a cryptographic function, like a cryptographic hash (\texttt{sha256}, \texttt{md5}, \texttt{sha-1}), whose output cannot be predicted without running the function, run the function from some random starting value and take its output and pass it as the input into the same function again. Record the number of times the function has been called and the output at each call. The starting random value chosen could be any string, like the headline of the New York times for the day.
 \\\\
 \noindent For example: \\\\\noindent
 \texttt{
@@ -82,10 +82,9 @@ With a cryptographic function, like a cryptographic hash (\texttt{sha256}, \text
   sha256(hash2) $\rightarrow$ hash3, (n\_count~$=~3$)\\
 }
 
-\noindent Where \texttt{hashN} represents the actual hash output. \\
+\noindent Where \texttt{hashN} represents the actual hash output.\\
 
-Instead of publishing every hash on every index, only a subset of
-these hashes could be published at an interval.\\
+It is only necessary to publish a subset of the hashes and indecies at an interval.\\
 
 \noindent For example:\\\\\noindent
 \texttt{
@@ -96,7 +95,7 @@ sha256(hash199) $\rightarrow$ hash200, (n\_count~$=200$)\\
 sha256(hash299) $\rightarrow$ hash300, (n\_count~$=300$)\\
 }
 
-This set of events can only be computed in sequence by a single computer thread, because there is no way to predict what the hash value at index $300$ is going to be without actually running the algorithm from the starting value $300$ times.
+As long as the hash function chosen is collision resistant, this set of hashes can only be computed in sequence by a single computer thread, because there is no way to predict what the hash value at index $300$ is going to be without actually running the algorithm from the starting value $300$ times.  Thus we can infer form the data structure that time passed between index $0$ and index $300$.
 
 \begin{figure}
   \begin{center}
@@ -164,9 +163,9 @@ sha256(append(hash600, photograph2\_sha256) $\rightarrow$ hash601,
 }
 
 So \texttt{photograph2} was created before \texttt{hash601}, and
-\texttt{photograph1} was created before \texttt{hash336}. Inserting this extra data into the sequence of hashes results in an unpredictable change to all subsequent values in the sequence. So it would be impossible to precompute any future sequences based on prior knowledge of what data will be mixed into the sequence.\\
+\texttt{photograph1} was created before \texttt{hash336}. Inserting the data into the sequence of hashes results in a change to all subsequent values in the sequence. As long as the hash function used is collision resistant, and the data was appended, it is computationally impossible to precompute any future sequences based on prior knowledge of what data will be integrated into the sequence.\\
 
-The sequence only needs to mix and publish a hash of the event data into the event sequence. The mapping of the hash to event data can be stored outside of the sequence, and the event data can contain other metadata within itself, such as real time stamps and connection IPs.\\
+The data that is mixed into the sequence can be the raw data itself, or just a hash of the data with accompanying metadata.\\
 
 \begin{figure}
   \begin{center}
@@ -176,9 +175,9 @@ The sequence only needs to mix and publish a hash of the event data into the eve
   \end{center}
   \end{figure}
 
-  In the example in Figure~\ref{fig:poh_insert}, input \texttt{cfd40df8\ldots} was inserted into the Proof of History sequence. The count at which it was inserted is $510145855488$ and the state at which it was inserted it is \texttt{3d039eef3}.\\
+  In the example in Figure~\ref{fig:poh_insert}, input \texttt{cfd40df8\ldots} was inserted into the Proof of History sequence. The count at which it was inserted is $510145855488$ and the state at which it was inserted it is \texttt{3d039eef3}.  All the future generated hashes are modified by this change to the sequence, this change is indicated by the color change in the figure.\\
 
-Every node observing this sequence can determine the order at which all events have been inserted. Generating a reverse order would require an attacker to start the malicious sequence after the second event. This delay would allow any non malicious peer to peer nodes to communicate about the original order.\\
+Every node observing this sequence can determine the order at which all events have been inserted and estimate the real time between the insertions.
 
 \subsection{Verification}
 The sequence can be verified as correct in a multi core computer in less time than it took to generated it \\
@@ -219,28 +218,39 @@ So given some number of cores, like a modern GPU with $4000$ cores, the verifier
   \end{center}
   \end{figure}
 
-In the example in Figure~\ref{fig:poh_verify}, each core is able to verify each slice of the sequence in parallel. Since all input strings are recorded into the output, with the counter and state that they are appended to, the verifiers can replicate each slice in parallel.
+In the example in Figure~\ref{fig:poh_verify}, each core is able to verify each slice of the sequence in parallel. Since all input strings are recorded into the output, with the counter and state that they are appended to, the verifiers can replicate each slice in parallel.  The red colored hashes indicate that the sequence was modified by a data insertion.
 
-\subsection{Horizontal Scaling}
-It’s possible to synchronize multiple Proof of History generators by mixing the sequence state from each generator to each other generator, and thus achieve horizontal scaling of the Proof of History generator.
+\subsection{Horizontal Scaling}\label{poh:scale}
+It’s possible to synchronize multiple Proof of History generators by mixing the sequence state from each generator to each other generator, and thus achieve horizontal scaling of the Proof of History generator.  This scaling is done without sharding, the output of both generators is necessary to reconstruct the full order of events in the system.
+
+\begin{center}
+  \begin{tabular}{ | Index | Hash | Data | }
+    \hline
+    1 & hash1a & \\ \hline
+    2 & hash2a & hash1a \\ \hline
+    3 & hash3a & \\ \hline
+    4 & hash4a & \\
+    \hline
+  \end{tabular}
+\end{center}
 
 \texttt{
 Generator A\\
-Hash1a\\
-Hash2a\\
-Hash3a hash(Hash2b, hash1a)\\
-Hash4a\\
+1 Hash1a \\
+2 Hash2a \\
+3 Hash3a = hash(Hash2b, hash1a)\\
+4 Hash4a \\
 }
 
 \texttt{
 Generator B\\
-Hash1b\\
-Hash2b\\
-Hash3b hash(Hash2a, hash1b)\\
-Hash4b\\
+1 Hash1b\\
+2 Hash2b\\
+3 Hash3b = hash(Hash2a, hash1b)\\
+4 Hash4b\\
 }
 
-GeneratorA receives a data packet from Generator B, which contains the last state from Generator B, and the last state generator b observed from GeneratorA. The next state hash in Generator A then depends on the state from Generator B, so we can derive that hash2b happened sometime before hash4a. This property can be transitive, so if three generators are synchronized through a single common generator A ⇔ B ⇔ C, we can trace the dependency between A and C even though they were not synchronized directly.
+Given generators A and B, A receives a data packet from B, which contains the last state from Generator B, and the last state generator b observed from GeneratorA. The next state hash in Generator A then depends on the state from Generator B, so we can derive that hash2b happened sometime before hash4a. This property can be transitive, so if three generators are synchronized through a single common generator A ⇔ B ⇔ C, we can trace the dependency between A and C even though they were not synchronized directly.
 
 By periodically synchronizing the generators, each generator can then handle a portion of external traffic, thus the overall system can handle a larger amount of events to track at the cost of the accuracy due to network latencies between the generators.
 
@@ -322,6 +332,10 @@ PoRep and PoH together provide a defense of both space and time against a forged
 
 \subsection{Overhead}
 4000 hashes per second would generate an additional 160 kilobytes of data, and would require access to a GPU with 4000 cores and roughly 0.75-0.25 milliseconds of time to verify.
+
+\subsection{Attacks}
+\subsubsection{Reversal}
+ Generating a reverse order would require an attacker to start the malicious sequence after the second event. This delay would allow any non malicious peer to peer nodes to communicate about the original order.
 
 \section{Proof of Stake Consensus}\label{proof_of_stake}
 \subsection{Description}
