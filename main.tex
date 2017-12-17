@@ -167,6 +167,7 @@ Because the initial process is still sequential, we can then tell that things en
 
 \begin{center}
   \begin{tabular}{ | l | c | r |}
+    \caption[Table 3]{PoH Sequence With 2 Events\label{table:multievent}}
     Index & Hash & Operation \\ \hline
     1 & hash1 & sha256(\char`\"any random starting value\char`\") \\ \hline
     200 & hash200 & sha256(hash199) \\ \hline
@@ -177,7 +178,6 @@ Because the initial process is still sequential, we can then tell that things en
     600 & hash600 & sha256(append(hash599, photograph2\_sha256)) \\ \hline
     700 & hash600 & sha256(hash599) \\ \hline
     \end{tabular}
-    \caption[Table 3]{PoH Sequence With 2 Events\label{table:multievent}}
 \end{center}
 
 In the sequence represented by Table\~\ref{table:multievent}, \texttt{photograph2} was created before \texttt{hash601}, and
