@@ -226,32 +226,30 @@ It's possible to synchronize multiple Proof of History generators by mixing the 
 \begin{center}
   \begin{tabular}{ | l | c | r |}
     \hline
+    \multicolumn{3}{|c|}{PoH Generator A} \\
+    \hline
     Index & Hash & Data \\ \hline
     1 & hash1a & \\ \hline
-    2 & hash2a & hash1a \\ \hline
+    2 & hash2a & hash1b \\ \hline
     3 & hash3a & \\ \hline
     4 & hash4a & \\
     \hline
     \end{tabular}
+  \begin{tabular}{ | l | c | r |}
+    \hline
+    \multicolumn{3}{|c|}{PoH Generator B} \\
+    \hline
+    Index & Hash & Data \\ \hline
+    1 & hash1b & \\ \hline
+    2 & hash2b & hash1a \\ \hline
+    3 & hash3b & \\ \hline
+    4 & hash4b & \\
+    \hline
+    \end{tabular}
+
 \end{center}
 
-\texttt{
-Generator A\\
-1 Hash1a \\
-2 Hash2a \\
-3 Hash3a = hash(Hash2b, hash1a)\\
-4 Hash4a \\
-}
-
-\texttt{
-Generator B\\
-1 Hash1b\\
-2 Hash2b\\
-3 Hash3b = hash(Hash2a, hash1b)\\
-4 Hash4b\\
-}
-
-Given generators A and B, A receives a data packet from B, which contains the last state from Generator B, and the last state generator b observed from GeneratorA. The next state hash in Generator A then depends on the state from Generator B, so we can derive that hash2b happened sometime before hash4a. This property can be transitive, so if three generators are synchronized through a single common generator A \rightleftarrow B \rightleftarrow C, we can trace the dependency between A and C even though they were not synchronized directly.
+Given generators A and B, A receives a data packet from B, which contains the last state from Generator B, and the last state generator b observed from GeneratorA. The next state hash in Generator A then depends on the state from Generator B, so we can derive that hash2b happened sometime before hash4a. This property can be transitive, so if three generators are synchronized through a single common generator A \leftrightarrow B \leftrightarrow C, we can trace the dependency between A and C even though they were not synchronized directly.
 
 By periodically synchronizing the generators, each generator can then handle a portion of external traffic, thus the overall system can handle a larger amount of events to track at the cost of the accuracy due to network latencies between the generators.
 
