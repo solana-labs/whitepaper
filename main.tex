@@ -425,6 +425,9 @@ If super majority of the bonded identities have voted within a timeout, then thi
 \subsection{Unbonding}
 
 Missing N number of votes marks the coins as stale and no longer eligible for voting. The user can issue an unbonding transaction to remove them.
+
+N is a dynamic value based on the ratio of stale to active votes.  N increases as the number of stale votes increase.  In an event of a large network partition, this allows the larger branch to recover faster then the smaller branch.
+
 \subsection{Elections}\label{subsec:elections}
 Election for a new PoH generator occur when the PoH generator failure is detected. The validator with the largest voting power, or highest public key address if there is a tie is picked as the new PoH generator.
 
