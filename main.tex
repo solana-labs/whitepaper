@@ -269,46 +269,73 @@ Scaling in this way comes at the cost of availability.  10x1gbps connections wit
 
 \subsection{Consistency}
 Users can enforce consistency of the generated sequence and make it resistant to attacks by inserting the last observed output of the sequence they consider valid into their input.\\
-\texttt{
-hash9a\\
-Event1, hash10a\\
-Event2, hash20a\\
-Event3, hash30a\\
-}
-If the events were all available to insert at the same time, or the service has a hidden clock that's slightly faster, the service could produce a second hidden sequence with the events in reverse order.\\
-\texttt{
-hash9a\\
-Event3, hash10b\\
-Event2, hash20b\\
-Event1, hash30b\\
-}
-Both sequences start at hash9a, so they are equal in length. But as clients of this service, we want only a single valid sequence to exist. 
 
-To prevent this attack, each client generated Event should contain within itself the latest hash that the client observed from what it considers to be a valid sequence. So when a client creates the “Event1” hash, they should append the last hash they have observed.\\
-\texttt{
-Hash5a
-Event1 = hash(append(event1 data, hash5a))\\
-Event1, hash10a\\
-hash15a\\
-Event2 = hash(append(event2 data, hash15a))\\
-Event2, hash20a\\
-hash25a\\
-Event3 = hash(append(event3 data, hash25a))\\
-Event3, hash30a\\
-}
-When the sequence is published, Event3 would be referencing hash25a, and if it’s not in the sequence prior to this Event, the consumers of the sequence know that it’s an invalid sequence. The partial reordering attack would then be limited to the number of hashes produced while the client has observed an event and when the event was entered. Clients can then write software that doesn’t assume the order is correct for the short period of hashes between the last observed and inserted hash.
+\begin{center}
+  \begin{tabular}{ | l | c | r |}
+    \hline
+    \multicolumn{3}{|c|}{PoH Sequence A} \\
+    \hline
+    Index & Hash & Data \\ \hline
+    10 & hash10a & \\ \hline
+    20 & hash20a & Event1 \\ \hline
+    30 & hash30a & Event2 \\ \hline
+    40 & hash40a & Event3 \\
+    \hline
+    \end{tabular}
+  \begin{tabular}{ | l | c | r |}
+    \hline
+    \multicolumn{3}{|c|}{PoH Hidden Sequence B} \\
+    \hline
+    Index & Hash & Data \\ \hline
+    10 & hash10a & \\ \hline
+    20 & hash20a & Event3 \\ \hline
+    30 & hash30a & Event2 \\ \hline
+    40 & hash40a & Event1 \\
+    \hline
+    \end{tabular}
+\end{center}
+
+A malicous PoH generator could produce a second hidden sequence with the events in reverse order, if it has access to all the events at once, or is able to generate a faster hidden sequence.\\
+
+To prevent this attack, each client generated Event should contain within itself the latest hash that the client observed from what it considers to be a valid sequence. So when a client creates the "Event1" data, they should append the last hash they have observed.\\
+
+\begin{center}
+  \begin{tabular}{ | l | c | r |}
+    \hline
+    \multicolumn{3}{|c|}{PoH Sequence A} \\
+    \hline
+    Index & Hash & Data \\ \hline
+    10 & hash10a & \\ \hline
+    20 & hash20a & Event1 = append(event1 data, hash10a) \\ \hline
+    30 & hash30a & Event2 = append(event2 data, hash20a) \\ \hline
+    40 & hash40a & Event3 = append(event3 data, hash30a) \\
+    \hline
+    \end{tabular}
+\end{center}
+
+When the sequence is published, Event3 would be referencing hash30a, and if it’s not in the sequence prior to this Event, the consumers of the sequence know that it’s an invalid sequence. The partial reordering attack would then be limited to the number of hashes produced while the client has observed an event and when the event was entered. Clients can then write software that doesn’t assume the order is correct for the short period of hashes between the last observed and inserted hash.
 
 To prevent a malicious clock service from rewriting the client Event hashes, the clients can submit a signature of the event data and the last observed hash instead of just a hash\\
-\texttt{
-Event3 = sign(append(event3 data, hash25a), client Private Key)\\
-Event3, hash30a\\
-}
-The mapping from the event hash or signature to event data and client’s public key can be published in a separate database for all the clients of the service to verify. For Loom the entire signed message is sequenced into the stream.\\
+\begin{center}
+  \begin{tabular}{ | l | c | r |}
+    \hline
+    \multicolumn{3}{|c|}{PoH Sequence A} \\
+    \hline
+    Index & Hash & Data \\ \hline
+    10 & hash10a & \\ \hline
+    20 & hash20a & Event1 = sign(append(event1 data, hash10a), Client Private Key) \\ \hline
+    30 & hash30a & Event2 = sign(append(event2 data, hash20a), Client Private Key) \\ \hline
+    40 & hash40a & Event3 = sign(append(event3 data, hash30a), Client Private Key) \\
+    \hline
+    \end{tabular}
+\end{center}
+
+Verification of this data requires a signature verificaiton, and a lookup of the hash in the sequence of hashes prior to this one.
 \noindent Verify:\\\\\noindent
 \texttt{
-    (Public Key, hash25a, event3 data) <- lookup Event3 \\
-    Verify Event3 signature with Public Key\\
-    Verify hash25a exists prior to hash31a in the sequence\\
+    (Signature, PublicKey, hash30a, event3 data) = Event3 \\
+    Verify(Signature, PublicKey, Event3)\\
+    Lookup(hash30a, PoHSequence)
 }
 
 \begin{figure}
@@ -320,14 +347,6 @@ The mapping from the event hash or signature to event data and client’s public
   \end{figure}
 
 In Figure~\ref{fig:poh_consistency}, the user supplied input is dependent on hash 0xdeadbeef existing in the generated sequence sometime before it’s inserted.
-\subsection{Advantages}
-
-Proof of history provides some protection against long range attacks. A malicious user that gains access to old private keys would have to recreate a historical record that takes as much time as the original one they are trying to forge. This would require access to a faster processor than the network is currently using, otherwise the attacker would never catch up in history length.
-
-Additionally, a single source of time allows for construction of a simper Proof of Replication (more on that in Section~\ref{porep}). Since all the participants in the network can rely on a single historical record of events.
-
-PoRep and PoH together provide a defense of both space and time against a forged ledger.
-
 \subsection{Overhead}
 4000 hashes per second would generate an additional 160 kilobytes of data, and would require access to a GPU with 4000 cores and roughly 0.75-0.25 milliseconds of time to verify.
 
@@ -341,6 +360,16 @@ Having multiple generators may make deployment more resistant to attacks. One ge
 The high speed sequence would create a secondary sequence of data that an attacker would have to reverse.
 
 It's conceivable to create a system where high speed generators periodically mix in their sequences into a slower generator.  Each high speed generator could be a liquid helium cooled ASIC that's running at the lowest temperature possible for a short amount of time.  The resulting sequence would be equivalent to a single ASIC running at the fastest speed possible.
+
+\subsusbsection{Long Range Attacks}
+
+Long range attacks involve aquiring old discarded client Private Keys, and generating a falsified ledger.  Proof of history provides some protection against long range attacks. A malicious user that gains access to old private keys would have to recreate a historical record that takes as much time as the original one they are trying to forge. This would require access to a faster processor than the network is currently using, otherwise the attacker would never catch up in history length.
+
+Additionally, a single source of time allows for construction of a simper Proof of Replication (more on that in Section~\ref{porep}). Since all the participants in the network can rely on a single historical record of events.
+
+PoRep and PoH together provide a defense of both space and time against a forged ledger.
+
+
 \section{Proof of Stake Consensus}\label{proof_of_stake}
 \subsection{Description}
 This specific instance of Proof of Stake is designed for quick confirmation of the current sequence produced by the Proof of History generator, for voting and selecting the next Proof of History generator, and for slashing any misbehaving validators. This algorithm depends on messages eventually arriving to all participating nodes within a certain timeout.
