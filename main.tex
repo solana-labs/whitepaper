@@ -182,7 +182,7 @@ Because the initial process is still sequential, we can then tell that things en
     \end{table}
 \end{center}
 
-In the sequence represented by Table\~\ref{table:multievent}, \texttt{photograph2} was created before \texttt{hash601}, and
+In the sequence represented by Table~\ref{table:multievent}, \texttt{photograph2} was created before \texttt{hash601}, and
 \texttt{photograph1} was created before \texttt{hash336}. Inserting the data into the sequence of hashes results in a change to all subsequent values in the sequence. As long as the hash function used is collision resistant, and the data was appended, it is computationally impossible to precompute any future sequences based on prior knowledge of what data will be integrated into the sequence.\\
 
 The data that is mixed into the sequence can be the raw data itself, or just a hash of the data with accompanying metadata.\\
