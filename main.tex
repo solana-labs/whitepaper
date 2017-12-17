@@ -377,20 +377,23 @@ This specific instance of Proof of Stake is designed for quick confirmation of t
 \begin{description}
 
 \item[bonds]
-Bonds are equivalent to a capital expense in Proof of Work. A miner buys hardware and electricity, and commits it to a single branch in a Proof of Work blockchain.
+Bonds are equivalent to a capital expense in Proof of Work. A miner buys hardware and electricity, and commits it to a single branch in a Proof of Work blockchain. A bond is coin that the validator commits as collateral while they are validating transactions.
 
 \item[slashing]
 
 The solution to the nothing at stake problem in Proof of Stake systems~\cite{slasher}.  When a proof of voting for a different branch is published, that branch can destroy the validator's bond.  This is an economic incentive designed to discourage validators from confirming multiple branches.
+\item[super majority]
+\(\frac{2}{3}\)rds of the validators weighted by their bonds.  A super majority vote indicates that the network has reached consensus, and at least \(\frac{1}{3}\)rd of the network would have had to vote duplicitly for this branch to be invalid.  This puts the economic cost of an attack at \(\frac{1}{3}\)rd of the market cap of the coin.
+
 \end{description}
 
 \subsection{Bonding}
-A bonding transaction takes a user specified amount of coin and moves it to a bonding account under the user’s identity. Coins in the bonding account cannot be spent, and have to remain in the account until the user removes them. The user can only remove stale coins that have timed out. Bonds are valid after \(\frac{2}{3}\)rds of the current stakeholders have confirmed the sequence.
+A bonding transaction takes a user specified amount of coin and moves it to a bonding account under the user’s identity. Coins in the bonding account cannot be spent, and have to remain in the account until the user removes them. The user can only remove stale coins that have timed out. Bonds are valid after super majority of the current stakeholders have confirmed the sequence.
 
 \subsection{Voting}
-Proof of History generator will publish a hash at a predefined period. Each bonded identity must vote to approve the hash, and all the ordered transactions before it. The vote is a simple Yes vote, without a no.
+Proof of History generator will publish a signature of the state at a predefined period. Each bonded identity must confirm that signature by publishing their own signed signature of the state. The vote is a simple Yes vote, without a no.
 
-If \(\frac{2}{3}\)rds of the bonded identities have voted within a timeout, that implies that either this history is valid, or a \(\frac{1}{3}\)rd have voted duplicity.
+If super majority of the bonded identities have voted within a timeout, then this branch is accepted as valid.
 
 \subsection{Unbonding}
 
