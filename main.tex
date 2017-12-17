@@ -204,19 +204,27 @@ Every node observing this sequence can determine the order at which all events h
 The sequence can be verified as correct in a multi core computer in less time than it took to generated it \\
 
 \noindent For example: \\\\\noindent
-\noindent Core 1: \\\\\noindent
-\texttt{
-sha256(\char`\"any random starting value\char`\") $\rightarrow$ hash1, (n\_count = 1)\\
-\ldots\\
-sha256(hash199) $\rightarrow$ hash200, (n\_count = 200)\\
-}
+\begin{center}
+  \begin{tabular}{ | l | c | r |}
+    \hline
+    \multicolumn{3}{|c|}{Core 1} \\
+    \hline
+    Index & Hash & Data \\ \hline
+    200 & hash200 & sha256(hash199) \\ \hline
+    300 & hash300 & sha256(hash299) \\ \hline
+    \hline
+    \end{tabular}
+  \begin{tabular}{ | l | c | r |}
+    \hline
+    \multicolumn{3}{|c|}{Core 2} \\
+    \hline
+    Index & Hash & Data \\ \hline
+    300 & hash300 & sha256(hash299) \\ \hline
+    336 & hash336 & sha256(append(hash335, photograph\_sha256)) \\ \hline
+    \hline
+    \end{tabular}
+\end{center}
 
-\noindent Core 2: \\\\\noindent
-\texttt{
-sha256(hash199) $\rightarrow$ hash200, (n\_count = 200)\\
-\ldots\\
-sha256(hash299) $\rightarrow$ hash300, (n\_count = 300)\\
-}
 
 So given some number of cores, like a modern GPU with $4000$ cores, the verifier can split up the sequence of hashes and their indexes into $4000$ slices, and in parallel make sure that each slice is correct from the starting hash to the last hash in the slice. So if the expected time to produce the sequence is going to be\\
 
