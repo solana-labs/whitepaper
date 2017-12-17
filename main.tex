@@ -223,15 +223,21 @@ In the example in Figure~\ref{fig:poh_verify}, each core is able to verify each 
 \subsection{Horizontal Scaling}\label{poh:scale}
 It’s possible to synchronize multiple Proof of History generators by mixing the sequence state from each generator to each other generator, and thus achieve horizontal scaling of the Proof of History generator.  This scaling is done without sharding, the output of both generators is necessary to reconstruct the full order of events in the system.
 
+\begin{tabular}{ l | c | r }
+  1 & 2 & 3 \\
+  4 & 5 & 6 \\
+  7 & 8 & 9 \\
+\end{tabular}
+
 \begin{center}
-  \begin{tabular}{ | Index | Hash | Data | }
+\begin{tabular}{ l | c | r }
     \hline
     1 & hash1a & \\ \hline
     2 & hash2a & hash1a \\ \hline
     3 & hash3a & \\ \hline
     4 & hash4a & \\
     \hline
-  \end{tabular}
+\end{tabular}
 \end{center}
 
 \texttt{
