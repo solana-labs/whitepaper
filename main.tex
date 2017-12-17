@@ -84,7 +84,6 @@ With a cryptographic function, like a cryptographic hash (\texttt{sha256}, \text
     1 & hash1 & sha256(\char`\"any random starting value\char`\") \\ \hline
     2 & hash2 & sha256(hash1) \\ \hline
     3 & hash3 & sha256(hash2) \\ \hline
-    \hline
     \end{tabular}
 \end{center}
 
@@ -104,7 +103,6 @@ It is only necessary to publish a subset of the hashes and indecies at an interv
     1 & hash1 & sha256(\char`\"any random starting value\char`\") \\ \hline
     200 & hash200 & sha256(hash199) \\ \hline
     300 & hash300 & sha256(hash299) \\ \hline
-    \hline
     \end{tabular}
 \end{center}
 
@@ -129,52 +127,60 @@ and count $510146904064$.
 This sequence of hashes can also be used to record that some piece of data was created before a particular hash index was generated. Using a `combine` function to combine the piece of data with the current hash at the current index. The `data` can simply be a cryptographically unique hash of arbitrary event data. The combine function can be a simple append of data, or any operation that is collision resistant. The next generated hash represents a "timestamp" of the data, because it could have only been generated after that specific piece of data was inserted.\\
 
 \noindent For example:\\\\\noindent
-\texttt{
-sha256(\char`\"any starting value\char`\") $\rightarrow$ hash1,
-(n\_count $=~1$)1\\
-\ldots\\
-sha256(hash199) $\rightarrow$ hash200, (n\_count $=~200$)\\
-\ldots\\
-sha256(hash299) $\rightarrow$ hash300, (n\_count $=~300$)\\
-}
+\begin{center}
+  \begin{tabular}{ | l | c | r |}
+    \hline
+    \multicolumn{3}{|c|}{PoH Sequence} \\
+    \hline
+    Index & Hash & Operation \\ \hline
+    1 & hash1 & sha256(\char`\"any random starting value\char`\") \\ \hline
+    200 & hash200 & sha256(hash199) \\ \hline
+    300 & hash300 & sha256(hash299) \\ \hline
+    \end{tabular}
+\end{center}
+
 
 \noindent Some external event occurs, like a photograph was taken, or
 any arbitrary digital data was created:\\\\\noindent
-\texttt{
-  sha256(hash334) $\rightarrow$ hash335, (n\_count $=~335$), photograph\_sha256\\
-  sha256(append(hash335, photograph\_sha256) $\rightarrow$ hash336,
-  (n\_count $=~336$)\\
-  \ldots\\
-  sha256(hash399) $\rightarrow$ hash400, (n\_count $=~400$)\\
-}
+\begin{center}
+  \begin{tabular}{ | l | c | r |}
+    \hline
+    \multicolumn{3}{|c|}{PoH Sequence With Data} \\
+    \hline
+    Index & Hash & Operation \\ \hline
+    1 & hash1 & sha256(\char`\"any random starting value\char`\") \\ \hline
+    200 & hash200 & sha256(hash199) \\ \hline
+    300 & hash300 & sha256(hash299) \\ \hline
+    336 & hash336 & sha256(append(hash335, photograph\_sha256)) \\ \hline
+    \end{tabular}
+\end{center}
+
 
 \texttt{Hash336} is computed from the appended binary data of
 \texttt{hash335} and the \texttt{sha256} of the photograph. The index,
 and the \texttt{sha256} of the photograph are recorded as part of the
 sequence output. So anyone verifying this sequence can then recreate
 this change to the sequence. The verifying can still be done in
-parallel:\\\\\noindent
-\texttt{
-  sha256(hash299) $\rightarrow$ hash300, (n\_count $=~300$)\\
-  sha256(hash334) $\rightarrow$ hash335, (n\_count $=~335$), photograph\_sha256\\
-}\\\noindent
-And\\\\\noindent
-\texttt{
-  sha256(append(hash335, photograph\_sha256) $\rightarrow$ hash336,
-  (n\_count $=~336$)\\
-  sha256(hash399) $\rightarrow$ hash400, (n\_count $=~400$)\\
-}
+parallel and its discussed in Section~\ref{poh:verify}
 
 Because the initial process is still sequential, we can then tell that things entered into the sequence must have occurred sometime before the future hashed value was computed.\\\\\noindent
-\texttt{
-sha256(hash334) $\rightarrow$ hash335, (n\_count $=~335$), photograph1\_sha256\\
-sha256(append(hash335, photograph\_sha256) $\rightarrow$ hash336,
-(n\_count $=~336$)\\
-\ldots\\
-sha256(hash599) $\rightarrow$ hash600, (n\_count $=~600$), photograph2\_sha256
-sha256(append(hash600, photograph2\_sha256) $\rightarrow$ hash601,
-(n\_count $=~601$)\\
-}
+
+\begin{center}
+  \begin{tabular}{ | l | c | r |}
+    \hline
+    \multicolumn{3}{|c|}{PoH Sequence With 2 Events} \\
+    \hline
+    Index & Hash & Operation \\ \hline
+    1 & hash1 & sha256(\char`\"any random starting value\char`\") \\ \hline
+    200 & hash200 & sha256(hash199) \\ \hline
+    300 & hash300 & sha256(hash299) \\ \hline
+    336 & hash336 & sha256(append(hash335, photograph1\_sha256)) \\ \hline
+    400 & hash400 & sha256(hash399) \\ \hline
+    500 & hash500 & sha256(hash499) \\ \hline
+    600 & hash600 & sha256(append(hash599, photograph2\_sha256)) \\ \hline
+    700 & hash600 & sha256(hash599) \\ \hline
+    \end{tabular}
+\end{center}
 
 So \texttt{photograph2} was created before \texttt{hash601}, and
 \texttt{photograph1} was created before \texttt{hash336}. Inserting the data into the sequence of hashes results in a change to all subsequent values in the sequence. As long as the hash function used is collision resistant, and the data was appended, it is computationally impossible to precompute any future sequences based on prior knowledge of what data will be integrated into the sequence.\\
@@ -193,7 +199,7 @@ The data that is mixed into the sequence can be the raw data itself, or just a h
 
 Every node observing this sequence can determine the order at which all events have been inserted and estimate the real time between the insertions.
 
-\subsection{Verification}
+\subsection{Verification}\label{poh:verify}
 The sequence can be verified as correct in a multi core computer in less time than it took to generated it \\
 
 \noindent For example: \\\\\noindent
@@ -344,7 +350,7 @@ To prevent a malicious clock service from rewriting the client Event hashes, the
     \end{tabular}
 \end{center}
 
-Verification of this data requires a signature verificaiton, and a lookup of the hash in the sequence of hashes prior to this one.\\
+Verification of this data requires a signature verification, and a lookup of the hash in the sequence of hashes prior to this one.\\
 \noindent Verify:\\\\\noindent
 \texttt{
     (Signature, PublicKey, hash30a, event3 data) = Event3 \\
