@@ -75,25 +75,39 @@ Proof of History provides a way to cryptographically verify passage of time betw
 With a cryptographic function, like a cryptographic hash (\texttt{sha256}, \texttt{md5}, \texttt{sha-1}), whose output cannot be predicted without running the function, run the function from some random starting value and take its output and pass it as the input into the same function again. Record the number of times the function has been called and the output at each call. The starting random value chosen could be any string, like the headline of the New York times for the day.
 \\\\
 \noindent For example: \\\\\noindent
-\texttt{
-  sha256(\char`\"any random starting value\char`\") $\rightarrow$
-  hash1, (n\_count~$=~1$) \\
-  sha256(hash1) $\rightarrow$ hash2, (n\_count~$=~2$)\\
-  sha256(hash2) $\rightarrow$ hash3, (n\_count~$=~3$)\\
-}
+\begin{center}
+  \begin{tabular}{ | l | c | r |}
+    \hline
+    \multicolumn{3}{|c|}{PoH Sequence} \\
+    \hline
+    Index & Hash & Operation \\ \hline
+    1 & hash1 & sha256(\char`\"any random starting value\char`\") \\ \hline
+    2 & hash2 & sha256(hash1) \\ \hline
+    3 & hash3 & sha256(hash2) \\ \hline
+    \hline
+    \end{tabular}
+\end{center}
+
+
 
 \noindent Where \texttt{hashN} represents the actual hash output.\\
 
 It is only necessary to publish a subset of the hashes and indecies at an interval.\\
 
 \noindent For example:\\\\\noindent
-\texttt{
- sha256(\char`\"any starting value\char`\") $\rightarrow$ hash1, (n\_count~$=1$)\\
-\ldots\\
-sha256(hash199) $\rightarrow$ hash200, (n\_count~$=200$)\\
-\ldots\\
-sha256(hash299) $\rightarrow$ hash300, (n\_count~$=300$)\\
-}
+\begin{center}
+  \begin{tabular}{ | l | c | r |}
+    \hline
+    \multicolumn{3}{|c|}{PoH Sequence} \\
+    \hline
+    Index & Hash & Operation \\ \hline
+    1 & hash1 & sha256(\char`\"any random starting value\char`\") \\ \hline
+    200 & hash200 & sha256(hash199) \\ \hline
+    300 & hash300 & sha256(hash299) \\ \hline
+    \hline
+    \end{tabular}
+\end{center}
+
 
 As long as the hash function chosen is collision resistant, this set of hashes can only be computed in sequence by a single computer thread, because there is no way to predict what the hash value at index $300$ is going to be without actually running the algorithm from the starting value $300$ times.  Thus we can infer form the data structure that time passed between index $0$ and index $300$.
 
