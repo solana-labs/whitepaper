@@ -167,9 +167,6 @@ Because the initial process is still sequential, we can then tell that things en
 
 \begin{center}
   \begin{tabular}{ | l | c | r |}
-    \hline
-    \multicolumn{3}{|c|}{PoH Sequence With 2 Events} \\
-    \hline
     Index & Hash & Operation \\ \hline
     1 & hash1 & sha256(\char`\"any random starting value\char`\") \\ \hline
     200 & hash200 & sha256(hash199) \\ \hline
@@ -179,10 +176,11 @@ Because the initial process is still sequential, we can then tell that things en
     500 & hash500 & sha256(hash499) \\ \hline
     600 & hash600 & sha256(append(hash599, photograph2\_sha256)) \\ \hline
     700 & hash600 & sha256(hash599) \\ \hline
+    \caption[Table 3]{PoH Sequence With 2 Events\label{table:multievent}}
     \end{tabular}
 \end{center}
 
-So \texttt{photograph2} was created before \texttt{hash601}, and
+In the sequence represented by Table\~\ref{table:multievent}, \texttt{photograph2} was created before \texttt{hash601}, and
 \texttt{photograph1} was created before \texttt{hash336}. Inserting the data into the sequence of hashes results in a change to all subsequent values in the sequence. As long as the hash function used is collision resistant, and the data was appended, it is computationally impossible to precompute any future sequences based on prior knowledge of what data will be integrated into the sequence.\\
 
 The data that is mixed into the sequence can be the raw data itself, or just a hash of the data with accompanying metadata.\\
