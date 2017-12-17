@@ -342,7 +342,7 @@ To prevent this attack, each client generated Event should contain within itself
 
 When the sequence is published, Event3 would be referencing hash30a, and if it’s not in the sequence prior to this Event, the consumers of the sequence know that it’s an invalid sequence. The partial reordering attack would then be limited to the number of hashes produced while the client has observed an event and when the event was entered. Clients can then write software that doesn’t assume the order is correct for the short period of hashes between the last observed and inserted hash.
 
-To prevent a malicious clock service from rewriting the client Event hashes, the clients can submit a signature of the event data and the last observed hash instead of just a hash\\
+To prevent a malicious clock service from rewriting the client Event hashes, the clients can submit a signature of the event data and the last observed hash instead of just the data.\\
 \begin{center}
   \begin{tabular}{ | l | c | r |}
     \hline
