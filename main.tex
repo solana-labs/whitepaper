@@ -363,7 +363,7 @@ It's conceivable to create a system where high speed generators periodically mix
 
 \subsusbsection{Long Range Attacks}
 
-Long range attacks involve aquiring old discarded client Private Keys, and generating a falsified ledger.  Proof of history provides some protection against long range attacks. A malicious user that gains access to old private keys would have to recreate a historical record that takes as much time as the original one they are trying to forge. This would require access to a faster processor than the network is currently using, otherwise the attacker would never catch up in history length.
+Long range attacks involve aquiring old discarded client Private Keys, and generating a falsified ledger~\cite{casper}.  Proof of history provides some protection against long range attacks. A malicious user that gains access to old private keys would have to recreate a historical record that takes as much time as the original one they are trying to forge. This would require access to a faster processor than the network is currently using, otherwise the attacker would never catch up in history length.
 
 Additionally, a single source of time allows for construction of a simper Proof of Replication (more on that in Section~\ref{porep}). Since all the participants in the network can rely on a single historical record of events.
 
@@ -681,6 +681,10 @@ BitShares Delegated Proof of Stake
 \bibitem{gpuecc}
 An Efficient Elliptic Curve Cryptography Signature Server With GPU Acceleration
 \\\texttt{http://ieeexplore.ieee.org/document/7555336/}
+
+\bibitem{casper}
+Casper the Friendly Finality Gadget
+\\\texttt{https://arxiv.org/pdf/1710.09437.pdf}
 \end{thebibliography}
 \end{document}
 This is never printed
