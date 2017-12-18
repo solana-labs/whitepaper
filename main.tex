@@ -670,7 +670,7 @@ Multiple transactions could be batched on the same hash. On a 1gbps network conn
 \subsubsection{Computational Limits}
 Each transaction requires a digest verification. This operation doesn’t use any memory outside of the transaction message itself, and can be parallelized independent of all the other transactions. Thus throughput is going to be limited by the number of cores available on the system.
 
-GPU based ECDSA verification servers have had experimental results of 900k operations per second~\cite{gpuecc}. This is inline with our estimate based on single NVidia 1080ti GPU. 
+GPU based ECDSA verification servers have had experimental results of 900k operations per second~\cite{gpuecc}.
 \subsubsection{Memory Limits}
 A naive implementation of the state as a \(50\%\) full hashtable with 32 byte entries for each account, would fit 10 billion accounts into 640GB. Steady state random access to this table is measured at \(1.1 * 10^7\) writes or reads per second. Based on 2 reads and two writes per transaction, memory throughput can handle 2.75m transactions per second. This was measured on AWS 1TB x1.16xlarge instance.
 
