@@ -107,7 +107,7 @@ It is only necessary to publish a subset of the hashes and indecies at an interv
 \end{center}
 
 
-As long as the hash function chosen is collision resistant, this set of hashes can only be computed in sequence by a single computer thread, because there is no way to predict what the hash value at index $300$ is going to be without actually running the algorithm from the starting value $300$ times.  Thus we can infer form the data structure that time passed between index $0$ and index $300$.
+As long as the hash function chosen is collision resistant, this set of hashes can only be computed in sequence by a single computer thread, because there is no way to predict what the hash value at index $300$ is going to be without actually running the algorithm from the starting value $300$ times.  Thus we can infer from the data structure that time passed between index $0$ and index $300$.
 
 \begin{figure}
   \begin{center}
@@ -177,7 +177,7 @@ Because the initial process is still sequential, we can then tell that things en
     400 & hash400 & sha256(hash399) \\ \hline
     500 & hash500 & sha256(hash499) \\ \hline
     600 & hash600 & sha256(append(hash599, photograph2\_sha256)) \\ \hline
-    700 & hash600 & sha256(hash599) \\ \hline
+    700 & hash700 & sha256(hash699) \\ \hline
     \end{tabular}
     \caption[Table 1]{PoH Sequence With 2 Events\label{table:multievent}}
     \end{table}
