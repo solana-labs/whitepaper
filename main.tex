@@ -65,7 +65,7 @@ There are many Looms in the network, and each Spool node has the same capabiliti
 
 The Loom generates a Proof of History sequence, which along with global read consistency also provides a verifiable passage of time for the network.
 
-In terms of CAP theorem, Consistency is always picked over Availability in an event of a Partition.
+In terms of CAP theorem, Consistency is almost always picked over Availability in an event of a Partition. In case of a large partition, this paper proposes a mechanism to eventually recover control of the network for a partition of any size.  This is covered in depth in Section~\ref{censorship}.
 
 \section{Proof of History}\label{proof_of_history}
 
