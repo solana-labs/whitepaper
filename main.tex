@@ -373,7 +373,8 @@ Verification of this data requires a signature verification, and a lookup of the
   \end{center}
   \end{figure}
 
-In Figure~\ref{fig:poh_consistency}, the user supplied input is dependent on hash 0xdeadbeef existing in the generated sequence sometime before it’s inserted.
+In Figure~\ref{fig:poh_consistency}, the user supplied input is dependent on hash 0xdeadbeef existing in the generated sequence sometime before it’s inserted.  The blue top left arrow indicates that the client is referencing a previously produced hash.  The clients message is only valid in a sequence that contains the hash 0xdeadbeef.  The red color in the sequence indicates that the sequence has been modified by the clients data.
+
 \subsection{Overhead}
 4000 hashes per second would generate an additional 160 kilobytes of data, and would require access to a GPU with 4000 cores and roughly 0.75-0.25 milliseconds of time to verify.
 
