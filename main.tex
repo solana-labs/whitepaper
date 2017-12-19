@@ -61,7 +61,7 @@ TBD
 
 As shown in Figure~\ref{fig:design}, Loom generates a Proof of History. It sequences user messages. It orders them such that they can be efficiently processed by maximizing throughput.  It executes the transactions on the current state that is stored in RAM. It publishes the transactions and a signature of the state to the replications nodes called Spools. Spools execute the same transactions on their copies of the state, and publish their computed signatures of the state as confirmations. The published confirmations serve as votes for the consensus algorithm.
 
-There are many Looms in the network, and each Spool node has the same capabilities as a Loom.  A Primary and lower ranked Looms are elected via a consensus algorithm. Elections for the proposed PoS algorithm are covered in depth in Section~\ref{subsec:elections}.
+There are many Looms in the network, and each Spool node has the same hardware capabilities as a Loom and can be elected as a Loom.  A Primary and lower ranked Looms are elected via a consensus algorithm. Elections for the proposed PoS algorithm are covered in depth in Section~\ref{subsec:elections}.
 
 The Loom generates a Proof of History sequence, which along with global read consistency also provides a verifiable passage of time for the network.
 
