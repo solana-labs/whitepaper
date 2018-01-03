@@ -275,7 +275,7 @@ It's possible to synchronize multiple Proof of History generators by mixing the 
     \end{tabular}
 \end{center}
 
-Given generators A and B, A receives a data packet from B (hash1b), which contains the last state from Generator B, and the last state generator B observed from Generator A. The next state hash in Generator A then depends on the state from Generator B, so we can derive that hash2b happened sometime before hash3a. This property can be transitive, so if three generators are synchronized through a single common generator \(A \leftrightarrow B \leftrightarrow C\), we can trace the dependency between A and C even though they were not synchronized directly.
+Given generators A and B, A receives a data packet from B (hash1b), which contains the last state from Generator B, and the last state generator B observed from Generator A. The next state hash in Generator A then depends on the state from Generator B, so we can derive that hash1b happened sometime before hash3a. This property can be transitive, so if three generators are synchronized through a single common generator \(A \leftrightarrow B \leftrightarrow C\), we can trace the dependency between A and C even though they were not synchronized directly.
 
 By periodically synchronizing the generators, each generator can then handle a portion of external traffic, thus the overall system can handle a larger amount of events to track at the cost of true time accuracy due to network latencies between the generators.  A global order can still be achieved by picking some deterministic function to order any events that are within the synchronization window, such as by the value of the hash itself.
 
