@@ -547,7 +547,7 @@ The signed hash is used to seed the sample. If a replicator could select a speci
 
 A replicator identity that is colluding with the proof of history generator could inject a specific transaction at the end of the sequence before the predefined hash for random byte selection is generated. With enough cores, an attacker could generate a hash that is preferable to the replicator identity.
 
-This attack could only benefit a single replicator identity. Since all the identities have to use the same exact hash that is cryptographically signed with ECCDSA (or equivalent), the resulting signature is unique for each replicator identity, and collision resistant. A single replicator identity would only have marginal gains.
+This attack could only benefit a single replicator identity. Since all the identities have to use the same exact hash that is cryptographically signed with ECDSA (or equivalent), the resulting signature is unique for each replicator identity, and collision resistant. A single replicator identity would only have marginal gains.
 \subsubsection{Denial of Service}
 The cost of adding an additional replicator identity is equal to the cost of storage. The cost of adding extra computational capacity to verify all the replicator identities is equal to the cost of a CPU or GPU core per replication identity.
 
