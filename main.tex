@@ -655,9 +655,9 @@ The Proof of History sequence packet contains the current hash, counter, and the
 \noindent Proof of History packet:\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
+\begin{rightwordgroup}{Signed}
 \bitbox{160}{Current Hash}
 & \bitbox{64}{Counter} \\
-\begin{rightwordgroup}{Signed}
 \bitbox{160}{Messages Hash} \\
 \bitbox{160}{State Signature} \\
 \end{rightwordgroup} \\
