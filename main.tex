@@ -651,7 +651,7 @@ The minimal payload that can be supported would be 1 destination account.
 
 \noindent With payload the minimum size: 176 bytes\\\\
 
-The Proof of History sequence packet contains the current hash, counter, and the hash of all the new messages added to the stream up to this packet and the state signature after processing all the messages.
+The Proof of History sequence packet contains the current hash, counter, and the hash of all the new messages added to the PoH sequence and the state signature after processing all the messages.  This packet is sent once every N messages are broadcast.\\
 \noindent Proof of History packet:\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
@@ -667,7 +667,7 @@ The Proof of History sequence packet contains the current hash, counter, and the
 
 \noindent Minimum size of the output packet is: 132 bytes \\\\
 
-Multiple transactions could be batched on the same hash. On a 1gbps network connection the maximum number of transactions possible is $1$~gigabit per second / $176$~bytes = $710$k tps max. Some loss $1-4\%$ is expected due to Ethernet framing. The spare capacity over the target amount for the network can be used to increase availability by coding the output with Reed-Solomon codes and striping it to the available downstream Spools.
+On a 1gbps network connection the maximum number of transactions possible is $1$~gigabit per second / $176$~bytes = $710$k tps max. Some loss $1-4\%$ is expected due to Ethernet framing. The spare capacity over the target amount for the network can be used to increase availability by coding the output with Reed-Solomon codes and striping it to the available downstream Spools.
 \subsection{Computational Limits}
 Each transaction requires a digest verification. This operation does not use any memory outside of the transaction message itself, and can be parallelized independent of all the other transactions. Thus throughput is going to be limited by the number of cores available on the system.
 
