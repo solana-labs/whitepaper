@@ -35,7 +35,7 @@
 \maketitle
 
 \begin{abstract}
-This paper proposes a Proof of History (PoH) - a proof for verifying passage of time between events. PoH is used to encode passage of time into a ledger - an append only data structure.  When used alongside a consensus algorithm such as Proof of Work (PoW) or Proof of Stake (PoS), PoH can reduce messaging overhead in a Byzantine Fault Tolerant replicated state machine.  This paper proposes two algorithms that leverage the time keeping properties of the PoH ledger - a Proof of Stake algorithm that can recover from partitions of any size and an efficient streaming Proof of Replication (PoRep).  The combination of PoRep and PoH provides a defense against forgery of the ledger with respect to time and storage.  The protocol is analyzed on a 1gbps network, and this paper shows that throughput up to 720k transactions per second is possible with today's hardware.
+This paper proposes a Proof of History (PoH) - a proof for verifying passage of time between events. PoH is used to encode passage of time into a ledger - an append only data structure.  When used alongside a consensus algorithm such as Proof of Work (PoW) or Proof of Stake (PoS), PoH can reduce messaging overhead in a Byzantine Fault Tolerant replicated state machine.  This paper proposes two algorithms that leverage the time keeping properties of the PoH ledger - a Proof of Stake algorithm that can recover from partitions of any size and an efficient streaming Proof of Replication (PoRep).  The combination of PoRep and PoH provides a defense against forgery of the ledger with respect to time and storage.  The protocol is analyzed on a 1gbps network, and this paper shows that throughput up to 710k transactions per second is possible with today's hardware.
 \end{abstract}
 
 \section{Work In Progress}
@@ -624,10 +624,11 @@ Loom takes incoming user packets, orders them the most efficient way possible, a
 & \bitbox{64}{Fee} \\
 & \bitbox{256}{From} \\
 \end{rightwordgroup} \\
-& \bitbox{256}{Signature} \\
+& \bitbox{256}{Signature 1/2} \\
+& \bitbox{256}{Signature 2/2} \\
 \end{bytefield}
 
-\noindent Size \(20 + 8 + 16 + 8 + 32 + 32 = 116\) bytes.\\\\
+\noindent Size \(20 + 8 + 16 + 8 + 32 + 32 32 = 148\) bytes.\\\\
 
 The minimal payload that can be supported would be 1 destination account.
 \noindent With Payload:\\\\\noindent
@@ -644,34 +645,29 @@ The minimal payload that can be supported would be 1 destination account.
 & \bitbox{64}{Fee} \\
 & \bitbox{256}{From} \\
 \end{rightwordgroup} \\
-& \bitbox{256}{Signature} \\
+& \bitbox{256}{Signature 1/2} \\
+& \bitbox{256}{Signature 2/2} \\
 \end{bytefield}
 
-\noindent With payload the minimum size: 144 bytes\\\\
+\noindent With payload the minimum size: 176 bytes\\\\
 
-The Proof of History sequence adds an additional hash and counter to the output. 
-\noindent Minimum Output:\\\\\noindent
+The Proof of History sequence packet contains the current hash, counter, and the hash of all the new messages added to the stream up to this packet and the state signature after processing all the messages.
+\noindent Proof of History packet:\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
 \bitbox{160}{Current Hash}
 & \bitbox{64}{Counter} \\
 \begin{rightwordgroup}{Signed}
-& \bitbox{160}{Last Valid Hash}
-& \bitbox{64}{Counter}
-& \bitbox{6}{u} 
-& \bitbox{10}{s} \\
-& \bitbox{160}{To}
-& \bitbox{64}{Amount} \\
-& \bitbox{64}{Counter}
-& \bitbox{64}{Fee} \\
-& \bitbox{256}{From} \\
+\bitbox{160}{Messages Hash}
+\bitbox{160}{State Signature}
 \end{rightwordgroup} \\
-& \bitbox{256}{Signature} \\
+& \bitbox{256}{Signature 1/2} \\
+& \bitbox{256}{Signature 2/2} \\
 \end{bytefield}
 
-\noindent Minimum size of the output packet is: 172 bytes \\\\
+\noindent Minimum size of the output packet is: 132 bytes \\\\
 
-Multiple transactions could be batched on the same hash. On a 1gbps network connection the maximum number of transactions possible is $1$~gigabit per second / $172$~bytes = $726$k tps max. Some loss $1-4\%$ is expected due to Ethernet framing. The spare capacity over the target amount for the network can be used to increase availability by coding the output with Reed-Solomon codes and striping it to the available downstream Spools.
+Multiple transactions could be batched on the same hash. On a 1gbps network connection the maximum number of transactions possible is $1$~gigabit per second / $176$~bytes = $710$k tps max. Some loss $1-4\%$ is expected due to Ethernet framing. The spare capacity over the target amount for the network can be used to increase availability by coding the output with Reed-Solomon codes and striping it to the available downstream Spools.
 \subsection{Computational Limits}
 Each transaction requires a digest verification. This operation does not use any memory outside of the transaction message itself, and can be parallelized independent of all the other transactions. Thus throughput is going to be limited by the number of cores available on the system.
 
