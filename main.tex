@@ -1,4 +1,4 @@
-\title{Loom: High throughput fault tolerant Operating System (WIP, v0.8.2) }
+\title{Loom: A new architecture for a high performance blockchain (WIP, v0.8.3) }
 
 \author{
         Anatoly Yakovenko \\
@@ -18,10 +18,10 @@
 
 \usepackage[]{hyperref}
 \hypersetup{
-    pdftitle={Your title here},
-    pdfauthor={Your name here},
-    pdfsubject={Your subject here},
-    pdfkeywords={keyword1, keyword2},
+    pdftitle={Loom: A new architecture for a high performance blockchain},
+    pdfauthor={anatoly@loomprotocol.com},
+    pdfsubject={blockchain},
+    pdfkeywords={blockchain, bitcoin, cryptocurrency},
     bookmarksnumbered=true,     
     bookmarksopen=true,         
     bookmarksopenlevel=1,       
@@ -39,7 +39,7 @@ This paper proposes a Proof of History (PoH) - a proof for verifying passage of 
 \end{abstract}
 
 \section{Work In Progress}
-This is a work in progress, for comments and suggestions please contact Anatoly Yakovenko aeyakovenko@gmail.com
+This is a work in progress, for comments and suggestions please contact Anatoly Yakovenko anatoly@loomprotocol.com
 
 \section{Introduction}
 Blockchain is an implementation of a fault tolerant replicated state machine.  Current publicly available blockchains do not rely on time, or make a weak assumption about the participant's abilities to keep time~\cite{tendermint}.  Each node in the network usually relies on their own local clock without knowledge of any other participants clocks in the network.  The lack of a trusted source of time means that when a message timestamp is used to accept or reject a message, there is no guarantee that every other participant in the network will make the exact same choice.  The PoH presented here creates a ledger with verifiable passage of time, duration between events and message ordering. Every node in the network can rely on the recorded passage of time in the ledger without trust.
