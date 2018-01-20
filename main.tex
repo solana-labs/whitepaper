@@ -1,4 +1,4 @@
-\title{Loom: A new architecture for a high performance blockchain (WIP, v0.8.3) }
+\title{Loom: A new architecture for a high performance blockchain (WIP, v0.8.4) }
 
 \author{
         Anatoly Yakovenko \\
@@ -540,6 +540,8 @@ The Proof of Replication that is designed in this paper allows for cheap verific
 \subsubsection{Partial Erasure}
 
 A replicator node could attempt to partially erase some of the data to avoid storing the entire state. The number of proofs, and the randomness of the seed should make this attack difficult.
+
+For example, a user storring 1 terrabite of data erases a single byte from each 1 megabyte block.  A proof that samples 1 byte out of every megabyte would have a likelyhood of collision with the erased byte \(1 - (1- frac{1}{1,000,0000})^{1,000,000} = 0.63\).  After 5 proofs the likehood is \(0.99\).
 
 \subsubsection{Collusion with PoH generator}
 
