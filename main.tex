@@ -34,9 +34,13 @@
 \begin{document}
 \maketitle
 
+\textbf{Disclaimer}
+All claims, designs, algorithms, specifications, and performance measurements described in this paper are done with the author's best effort.  It is up to the reader to check and validate their accuracy and truthfulness.
+
 \begin{abstract}
 This paper proposes a Proof of History (PoH) - a proof for verifying passage of time between events. PoH is used to encode passage of time into a ledger - an append only data structure.  When used alongside a consensus algorithm such as Proof of Work (PoW) or Proof of Stake (PoS), PoH can reduce messaging overhead in a Byzantine Fault Tolerant replicated state machine.  This paper proposes two algorithms that leverage the time keeping properties of the PoH ledger - a Proof of Stake algorithm that can recover from partitions of any size and an efficient streaming Proof of Replication (PoRep).  The combination of PoRep and PoH provides a defense against forgery of the ledger with respect to time and storage.  The protocol is analyzed on a 1gbps network, and this paper shows that throughput up to 710k transactions per second is possible with today's hardware.
 \end{abstract}
+
 
 \section{Introduction}
 Blockchain is an implementation of a fault tolerant replicated state machine.  Current publicly available blockchains do not rely on time, or make a weak assumption about the participant's abilities to keep time~\cite{tendermint}.  Each node in the network usually relies on their own local clock without knowledge of any other participants clocks in the network.  The lack of a trusted source of time means that when a message timestamp is used to accept or reject a message, there is no guarantee that every other participant in the network will make the exact same choice.  The PoH presented here creates a ledger with verifiable passage of time, duration between events and message ordering. Every node in the network can rely on the recorded passage of time in the ledger without trust.
