@@ -34,8 +34,10 @@
 \begin{document}
 \maketitle
 
-\textbf{Disclaimer}
-All claims, content, designs, algorithms, estimates, roadmaps, specifications, and performance measurements described in this document are done with the author's best effort.  It is up to the reader to check and validate their accuracy and truthfulness.  Furthermore nothing in this document constitutes a solicitation for investment.
+\textbf{Legal Disclaimer}
+Nothing in this White Paper is an offer to sell, or the solicitation of an offer to buy, any tokens. Loom is publishing this White Paper solely to receive feedback and comments from the public.  If and when Loom offers for sale any tokens (or a Simple Agreement for Future Tokens), it will do so through definitive offering documents, including a disclosure document and risk factors. Those definitive documents also are expected to include an updated version of this White Paper, which may differ significantly from the current version.  If and when Loom makes such an offering in the United States, the offering likely will be available solely to accredited investors.
+
+Nothing in this White Paper should be treated or read as a guarantee or promise of how Loom's business or the tokens will develop or of the utility or value of the tokens.  This White Paper outlines current plans, which could change at its discretion, and the success of which will depend on many factors outside Loom's control, including market-based factors and factors within the data and cryptocurrency industries, among others.  Any statements about future events are based solely on Loom's analysis of the issues described in this White Paper.  That analysis may prove to be incorrect.
 
 \begin{abstract}
 This paper proposes a Proof of History (PoH) - a proof for verifying passage of time between events. PoH is used to encode passage of time into a ledger - an append only data structure.  When used alongside a consensus algorithm such as Proof of Work (PoW) or Proof of Stake (PoS), PoH can reduce messaging overhead in a Byzantine Fault Tolerant replicated state machine.  This paper proposes two algorithms that leverage the time keeping properties of the PoH ledger - a Proof of Stake algorithm that can recover from partitions of any size and an efficient streaming Proof of Replication (PoRep).  The combination of PoRep and PoH provides a defense against forgery of the ledger with respect to time and storage.  The protocol is analyzed on a 1gbps network, and this paper shows that throughput up to 710k transactions per second is possible with today's hardware.
@@ -43,7 +45,7 @@ This paper proposes a Proof of History (PoH) - a proof for verifying passage of 
 
 
 \section{Introduction}
-Blockchain is an implementation of a fault tolerant replicated state machine.  Current publicly available blockchains do not rely on time, or make a weak assumption about the participant's abilities to keep time~\cite{tendermint}.  Each node in the network usually relies on their own local clock without knowledge of any other participants clocks in the network.  The lack of a trusted source of time means that when a message timestamp is used to accept or reject a message, there is no guarantee that every other participant in the network will make the exact same choice.  The PoH presented here creates a ledger with verifiable passage of time, duration between events and message ordering. Every node in the network can rely on the recorded passage of time in the ledger without trust.
+Blockchain is an implementation of a fault tolerant replicated state machine.  Current publicly available blockchains do not rely on time, or make a weak assumption about the participant's abilities to keep time~\cite{tendermint}.  Each node in the network usually relies on their own local clock without knowledge of any other participants clocks in the network.  The lack of a trusted source of time means that when a message timestamp is used to accept or reject a message, there is no guarantee that every other participant in the network will make the exact same choice.  The PoH presented here is designed to create a ledger with verifiable passage of time, duration between events and message ordering. It is anticipated that every node in the network will be able to rely on the recorded passage of time in the ledger without trust.
 
 \section{Outline}
 The remainder of this article is organized as follows. Overall system design is described in Section~\ref{design}. In depth description of Proof of History is described in Section~\ref{proof_of_history}. In depth description of the proposed Proof of Stake consensus algorithm is described in Section~\ref{proof_of_stake}. In depth description of the proposed fast Proof of Replication is described in Section~\ref{porep}. System Architecture and performance limits are analyzed in Section~\ref{system_architecture}. A high performance GPU friendly smart contracts engine is described in Section~\ref{sec:smartcontracts}
@@ -58,9 +60,9 @@ The remainder of this article is organized as follows. Overall system design is 
   \end{center}
   \end{figure}
 
-As shown in Figure~\ref{fig:design}, Loom generates a Proof of History. It sequences user messages. It orders them such that they can be efficiently processed by maximizing throughput.  It executes the transactions on the current state that is stored in RAM. It publishes the transactions and a signature of the state to the replications nodes called Spools. Spools execute the same transactions on their copies of the state, and publish their computed signatures of the state as confirmations. The published confirmations serve as votes for the consensus algorithm.
+As shown in Figure~\ref{fig:design}, Loom is designed to generate a Proof of History. It sequences user messages. It orders them such that they can be efficiently processed by maximizing throughput.  It executes the transactions on the current state that is stored in RAM. It publishes the transactions and a signature of the state to the replications nodes called Spools. Spools execute the same transactions on their copies of the state, and publish their computed signatures of the state as confirmations. The published confirmations serve as votes for the consensus algorithm.
 
-There are many Looms in the network, and each Spool node has the same hardware capabilities as a Loom and can be elected as a Loom.  A Primary and lower ranked Looms are elected via a consensus algorithm. Elections for the proposed PoS algorithm are covered in depth in Section~\ref{subsec:elections}.
+There are many Looms in the network, and each Spool node has the same hardware capabilities as a Loom and can be elected as a Loom.  A Primary Loom and lower ranked Looms are elected via a consensus algorithm. Elections for the proposed PoS algorithm are covered in depth in Section~\ref{subsec:elections}.
 
 The Loom generates a Proof of History sequence, which provides global read consistency and a verifiable passage of time for the network.
 
@@ -68,10 +70,10 @@ In terms of CAP theorem, Consistency is almost always picked over Availability i
 
 \section{Proof of History}\label{proof_of_history}
 
-Proof of History provides a way to cryptographically verify passage of time between two events. It uses a cryptographically secure function whose output cannot be predicted from the input, and must be completely executed to generate the output. The function is run in a sequence, its previous output as the current input, periodically recording the current output, and how many times it's been called. The output can then be re-computed and verified by external computers in parallel by checking each period in parallel on a separate core. Data can be timestamped into this sequence by appending the data into the state of the function.  The recording of the state, index and data as it was appended into the sequences provides a timestamp that guarantees that the data was created sometime before the next hash was generated in the sequence. Horizontal scaling is also possible as multiple generators can synchronize amongst each other by mixing their state into each others sequences.  Horizontal scaling is discussed in depth in Section~\ref{poh:scale}\\
+Proof of History can provide a way to cryptographically verify passage of time between two events. It uses a cryptographically secure function written so that output cannot be predicted from the input, and must be completely executed to generate the output. The function is run in a sequence, its previous output as the current input, periodically recording the current output, and how many times it's been called. The output can then be re-computed and verified by external computers in parallel by checking each period in parallel on a separate core. Data can be timestamped into this sequence by appending the data into the state of the function.  The recording of the state, index and data as it was appended into the sequences provides a timestamp that can guarantee that the data was created sometime before the next hash was generated in the sequence. Horizontal scaling is also possible as multiple generators can synchronize amongst each other by mixing their state into each others sequences.  Horizontal scaling is discussed in depth in Section~\ref{poh:scale}\\
 
 \subsection{Description}
-With a cryptographic hash function, like a (\texttt{sha256}, \texttt{ripemd}), whose output cannot be predicted without running the function, run the function from some random starting value and take its output and pass it as the input into the same function again. Record the number of times the function has been called and the output at each call. The starting random value chosen could be any string, like the headline of the New York times for the day.
+The system is designed to work as follows.  With a cryptographic hash function, like a (\texttt{sha256}, \texttt{ripemd}), whose output cannot be predicted without running the function, run the function from some random starting value and take its output and pass it as the input into the same function again. Record the number of times the function has been called and the output at each call. The starting random value chosen could be any string, like the headline of the New York times for the day.
 \\\\
 \noindent For example: \\\\\noindent
 \begin{center}
@@ -123,7 +125,7 @@ and count $510146904064$.
 
 \subsection{Timestamp for Events}
 
-This sequence of hashes can also be used to record that some piece of data was created before a particular hash index was generated. Using a `combine` function to combine the piece of data with the current hash at the current index. The data can simply be a cryptographically unique hash of arbitrary event data. The combine function can be a simple append of data, or any operation that is collision resistant. The next generated hash represents a timestamp of the data, because it could have only been generated after that specific piece of data was inserted.\\
+We believe this sequence of hashes can also be used to record that some piece of data was created before a particular hash index was generated. Using a `combine` function to combine the piece of data with the current hash at the current index. The data can simply be a cryptographically unique hash of arbitrary event data. The combine function can be a simple append of data, or any operation that is collision resistant. The next generated hash represents a timestamp of the data, because it could have only been generated after that specific piece of data was inserted.\\
 
 \noindent For example:\\\\\noindent
 \begin{center}
@@ -183,7 +185,7 @@ Because the initial process is still sequential, we can then tell that things en
 \end{center}
 
 In the sequence represented by Table~\ref{table:multievent} below, \texttt{photograph2} was created before \texttt{hash600}, and
-\texttt{photograph1} was created before \texttt{hash336}. Inserting the data into the sequence of hashes results in a change to all subsequent values in the sequence. As long as the hash function used is collision resistant, and the data was appended, it is computationally impossible to pre-compute any future sequences based on prior knowledge of what data will be integrated into the sequence.\\
+\texttt{photograph1} was created before \texttt{hash336}. Inserting the data into the sequence of hashes results in a change to all subsequent values in the sequence. As long as the hash function used is collision resistant, and the data was appended, it should be computationally impossible to pre-compute any future sequences based on prior knowledge of what data will be integrated into the sequence.\\
 
 The data that is mixed into the sequence can be the raw data itself, or just a hash of the data with accompanying metadata.\\
 
@@ -294,7 +296,7 @@ The synchronization is transitive. \(A \leftrightarrow B \leftrightarrow C\)  Th
 Scaling in this way comes at the cost of availability.  10x1gbps connections with availability of 0.999 would have \(0.999^{10} = 0.99 \) availability.
 
 \subsection{Consistency}
-Users can enforce consistency of the generated sequence and make it resistant to attacks by inserting the last observed output of the sequence they consider valid into their input.\\
+Users are expected to be able to enforce consistency of the generated sequence and make it resistant to attacks by inserting the last observed output of the sequence they consider valid into their input.\\
 
 \begin{center}
   \begin{tabular}{ | l | c | r |}
@@ -339,7 +341,7 @@ To prevent this attack, each client-generated Event should contain within itself
     \end{tabular}
 \end{center}
 
-When the sequence is published, Event3 would be referencing hash30a, and if it’s not in the sequence prior to this Event, the consumers of the sequence know that it’s an invalid sequence. The partial reordering attack would then be limited to the number of hashes produced while the client has observed an event and when the event was entered. Clients can then write software that does not assume the order is correct for the short period of hashes between the last observed and inserted hash.
+When the sequence is published, Event3 would be referencing hash30a, and if it’s not in the sequence prior to this Event, the consumers of the sequence know that it’s an invalid sequence. The partial reordering attack would then be limited to the number of hashes produced while the client has observed an event and when the event was entered. Clients should then be able to write software that does not assume the order is correct for the short period of hashes between the last observed and inserted hash.
 
 To prevent a malicious PoH generator from rewriting the client Event hashes, the clients can submit a signature of the event data and the last observed hash instead of just the data.\\
 \begin{center}
@@ -379,7 +381,7 @@ In Figure~\ref{fig:poh_consistency}, the user supplied input is dependent on has
 
 \subsection{Attacks}
 \subsubsection{Reversal}
- Generating a reverse order would require an attacker to start the malicious sequence after the second event. This delay would allow any non malicious peer to peer nodes to communicate about the original order.
+ Generating a reverse order would require an attacker to start the malicious sequence after the second event. This delay should allow any non malicious peer to peer nodes to communicate about the original order.
 
 \subsubsection{Speed}
 Having multiple generators may make deployment more resistant to attacks. One generator could be high bandwidth, and receive many events to mix into its sequence, another generator could be high speed low bandwidth that periodically mixes with the high bandwidth generator.
@@ -390,9 +392,9 @@ The high speed sequence would create a secondary sequence of data that an attack
 
 Long range attacks involve acquiring old discarded client Private Keys, and generating a falsified ledger~\cite{casper}.  Proof of History provides some protection against long range attacks. A malicious user that gains access to old private keys would have to recreate a historical record that takes as much time as the original one they are trying to forge. This would require access to a faster processor than the network is currently using, otherwise the attacker would never catch up in history length.
 
-Additionally, a single source of time allows for construction of a simpler Proof of Replication (more on that in Section~\ref{porep}). Since all the participants in the network can rely on a single historical record of events.
+Additionally, a single source of time allows for construction of a simpler Proof of Replication (more on that in Section~\ref{porep}). Since the network is designed so that all participants in the network will rely on a single historical record of events.
 
-PoRep and PoH together provide a defense of both space and time against a forged ledger.
+PoRep and PoH together should provide a defense of both space and time against a forged ledger.
 
 
 \section{Proof of Stake Consensus}\label{proof_of_stake}
@@ -406,9 +408,9 @@ Bonds are equivalent to a capital expense in Proof of Work. A miner buys hardwar
 
 \item[slashing]
 
-A solution to the nothing at stake problem in Proof of Stake systems~\cite{slasher}.  When a proof of voting for a different branch is published, that branch can destroy the validator's bond.  This is an economic incentive designed to discourage validators from confirming multiple branches.
+The proposed solution to the nothing at stake problem in Proof of Stake systems~\cite{slasher}.  When a proof of voting for a different branch is published, that branch can destroy the validator's bond.  This is an economic incentive designed to discourage validators from confirming multiple branches.
 \item[super majority]
-A super majority is \(\frac{2}{3}\)rds of the validators weighted by their bonds.  A super majority vote indicates that the network has reached consensus, and at least \(\frac{1}{3}\)rd of the network would have had to vote maliciously for this branch to be invalid.  This puts the economic cost of an attack at \(\frac{1}{3}\)rd of the market cap of the coin.
+A super majority is \(\frac{2}{3}\)rds of the validators weighted by their bonds.  A super majority vote indicates that the network has reached consensus, and at least \(\frac{1}{3}\)rd of the network would have had to vote maliciously for this branch to be invalid.  This would put the economic cost of an attack at \(\frac{1}{3}\)rd of the market cap of the coin.
 
 \end{description}
 
@@ -416,9 +418,9 @@ A super majority is \(\frac{2}{3}\)rds of the validators weighted by their bonds
 A bonding transaction takes a user specified amount of coin and moves it to a bonding account under the user’s identity. Coins in the bonding account cannot be spent and have to remain in the account until the user removes them. The user can only remove stale coins that have timed out. Bonds are valid after super majority of the current stakeholders have confirmed the sequence.
 
 \subsection{Voting}
-Proof of History generator will publish a signature of the state at a predefined period. Each bonded identity must confirm that signature by publishing their own signed signature of the state. The vote is a simple yes vote, without a no.
+It is anticpated that the Proof of History generator will be able to publish a signature of the state at a predefined period. Each bonded identity must confirm that signature by publishing their own signed signature of the state. The vote is a simple yes vote, without a no.
 
-If super majority of the bonded identities have voted within a timeout, then this branch is accepted as valid.
+If super majority of the bonded identities have voted within a timeout, then this branch would be accepted as valid.
 
 \subsection{Unbonding}
 
