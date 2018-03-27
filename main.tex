@@ -1,4 +1,4 @@
-\title{Loom: A new architecture for a high performance blockchain v0.8.10 }
+\title{Solana: A new architecture for a high performance blockchain v0.8.10 }
 
 \author{
         Anatoly Yakovenko \\
@@ -18,7 +18,7 @@
 
 \usepackage[]{hyperref}
 \hypersetup{
-    pdftitle={Loom: A new architecture for a high performance blockchain},
+    pdftitle={Solana: A new architecture for a high performance blockchain},
     pdfauthor={anatoly@loomprotocol.com},
     pdfsubject={blockchain},
     pdfkeywords={blockchain, bitcoin, cryptocurrency},
@@ -35,9 +35,9 @@
 \maketitle
 
 \textbf{Legal Disclaimer}
-Nothing in this White Paper is an offer to sell, or the solicitation of an offer to buy, any tokens. Loom is publishing this White Paper solely to receive feedback and comments from the public.  If and when Loom offers for sale any tokens (or a Simple Agreement for Future Tokens), it will do so through definitive offering documents, including a disclosure document and risk factors. Those definitive documents also are expected to include an updated version of this White Paper, which may differ significantly from the current version.  If and when Loom makes such an offering in the United States, the offering likely will be available solely to accredited investors.
+Nothing in this White Paper is an offer to sell, or the solicitation of an offer to buy, any tokens. Solana is publishing this White Paper solely to receive feedback and comments from the public.  If and when Solana offers for sale any tokens (or a Simple Agreement for Future Tokens), it will do so through definitive offering documents, including a disclosure document and risk factors. Those definitive documents also are expected to include an updated version of this White Paper, which may differ significantly from the current version.  If and when Solana makes such an offering in the United States, the offering likely will be available solely to accredited investors.
 
-Nothing in this White Paper should be treated or read as a guarantee or promise of how Loom's business or the tokens will develop or of the utility or value of the tokens.  This White Paper outlines current plans, which could change at its discretion, and the success of which will depend on many factors outside Loom's control, including market-based factors and factors within the data and cryptocurrency industries, among others.  Any statements about future events are based solely on Loom's analysis of the issues described in this White Paper.  That analysis may prove to be incorrect.
+Nothing in this White Paper should be treated or read as a guarantee or promise of how Solana's business or the tokens will develop or of the utility or value of the tokens.  This White Paper outlines current plans, which could change at its discretion, and the success of which will depend on many factors outside Solana's control, including market-based factors and factors within the data and cryptocurrency industries, among others.  Any statements about future events are based solely on Solana's analysis of the issues described in this White Paper.  That analysis may prove to be incorrect.
 
 \begin{abstract}
 This paper proposes a Proof of History (PoH) - a proof for verifying passage of time between events. PoH is used to encode passage of time into a ledger - an append only data structure.  When used alongside a consensus algorithm such as Proof of Work (PoW) or Proof of Stake (PoS), PoH can reduce messaging overhead in a Byzantine Fault Tolerant replicated state machine.  This paper proposes two algorithms that leverage the time keeping properties of the PoH ledger - a Proof of Stake algorithm that can recover from partitions of any size and an efficient streaming Proof of Replication (PoRep).  The combination of PoRep and PoH provides a defense against forgery of the ledger with respect to time and storage.  The protocol is analyzed on a 1gbps network, and this paper shows that throughput up to 710k transactions per second is possible with today's hardware.
@@ -60,11 +60,11 @@ The remainder of this article is organized as follows. Overall system design is 
   \end{center}
   \end{figure}
 
-As shown in Figure~\ref{fig:design}, Loom is designed to generate a Proof of History. It sequences user messages. It orders them such that they can be efficiently processed by maximizing throughput.  It executes the transactions on the current state that is stored in RAM. It publishes the transactions and a signature of the state to the replications nodes called Spools. Spools execute the same transactions on their copies of the state, and publish their computed signatures of the state as confirmations. The published confirmations serve as votes for the consensus algorithm.
+As shown in Figure~\ref{fig:design}, Leader is designed to generate a Proof of History. It sequences user messages. It orders them such that they can be efficiently processed by maximizing throughput.  It executes the transactions on the current state that is stored in RAM. It publishes the transactions and a signature of the state to the replications nodes called Verifiers. Verifiers execute the same transactions on their copies of the state, and publish their computed signatures of the state as confirmations. The published confirmations serve as votes for the consensus algorithm.
 
-There are many Looms in the network, and each Spool node has the same hardware capabilities as a Loom and can be elected as a Loom.  A Primary Loom and lower ranked Looms are elected via a consensus algorithm. Elections for the proposed PoS algorithm are covered in depth in Section~\ref{subsec:elections}.
+There are many Leaders in the network, and each Verifier node has the same hardware capabilities as a Leader and can be elected as a Leader.  A Primary Leader and lower ranked Leaders are elected via a consensus algorithm. Elections for the proposed PoS algorithm are covered in depth in Section~\ref{subsec:elections}.
 
-The Loom generates a Proof of History sequence, which provides global read consistency and a verifiable passage of time for the network.
+The Leader generates a Proof of History sequence, which provides global read consistency and a verifiable passage of time for the network.
 
 In terms of CAP theorem, Consistency is almost always picked over Availability in an event of a Partition. In case of a large partition, this paper proposes a mechanism to eventually recover control of the network from a partition of any size.  This is covered in depth in Section~\ref{availability}.
 
@@ -486,7 +486,7 @@ A verifier that is colluding with the PoH generator would know in advance when t
 \subsubsection{Censorship}\label{censorship}
 Censorship or denial of service could occur when \(\frac{1}{3}\)rd of the bond holders refuse to validate any sequences with new bonds. The protocol can defend against this form of attack by dynamically adjusting how fast bonds become stale. In the event of a denial of service, the larger partition will be designed to fork and censor the Byzantine bond holders. The larger network will recover as the Byzantine bonds become stale with time. The smaller Byzantine partition would not be able to move forward for a longer period of time. 
 
-The algorithm would work as follows.  A majority of the network would elect a new Loom.  The Loom would then censor the Byzantine bond holders from participating.  Proof of History generator would have to continue generating a sequence, to prove the passage of time, until enough Byzantine bonds have become stale so the bigger network has a super majority.  The rate at which bonds become stale would be dynamically based on what percentage of bonds are active.  So the Byzantine minority fork of the network would have to wait much longer than the majority fork to recover a super majority.  Once a super majority has been established, slashing could be used to permanently punish the Byzantine bond holders.
+The algorithm would work as follows.  A majority of the network would elect a new Leader.  The Leader would then censor the Byzantine bond holders from participating.  Proof of History generator would have to continue generating a sequence, to prove the passage of time, until enough Byzantine bonds have become stale so the bigger network has a super majority.  The rate at which bonds become stale would be dynamically based on what percentage of bonds are active.  So the Byzantine minority fork of the network would have to wait much longer than the majority fork to recover a super majority.  Once a super majority has been established, slashing could be used to permanently punish the Byzantine bond holders.
 
 \subsubsection{Long Range Attacks}\label{censorship}
 PoH provides a natural defense against long range attacks. Recovering the ledger from any point in the past would require the attacker to overtake the valid ledger in time by outpacing the speed of the PoH generator.
@@ -601,8 +601,8 @@ To further avoid this scenario, the PoRep verifiers can submit false proofs a sm
 
 \subsection{Components}
 
-\subsubsection{Loom, Proof of History generator}
-The Loom is an elected Proof of History generator. It consumes arbitrary user transactions and outputs a Proof of History sequence of all the transactions that guarantees a unique global order in the system. After each batch of transactions the Loom outputs a signature of the state that is the result of running the transactions in that order. This signature is signed with the identity of the Loom.
+\subsubsection{Leader, Proof of History generator}
+The Leader is an elected Proof of History generator. It consumes arbitrary user transactions and outputs a Proof of History sequence of all the transactions that guarantees a unique global order in the system. After each batch of transactions the Leader outputs a signature of the state that is the result of running the transactions in that order. This signature is signed with the identity of the Leader.
 
 \subsubsection{State}
 A naive hash table indexed by the user’s address. Each cell contains the full user's address and the memory required for this computation. For example\\
@@ -623,12 +623,12 @@ For a total of 32 bytes.\\
 & \bitbox{224}{unused}
 \end{bytefield}\\
 For a total of 64 bytes.
-\subsubsection{Spool, State Replication}
-The Spool nodes replicate the blockchain state and provide high availability of the blockchain state. The replication target is selected by the consensus algorithm, and the validators in the consensus algorithm select and vote the Proof of Replication nodes they approve of based on off-chain defined criteria.
+\subsubsection{Verifier, State Replication}
+The Verifier nodes replicate the blockchain state and provide high availability of the blockchain state. The replication target is selected by the consensus algorithm, and the validators in the consensus algorithm select and vote the Proof of Replication nodes they approve of based on off-chain defined criteria.
 
 The network could be configured with a minimum Proof of Stake bond size, and a requirement for a single replicator identity per bond.
 \subsubsection{Validators}
-These nodes are consuming bandwidth from Spools. They are virtual nodes, and can run on the same machines as the Spools or the Loom, or on separate machines that are specific to the consensus algorithm configured for this network.
+These nodes are consuming bandwidth from Verifiers. They are virtual nodes, and can run on the same machines as the Verifiers or the Leader, or on separate machines that are specific to the consensus algorithm configured for this network.
 
 \subsection{Network Limits}
 
@@ -636,11 +636,11 @@ These nodes are consuming bandwidth from Spools. They are virtual nodes, and can
   \begin{center}
     \centering
     \includegraphics[width=0.8\textwidth]{figures/fig_10.png}
-    \caption[Fig 10]{Loom network limits\label{fig_10}}
+    \caption[Fig 10]{Leader network limits\label{fig_10}}
   \end{center}
   \end{figure}
 
-Loom is expected to be able to take incoming user packets, orders them the most efficient way possible, and sequences them into a Proof of History sequence that is published to downstream Spools. Efficiency is based on memory access patterns of the transactions, so the transactions are ordered to minimize faults and to maximize prefetching.\\\\
+Leader is expected to be able to take incoming user packets, orders them the most efficient way possible, and sequences them into a Proof of History sequence that is published to downstream Verifiers. Efficiency is based on memory access patterns of the transactions, so the transactions are ordered to minimize faults and to maximize prefetching.\\\\
 
 \noindent Incoming packet format:\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
@@ -696,7 +696,7 @@ The Proof of History sequence packet contains the current hash, counter, and the
 
 \noindent Minimum size of the output packet is: 132 bytes \\\\
 
-On a 1gbps network connection the maximum number of transactions possible is $1$~gigabit per second / $176$~bytes = $710$k tps max. Some loss $1-4\%$ is expected due to Ethernet framing. The spare capacity over the target amount for the network can be used to increase availability by coding the output with Reed-Solomon codes and striping it to the available downstream Spools.
+On a 1gbps network connection the maximum number of transactions possible is $1$~gigabit per second / $176$~bytes = $710$k tps max. Some loss $1-4\%$ is expected due to Ethernet framing. The spare capacity over the target amount for the network can be used to increase availability by coding the output with Reed-Solomon codes and striping it to the available downstream Verifiers.
 \subsection{Computational Limits}
 Each transaction requires a digest verification. This operation does not use any memory outside of the transaction message itself and can be parallelized independently. Thus throughput is expected to be limited by the number of cores available on the system.
 
