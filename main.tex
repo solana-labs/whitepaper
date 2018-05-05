@@ -23,11 +23,11 @@
     pdfauthor={anatoly@solana.io},
     pdfsubject={blockchain},
     pdfkeywords={blockchain, bitcoin, cryptocurrency},
-    bookmarksnumbered=true,     
-    bookmarksopen=true,         
-    bookmarksopenlevel=1,       
-    colorlinks=true,            
-    pdfstartview=Fit,           
+    bookmarksnumbered=true,
+    bookmarksopen=true,
+    bookmarksopenlevel=1,
+    colorlinks=true,
+    pdfstartview=Fit,
     pdfpagemode=UseOutlines,    % this is the option you were lookin for
     pdfpagelayout=TwoPageRight
 }
@@ -99,7 +99,7 @@ It is only necessary to publish a subset of the hashes and indices at an interva
     \multicolumn{3}{c}{PoH Sequence} \\
     \hline
     Index & Operation & Output Hash \\ \hline
-    $1$ & sha256(\char`\"any random starting value\char`\") & \texttt{hash1}\\ 
+    $1$ & sha256(\char`\"any random starting value\char`\") & \texttt{hash1}\\
     $200$ &  sha256(\texttt{hash199}) & \texttt{hash200}\\
     $300$ & sha256(\texttt{hash299}) & \texttt{hash300} \\
     \end{tabular}
@@ -130,9 +130,9 @@ This sequence of hashes can also be used to record that some piece of data was c
     \multicolumn{3}{c}{PoH Sequence} \\
     \hline
     Index  & Operation  & Output Hash\\ \hline
-    $1$ & sha256(\char`\"any random starting value\char`\") & \texttt{hash1}\\ 
-    $200$ & sha256(\texttt{hash199}) & \texttt{hash200}\\ 
-    $300$ & sha256(\texttt{hash299}) & \texttt{hash300}\\ 
+    $1$ & sha256(\char`\"any random starting value\char`\") & \texttt{hash1}\\
+    $200$ & sha256(\texttt{hash199}) & \texttt{hash200}\\
+    $300$ & sha256(\texttt{hash299}) & \texttt{hash300}\\
     \end{tabular}
 \end{center}
 
@@ -144,10 +144,10 @@ any arbitrary digital data was created:\\\\\noindent
     \multicolumn{3}{c}{PoH Sequence With Data} \\
     \hline
     Index  & Operation & Output Hash\\ \hline
-    $1$ & sha256(\char`\"any random starting value\char`\") & \texttt{hash1} \\ 
-    $200$ & sha256(\texttt{hash199}) & \texttt{hash200} \\ 
-    $300$  & sha256(\texttt{hash299}) & \texttt{hash300}\\ 
-    $336$ & sha256(append(\texttt{hash335}, photograph\_sha256)) & \texttt{hash336}\\ 
+    $1$ & sha256(\char`\"any random starting value\char`\") & \texttt{hash1} \\
+    $200$ & sha256(\texttt{hash199}) & \texttt{hash200} \\
+    $300$  & sha256(\texttt{hash299}) & \texttt{hash300}\\
+    $336$ & sha256(append(\texttt{hash335}, photograph\_sha256)) & \texttt{hash336}\\
     \end{tabular}
 \end{center}
 
@@ -166,14 +166,14 @@ Because the initial process is still sequential, we can then tell that things en
   \begin{tabular}{l l r}
     \multicolumn{3}{c}{POH Sequence} \\ \hline
     Index & Operation & Output Hash \\ \hline
-    $1$ & sha256(\char`\"any random starting value\char`\") & \texttt{hash1} \\ 
-    $200$ & sha256(hash199) & \texttt{hash200} \\ 
-    $300$ & sha256(hash299) & \texttt{hash300} \\ 
-    $336$ & sha256(append(hash335, photograph1\_sha256)) & \texttt{hash336}\\ 
-    $400$ & sha256(hash399) & \texttt{hash400} \\ 
-    $500$ & sha256(hash499) & \texttt{hash500}\\ 
-    $600$ & sha256(append(hash599, photograph2\_sha256)) & \texttt{hash600}\\ 
-    $700$ & sha256(hash699) & \texttt{hash700}\\ 
+    $1$ & sha256(\char`\"any random starting value\char`\") & \texttt{hash1} \\
+    $200$ & sha256(hash199) & \texttt{hash200} \\
+    $300$ & sha256(hash299) & \texttt{hash300} \\
+    $336$ & sha256(append(hash335, photograph1\_sha256)) & \texttt{hash336}\\
+    $400$ & sha256(hash399) & \texttt{hash400} \\
+    $500$ & sha256(hash499) & \texttt{hash500}\\
+    $600$ & sha256(append(hash599, photograph2\_sha256)) & \texttt{hash600}\\
+    $700$ & sha256(hash699) & \texttt{hash700}\\
     \end{tabular}
     \caption[Table 1]{PoH Sequence With 2 Events\label{table:multievent}}
     \end{table}
@@ -206,18 +206,18 @@ The sequence can be verified correct by a multicore computer in significantly le
 \begin{tabular}{l l r}
     \multicolumn{3}{c}{Core 1} \\ \hline
     Index & Data & Output Hash \\ \hline
-    $200$ & sha256(\texttt{hash199}) & \texttt{hash200} \\ 
-    $300$ & sha256(\texttt{hash299}) & \texttt{hash300}\\ 
+    $200$ & sha256(\texttt{hash199}) & \texttt{hash200} \\
+    $300$ & sha256(\texttt{hash299}) & \texttt{hash300}\\
     \end{tabular}\\
-    
+
   \begin{tabular}{l l r}
     \multicolumn{3}{c}{Core 2} \\
     \hline
     Index & Data & Output Hash \\ \hline
     $300$ & sha256(\texttt{hash299}) & \texttt{hash300} \\
-    $400$ & sha256(\texttt{hash399}) & \texttt{hash400}\\ 
+    $400$ & sha256(\texttt{hash399}) & \texttt{hash400}\\
     \end{tabular}
-    
+
 \end{center}
 
 
@@ -254,9 +254,9 @@ It’s possible to synchronize multiple Proof of History generators by mixing th
     \multicolumn{3}{|c|}{PoH Generator A} \\
   %  \hline
     Index & Hash & Data \\ \hline
-    $1$ & \texttt{hash1a} & \\ 
-    $2$ & \texttt{hash2a} & \texttt{hash1b} \\ 
-    $3$ & \texttt{hash3a} & \\ 
+    $1$ & \texttt{hash1a} & \\
+    $2$ & \texttt{hash2a} & \texttt{hash1b} \\
+    $3$ & \texttt{hash3a} & \\
     $4$ & \texttt{hash4a} & \\
     \hline
     \end{tabular}
@@ -265,9 +265,9 @@ It’s possible to synchronize multiple Proof of History generators by mixing th
     \multicolumn{3}{|c|}{PoH Generator B} \\
 %    \hline
     Index & Hash & Data \\ \hline
-    $1$ & \texttt{hash1b} & \\ 
-    $2$ & \texttt{hash2b} & \texttt{hash1a} \\ 
-    $3$ & \texttt{hash3b} & \\ 
+    $1$ & \texttt{hash1b} & \\
+    $2$ & \texttt{hash2b} & \texttt{hash1a} \\
+    $3$ & \texttt{hash3b} & \\
     $4$ & \texttt{hash4b} & \\
     \hline
     \end{tabular}
@@ -301,9 +301,9 @@ Users are expected to be able to enforce consistency of the generated sequence a
     \hline
     \multicolumn{3}{|c|}{PoH Sequence A} \\
     Index & Data & Output Hash  \\ \hline
-    $10$ & & \texttt{hash10a} \\ 
-    $20$ & Event1 & \texttt{hash20a} \\ 
-    $30$ & Event2 & \texttt{hash30a} \\ 
+    $10$ & & \texttt{hash10a} \\
+    $20$ & Event1 & \texttt{hash20a} \\
+    $30$ & Event2 & \texttt{hash30a} \\
     $40$ & Event3 & \texttt{hash40a} \\
     \hline
     \end{tabular}
@@ -311,9 +311,9 @@ Users are expected to be able to enforce consistency of the generated sequence a
     \hline
     \multicolumn{3}{|c|}{PoH Hidden Sequence B} \\
     Index & Data & Output Hash \\ \hline
-    $10$ & & \texttt{hash10b}\\ 
-    $20$ & Event3 & \texttt{hash20b}  \\ 
-    $30$ & Event2 & \texttt{hash30b} \\ 
+    $10$ & & \texttt{hash10b}\\
+    $20$ & Event3 & \texttt{hash20b}  \\
+    $30$ & Event2 & \texttt{hash30b} \\
     $40$ & Event1 & \texttt{hash40b} \\
     \hline
     \end{tabular}
@@ -329,9 +329,9 @@ To prevent this attack, each client-generated Event should contain within itself
     \multicolumn{3}{c}{PoH Sequence A} \\
     \hline
     Index  & Data & Output Hash  \\ \hline
-    $10$ & & \texttt{hash10a} \\ 
-    $20$ & Event1 = append(event1 data, \texttt{hash10a}) & \texttt{hash20a}  \\ 
-    $30$ & Event2 = append(event2 data, \texttt{hash20a}) & \texttt{hash30a} \\ 
+    $10$ & & \texttt{hash10a} \\
+    $20$ & Event1 = append(event1 data, \texttt{hash10a}) & \texttt{hash20a}  \\
+    $30$ & Event2 = append(event2 data, \texttt{hash20a}) & \texttt{hash30a} \\
     $40$ &  Event3 = append(event3 data, \texttt{hash30a}) & \texttt{hash40a} \\
     \end{tabular}
 \end{center}
@@ -344,9 +344,9 @@ To prevent a malicious PoH generator from rewriting the client Event hashes, the
     \multicolumn{3}{c}{PoH Sequence A} \\
     \hline
     Index & Data & Output Hash \\ \hline
-    $10$ & & hash10a  \\ 
-    $20$ & \makecell{Event1 = sign(append(event1 data, hash10a), \\Client Private Key)} & hash20a\\ 
-    $30$ & \makecell{Event2 = sign(append(event2 data, hash20a), \\Client Private Key)} & hash30a \\ 
+    $10$ & & hash10a  \\
+    $20$ & \makecell{Event1 = sign(append(event1 data, hash10a), \\Client Private Key)} & hash20a\\
+    $30$ & \makecell{Event2 = sign(append(event2 data, hash20a), \\Client Private Key)} & hash30a \\
     $40$ & \makecell{Event3 = sign(append(event3 data, hash30a), \\Client Private Key)} & hash40a \\
 
     \end{tabular}
@@ -486,15 +486,15 @@ The consensus protocol provides a second layer of defense, as any attack would h
 
 \subsubsection{ASIC Attacks}\label{censorship}
 
-Two opportunities for an ASIC attacks exist in this protocol - during partition, and cheating timeouts in Finality.
+Two opportunities for ASIC attacks exist in this protocol - during partition, and cheating timeouts in Finality.
 
 For ASIC attacks during Partitions, the Rate at which bonds are unstaked is non-linear, and for networks with large partitions the rate is orders of magnitude slower then expected gains from an ASIC attack.
 
-For ASIC attacks during Finality, the vulnerability allows for byzantine validators who have a bonded stake wait for confirmations from other nodes and inject their votes with a collaborating PoH generator. The PoH generator can then use its faster ASIC to generate 500ms worth of hashes in less time, and allow for network communication between PoH generator and the collaborating nodes. But, if the PoH generator is also byzantine, there is no reason why the byzantine generator wouldn’t have communicated the exact counter when they expect to insert the failure. This scenario is no different than a PoH generator and all the collaborators sharing the same identity and having a single combined stake and only using 1 set of hardware.
+For ASIC attacks during Finality, the vulnerability allows for byzantine validators who have a bonded stake to wait for confirmations from other nodes and inject their votes with a collaborating PoH generator. The PoH generator can then use its faster ASIC to generate 500ms worth of hashes in less time, and allow for network communication between PoH generator and the collaborating nodes. But, if the PoH generator is also byzantine, there is no reason why the byzantine generator wouldn’t have communicated the exact counter when they expect to insert the failure. This scenario is no different than a PoH generator and all the collaborators sharing the same identity vs. having a single combined stake and only using 1 set of hardware.
 
 \section{Streaming Proof of Replication}\label{porep}
 \subsection{Description}
-Filecoin proposed a version of Proof of Replication \cite{filecoinporep}. The goal of this version is to have fast and streaming verifications of Proof of Replication, which are enabled by keeping track of time in Proof of History generated sequence. Replication is not used as a consensus algorithm, but is a useful tool to account for the cost of storing the blockchain history or state at a high availability.
+Filecoin proposed a version of Proof of Replication \cite{filecoinporep}. The goal of this version is to have fast and streaming verifications of Proof of Replication, which are enabled by keeping track of time in a Proof of History generated sequence. Replication is not used as a consensus algorithm, but is a useful tool to account for the cost of storing the blockchain history or state at a high availability.
 \subsection{Algorithm}
 As shown in Figure~\ref{fig:encrypt} CBC encryption encrypts each block of data in sequence, using the previously encrypted block to XOR the input data.
 
@@ -506,7 +506,7 @@ As shown in Figure~\ref{fig:encrypt} CBC encryption encrypts each block of data 
   \end{center}
   \end{figure}
 
-Each replication identity generates a key by signing a hash that has been generated Proof of History sequence. This ties the key to a replicator’s identity, and to a specific Proof of History sequence. Only specific hashes can be selected. (See Section~\ref{hashselection} on Hash Selection)
+Each replication identity generates a key by signing a hash that has been generated via a Proof of History sequence. This ties the key to a replicator’s identity, and to a specific Proof of History sequence. Only specific hashes can be selected. (See Section~\ref{hashselection} on Hash Selection)
 
 The data set is fully encrypted block by block. Then to generate a proof, the key is used to seed a pseudorandom number generator that selects a random 32 bytes from each block.
 
@@ -520,12 +520,12 @@ A merkle hash is computed with the selected PoH hash prepended to the each slice
   \end{center}
   \end{figure}
 
-The root is published, along with the key, and the selected hash that was generated. The replication node is required to publish another proof in N hashes as they are generated by Proof of History generator, where N is approximately \(\frac{1}{2}\) the time it takes to encrypt the data. The Proof of History generator will publish specific hashes for Proof of Replication at a predefined periods. The replicator node must select the next published hash for generating the proof. Again, the hash is signed, and random slices are selected from the blocks to create the merkle root.
+The root is published, along with the key, and the selected hash that was generated. The replication node is required to publish another proof in N hashes as they are generated by Proof of History generator, where N is approximately \(\frac{1}{2}\) the time it takes to encrypt the data. The Proof of History generator will publish specific hashes for Proof of Replication at predefined periods. The replicator node must select the next published hash for generating the proof. Again, the hash is signed, and random slices are selected from the blocks to create the merkle root.
 
 After a period of N proofs, the data is re-encrypted with a new CBC key.
 \subsection{Verification}
 
-With N cores, each core can stream encryption for each identity. Total space required is \(2 blocks * N cores\), since the previous encrypted block is necessary to generate the next one. Each core can then be used to generate all the proofs that derived from the current encrypted block.
+With N cores, each core can stream encryption for each identity. Total space required is \(2 blocks * N cores\), since the previous encrypted block is necessary to generate the next one. Each core can then be used to generate all the proofs that were derived from the current encrypted block.
 
 Total time to verify proofs is expected to be equal to the time it takes to encrypt. The proofs themselves consume few random bytes from the block, so the amount of data to hash is significantly lower then the encrypted block size. The number of replication identities that can be verified at the same time is equal to the number of available cores. Modern GPUs have 3500+ cores available to them, albeit at \(\frac{1}{2}\)-\(\frac{1}{3}\) the clock speed of a CPU.
 
@@ -537,16 +537,16 @@ Rotation needs to be slow enough that it’s practical to verify replication pro
 
 \subsection{Hash Selection}\label{hashselection}
 
-Proof of History generator publishes a hash to be used by the entire network for encrypting Proofs of Replication, and for using as the pseudorandom number generator for byte selection in fast proofs.
+The Proof of History generator publishes a hash to be used by the entire network for encrypting Proofs of Replication, and for using as the pseudorandom number generator for byte selection in fast proofs.
 
-Hash is published at a periodic counter that is roughly equal to \(\frac{1}{2}\) the time it takes to encrypt the data set. Each replication identity must use the same hash, and use the signed result of the hash as the seed for byte selection, or the encryption key.
+The hash is published at a periodic counter that is roughly equal to \(\frac{1}{2}\) the time it takes to encrypt the data set. Each replication identity must use the same hash, and use the signed result of the hash as the seed for byte selection, or the encryption key.
 
 The period that each replicator must provide a proof must be smaller than the encryption time. Otherwise the replicator can stream the encryption and delete it for each proof.
 
 A malicious generator could inject data into the sequence prior to this hash to generate a specific hash. This attack is discussed more in \ref{subsubsec:collusion}.
 
 \subsection{Proof Validation}
-The Proof of History node is not expected to validate the submitted Proof of Replication proofs. It is expected to keep track of number of pending and verified proofs submitted by the replicator’s identity. A proof is expected to be verified when the replicator is able to sign the proof by a super majority of the validators in the network.
+The Proof of History node is not expected to validate the submitted Proof of Replication proofs. It is expected to keep track of the number of pending and verified proofs submitted by the replicator’s identity. A proof is expected to be verified when the replicator is able to sign the proof by a super majority of the validators in the network.
 
 The verifications are collected by the replicator via p2p gossip network, and submitted as one packet that contains a super majority of the validators in the network. This packet verifies all the proofs prior to a specific hash generated by the Proof of History sequence, and can contain multiple replicator identities at once.
 \subsection{Attacks}
@@ -576,7 +576,7 @@ This creates an opportunity for a denial of service attack on the network by cre
 To limit this attack, the consensus protocol chosen for the network can select a replication target, and award the replication proofs that meet the desired characteristics, like availability on the network, bandwidth, geolocation etc...
 \subsubsection{Tragedy of Commons}
 
-The PoS verifiers could simply confirm PoRep without doing any work. The economic incentives should be lined up with the PoS verifiers to do work, like by splitting the mining payout between the PoS verifiers and the PoRep replication nodes.
+The PoS verifiers could simply confirm PoRep without doing any work. The economic incentives should be lined up with the PoS verifiers to do work, i.e. splitting the mining payout between the PoS verifiers and the PoRep replication nodes.
 
 To further avoid this scenario, the PoRep verifiers can submit false proofs a small percentage of the time. They can prove the proof is false by providing the function that generated the false data. Any PoS verifier that confirmed a false proof would be slashed.
 
@@ -593,19 +593,19 @@ To further avoid this scenario, the PoRep verifiers can submit false proofs a sm
 \subsection{Components}
 
 \subsubsection{Leader, Proof of History generator}
-The Leader is an elected Proof of History generator. It consumes arbitrary user transactions and outputs a Proof of History sequence of all the transactions that guarantees a unique global order in the system. After each batch of transactions the Leader outputs a signature of the state that is the result of running the transactions in that order. This signature is signed with the identity of the Leader.
+The Leader is an elected Proof of History generator. It consumes arbitrary user transactions and outputs a Proof of History sequence of all the transactions that guarantee a unique global order in the system. After each batch of transactions the Leader outputs a signature of the state that is the result of running the transactions in that order. This signature is signed with the identity of the Leader.
 
 \subsubsection{State}
-A naive hash table indexed by the user’s address. Each cell contains the full user’s address and the memory required for this computation. For example\\
-\noindent Transaction table contains:\\\\\noindent
+The state is a naive hash table indexed by the user’s address. Each cell contains the full user’s address and the memory required for this computation. For example,\\
+\noindent the Transaction table contains:\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
 \bitbox{160}{Ripemd of Users Public Key}
 & \bitbox{64}{Account}
 & \bitbox{32}{unused}
 \end{bytefield}\\
-For a total of 32 bytes.\\
-\noindent Proof of Stake bond’s table contains:\\\\\noindent
+for a total of 32 bytes.\\
+\noindent The Proof of Stake bond’s table contains:\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
 \bitbox{160}{Ripemd of Users Public Key}
@@ -613,9 +613,9 @@ For a total of 32 bytes.\\
 & \bitbox{64}{Last Vote} \\
 & \bitbox{224}{unused}
 \end{bytefield}\\
-For a total of 64 bytes.
+for a total of 64 bytes.
 \subsubsection{Verifier, State Replication}
-The Verifier nodes replicate and provide high availability of the blockchain state. The replication target is selected by the consensus algorithm, and the validators in the consensus algorithm select and vote the Proof of Replication nodes they approve of based on off-chain defined criteria.
+The Verifier nodes replicate and provide high availability of the blockchain state. The replication target is selected by the consensus algorithm, and the validators in the consensus algorithm select and vote for the Proof of Replication nodes they approve of based on off-chain defined criteria.
 
 The network could be configured with a minimum Proof of Stake bond size, and a requirement for a single replicator identity per bond.
 \subsubsection{Validators}
@@ -631,7 +631,7 @@ These nodes are consuming bandwidth from Verifiers. They are virtual nodes, and 
   \end{center}
   \end{figure}
 
-Leader is expected to be able to take incoming user packets, orders them the most efficient way possible, and sequences them into a Proof of History sequence that is published to downstream Verifiers. Efficiency is based on memory access patterns of the transactions, so the transactions are ordered to minimize faults and to maximize prefetching.\\\\
+The leader is expected to be able to take incoming user packets, order them in the most efficient way possible, and sequence them into a Proof of History sequence that is published to downstream Verifiers. Efficiency is based on memory access patterns of the transactions, so the transactions are ordered to minimize faults and to maximize prefetching.\\\\
 
 \noindent \textbf{Incoming packet format:}\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
@@ -639,7 +639,7 @@ Leader is expected to be able to take incoming user packets, orders them the mos
 \begin{rightwordgroup}{Signed}
 \bitbox{160}{Last Valid Hash}
 & \bitbox{64}{Counter}
-& \bitbox{6}{u} 
+& \bitbox{6}{u}
 & \bitbox{10}{s} \\
 & \bitbox{64}{Fee} \\
 & \bitbox{256}{From} \\
@@ -652,14 +652,19 @@ Leader is expected to be able to take incoming user packets, orders them the mos
 
 The minimal payload that can be supported would be 1 destination account.\\\\
 
+<<<<<<< HEAD
 \noindent \textbf{With payload:}\\\\\noindent
+=======
+The minimal payload that can be supported would be 1 destination account with a minimum size of 176 bytes.
+\noindent With payload:\\\\\noindent
+>>>>>>> typo updates
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
 \begin{rightwordgroup}{Signed}
 \bitbox{160}{Last Valid Hash}
 & \bitbox{64}{Counter}
 & \bitbox{6}{u}
-& \bitbox{10}{s} \\ 
+& \bitbox{10}{s} \\
 & \bitbox{160}{To}
 & \bitbox{64}{Amount} \\
 & \bitbox{64}{Counter}
@@ -688,7 +693,7 @@ The Proof of History sequence packet contains the current hash, counter, and the
 
 \noindent Minimum size of the output packet is: 132 bytes \\\\
 
-On a 1gbps network connection the maximum number of transactions possible is $1$~gigabit per second / $176$~bytes = $710$k tps max. Some loss $1-4\%$ is expected due to Ethernet framing. The spare capacity over the target amount for the network can be used to increase availability by coding the output with Reed-Solomon codes and striping it to the available downstream Verifiers.
+On a 1gbps network connection the maximum number of transactions possible is $1$~gigabit per second / $176$~bytes = $710$k tps max. Some loss ($1-4\%$) is expected due to Ethernet framing. The spare capacity over the target amount for the network can be used to increase availability by coding the output with Reed-Solomon codes, and striping it to the available downstream Verifiers.
 \subsection{Computational Limits}
 Each transaction requires a digest verification. This operation does not use any memory outside of the transaction message itself and can be parallelized independently. Thus throughput is expected to be limited by the number of cores available on the system.
 
@@ -698,7 +703,7 @@ A naive implementation of the state as a \(50\%\) full hashtable with 32 byte en
 
 \subsection{High Performance Smart Contracts}\label{sec:smartcontracts}
 
-Smart contracts are a generalized form of transactions. These are programs that run on each node and modify the state. This design leverages extended Berkeley Packet Filter bytecode as fast and easy to analyze and JIT bytecode as the smart contracts language.
+Smart contracts are a generalized form of transactions. These are programs that run on each node and modify the state. This design leverages extended Berkeley Packet Filter bytecode, which is fast and easy to analyze, and JIT bytecode as the smart contracts language.
 
 One of its main advantages is a zero cost Foreign Function Interface. Intrinsics, or \hyphenation{high level} functions that are implemented on the platform directly, are callable by \hyphenation{user supplied} programs. Calling the intrinsics suspends that program and schedules the intrinsic on a high performance server. Intrinsics are batched together to execute in parallel on the GPU.
 
