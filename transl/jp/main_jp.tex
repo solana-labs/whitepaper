@@ -44,7 +44,7 @@
 本文はSolanaの事業やトークンの発展性、利用価値、金銭的価値を確約したものではない。このホワイトペーパーに記載される内容は現時点における予定を記したもので、それはプロジェクトの方針により変更されうる。またデータ、暗号通貨の市況やその他の要因、つまりSolanaプロジェクトが持つ影響力の範疇を超えたことに起因して、この目論見の成否に影響を与えることも予想される。本文中の未来事象に関する記述はSolanaプロジェクトの分析に基づいたものであり、その見込みは確約されたものではない。
 
 \begin{abstract}
-本文ではProof of History（PoH）による新たなブロックチェーンのアーキテクチャを提言する。PoHはトラストレスなネットワークにあって、一連のイベント発生タイミングの前後関係を記帳し、それを証明する仕組みである……この台帳では記帳済みの内容は変更不可能で、追記のみを可能とする。PoHはProof of Work（PoW）あるいはProof of Stake（PoS）などの合意形成アルゴリズムと併用することで、Byzantine Fault Tolerantによるステートマシーンの状態共有のオーバーヘッドを低減し、結果的に合意完了にかかる時間を短縮することができる。またPoHによる時間管理の性能をより効果的にする二つのアルゴリズムを紹介する。ひとつは任意のサイズに分断されたネットワークから復旧可能なPoSアルゴリズム、もうひとつはProof of Replication（PoRep）を効率的にストリーミングするアルゴリズムである。PoRepとPoHの組み合わせは、時間（順序）とデータ保管を司る台帳の偽造に対する防衛手段となる。現代のハードウェア性能と1Gbpsのネットワーク環境が備えられていることを前提として、このプロトコルによる実装は最大710,000TPS（transaction per-second）のスループットが実現可能であることを示す。
+本文ではProof of History（PoH）による新たなブロックチェーンのアーキテクチャを提言する。PoHはトラストレスなネットワークにあって、一連のイベント発生タイミングの前後関係を記帳し、それを証明する仕組みである──この台帳においては記帳済みの情報は変更不可能、追記のみを可能とする。PoHはProof of Work（PoW）あるいはProof of Stake（PoS）などの合意形成アルゴリズムと併用することで、Byzantine Fault Tolerantによるステートマシーンの状態共有のオーバーヘッドを低減し、結果的に合意完了にかかる時間を短縮することができる。またPoHによる時間管理の性能をより効果的にする二つのアルゴリズムを紹介する。ひとつは任意のサイズに分断されたネットワークから復旧可能なPoSアルゴリズム、もうひとつはProof of Replication（PoRep）を効率的にストリーミングするアルゴリズムである。PoRepとPoHの組み合わせは、時間（順序）とデータ保管を司る台帳の偽造に対する防衛手段となる。現代のハードウェア性能と1Gbpsのネットワーク環境が備えられていることを前提として、このプロトコルによる実装は最大710,000TPS（transaction per-second）のスループットが実現可能であることを示す。
 \end{abstract}
 
 
@@ -71,48 +71,44 @@
 
 \section{Proof of History}\label{proof_of_history}
 
-Proof of History is a sequence of computation that can provide a way to cryptographically verify passage of time between two events. It uses a cryptographically secure function written so that output cannot be predicted from the input, and must be completely executed to generate the output. The function is run in a sequence on a single core, its previous output as the current input, periodically recording the current output, and how many times it’s been called. The output can then be re-computed and verified by external computers in parallel by checking each sequence segment on a separate core.
+Proof of Historyは任意の二つのイベントに挟まれた時間の経過を暗号理論的に検証できる方法を提供する。これには入力から出力を予測することが不可能な暗号理論的に安全な関数で計算することが求められる。一連の計算は単一コア上で行われ、前回計算のアウトプットは今回計算のインプットとして使われる。関数が呼び出される度、その計算結果と呼び出し回数を記録する。ここまで行われた計算の入出力を分割して他ノードに並列で（＝複数の異なるコアで）再計算させることで、計算結果に対する正否の検証が行われる。
+データそのもの、あるいはデータのハッシュ値をシーケンスに加えることは、タイムスタンプに相当する情報をそのデータに付与することにあたる。つまりそれは状態、順序、データの記録が、次のハッシュ計算が開始された以前に完了していたことの証明に他ならないからだ。この設計は、複数のシーケンス生成者同士が互いのシーケンスに含まれる情報を提供し、絡み合い、同期を取ることができる平行スケーリングをサポートする。この平行スケーリングについてはセクション\ref{poh:scale}で踏み込んだ議論を行う。
 
-Data can be timestamped into this sequence by appending the data (or a hash of some data) into the state of the function. The recording of the state, index and data as it was appended into the sequences provides a timestamp that can guarantee that the data was created sometime before the next hash was generated in the sequence. This design also supports horizontal scaling as multiple generators can synchronize amongst each other by mixing their state into each others sequences. Horizontal scaling is discussed in depth in Section~\ref{poh:scale}\\
-
-\subsection{Description}
-The system is designed to work as follows. With a cryptographic hash function, whose output cannot be predicted without running the function (e.g. \texttt{sha256}, \texttt{ripemd}, etc.), run the function from some random starting value and take its output and pass it as the input into the same function again. Record the number of times the function has been called and the output at each call. The starting random value chosen could be any string, like the headline of the New York times for the day.
+\subsection{説明}
+システムは次のように設計される。実行前に計算結果を導くことができない暗号学的ハッシュ関数(例：\texttt{sha256}、\texttt{ripemd}など)をつかう。ランダムな値を初期入力値としてハッシュ計算を開始、今回計算結果を次回計算の入力値として使う。今回計算も次回計算も実行するハッシュ関数は同じである。関数の呼び出し回数および計算結果はは毎回記録される。またここで登場した初期入力値は、当日のニューヨークタイムズ紙のヘッドラインなど、任意の文字列を選択して良い。
 \\\\
-\noindent For example: \noindent
+\noindent 例 \noindent
 \begin{center}
   \begin{tabular}{  l  l  r }
 %    \hline
     \multicolumn{3}{c}{PoH Sequence} \\
     \hline
-    Index  & Operation & Output Hash \\ \hline
+    順番  & 計算内容 & 計算結果 \\ \hline
     $1$ & sha256(\char`\"any random starting value\char`\") & \texttt{hash1}\\ %\hline
     $2$ &  sha256(\texttt{hash1}) & \texttt{hash2}\\ %\hline
     $3$ & sha256(\texttt{hash2}) & \texttt{hash3}\\ %\hline
     \end{tabular}
 \end{center}
 
-\noindent Where \texttt{hashN} represents the actual hash output.\\
+\noindent 図中の\texttt{hashN}はN番目に行われたハッシュ計算の結果を表している。\\
 
-It is only necessary to publish a subset of the hashes and indices at an interval.\\
+ここで要求されるのは都度ハッシュ計算結果と順序番号を発行することに尽きる。\\
 
-\noindent For example:\\\\\noindent
+\noindent 例\\\\\noindent
 \begin{center}
   \begin{tabular}{ l  l  r }
     \multicolumn{3}{c}{PoH Sequence} \\
     \hline
-    Index & Operation & Output Hash \\ \hline
+    順番  & 計算内容 & 計算結果 \\ \hline
     $1$ & sha256(\char`\"any random starting value\char`\") & \texttt{hash1}\\ 
     $200$ &  sha256(\texttt{hash199}) & \texttt{hash200}\\
     $300$ & sha256(\texttt{hash299}) & \texttt{hash300} \\
     \end{tabular}
 \end{center}
 
-As long as the hash function chosen is collision resistant, this set of hashes can only be computed in sequence by a single computer thread. This follows from the fact that there is no way to predict what the hash value at index $300$ is going to be without actually running the algorithm from the starting value $300$ times. Thus we can thus infer from the data structure that real time has passed between index $0$ and index $300$.
+ハッシュ関数に強衝突耐性が備わっている限り、この一連のハッシュ値はシングルスレッドのみで計算可能である（＝マルチスレッド計算のメリットは皆無である）。これは$300$番目のハッシュ計算結果は、当該ハッシュ計算を$300$回繰り返すまで求まらないことから明らかである。この制約から$0$番目から$300$番目までの計算が終わるまでには、相応の時間が経過していることが分かる。
 
-In the example in Figure~\ref{fig:poh_seq}, hash \texttt{62f51643c1} was produced on
-count $510144806912$ and hash \texttt{c43d862d88} was produced on
-count $510146904064$. Following the previously discussed properties of the PoH algorithm, we can trust that real time passed between count $510144806912$
-and count $510146904064$.
+図\ref{fig:poh_seq}中にあるハッシュ値\texttt{62f51643c1}は$510144806912$番目に求められ、ハッシュ値\texttt{c43d862d88}は$510146904064$番目に求められたことを表している。既に説明した通り、$510144806912$番目と$510146904064$番目の間にかかった計算時間の分だけ現実世界の時間も経過することがわかる。
 
 \begin{figure}[h]
   \begin{center}
