@@ -1,0 +1,767 @@
+% !TEX encoding = UTF-8 Unicode
+\title{Solana:\\
+高パフォーマンスなブロックチェーンを実現する\\
+新しいアーキテクチャ v0.8.13 }
+
+\author{
+        Anatoly Yakovenko \\
+        anatoly@solana.io\\
+}
+\date{}
+
+\documentclass[12pt]{ltjsarticle}
+
+% \usepackage{draftwatermark}
+% \SetWatermarkText{Confidential}
+% \SetWatermarkScale{5}
+% \SetWatermarkColor[gray]{0.95}
+
+\usepackage{graphicx}
+\usepackage{bytefield}
+\usepackage{makecell}
+
+\usepackage[]{hyperref}
+\hypersetup{
+    pdftitle={Solana: A new architecture for a high performance blockchain},
+    pdfauthor={anatoly@solana.io},
+    pdfsubject={blockchain},
+    pdfkeywords={blockchain, bitcoin, cryptocurrency},
+    bookmarksnumbered=true,     
+    bookmarksopen=true,         
+    bookmarksopenlevel=1,       
+    colorlinks=true,            
+    pdfstartview=Fit,           
+    pdfpagemode=UseOutlines,    % this is the option you were lookin for
+    pdfpagelayout=TwoPageRight
+}
+
+\begin{document}
+\maketitle
+
+\textbf{\footnotesize 免責事項}\scriptsize
+~~当資料はトークンの販売を意図した文書ではなく、Solanaの仕組みに対する読者からのフィードバックやコメントを集めることを目的としたものである。Solanaがトークンセール（SAFT形式等）を開催する場合には、リスク要因など開示すべき情報をまとめた文書を作成する。その際は併せて本文の最新版が開示される予定だが、大幅な改訂がなされる可能性がある。また米国内に向けて販売がおこなわれる場合は、認定投資家のみを勧誘対象とする予定である。
+
+本文はSolanaの事業やトークンの発展性、利用価値、金銭的価値を確約したものではない。このホワイトペーパーに記載される内容は現時点における予定を記したもので、それはプロジェクトの方針により変更されうる。またデータ、暗号通貨の市況やその他の要因、つまりSolanaプロジェクトが持つ影響力の範疇を超えたことに起因して、この目論見の成否に影響を与えることも予想される。本文中の未来事象に関する記述はSolanaプロジェクトの分析に基づいたものであり、その見込みは確約されたものではない。
+
+\begin{abstract}
+本文ではProof of History（PoH）による新たなブロックチェーンのアーキテクチャを提言する。PoHはトラストレスなネットワークにあって、一連のイベント発生タイミングの前後関係を記帳し、それを証明する仕組みである……この台帳では記帳済みの内容は変更不可能で、追記のみを可能とする。PoHはProof of Work（PoW）あるいはProof of Stake（PoS）などの合意形成アルゴリズムと併用することで、Byzantine Fault Tolerantによるステートマシーンの状態共有のオーバーヘッドを低減し、結果的に合意完了にかかる時間を短縮することができる。またPoHによる時間管理の性能をより効果的にする二つのアルゴリズムを紹介する。ひとつは任意のサイズに分断されたネットワークから復旧可能なPoSアルゴリズム、もうひとつはProof of Replication（PoRep）を効率的にストリーミングするアルゴリズムである。PoRepとPoHの組み合わせは、時間（順序）とデータ保管を司る台帳の偽造に対する防衛手段となる。現代のハードウェア性能と1Gbpsのネットワーク環境が備えられていることを前提として、このプロトコルによる実装は最大710,000TPS（transaction per-second）のスループットが実現可能であることを示す。
+\end{abstract}
+
+
+\section{はじめに}\normalsize
+ブロックチェーンは耐障害性を備える複製されたステートマシンの実装である。現在パブリックに利用可能なブロックチェーンの生成アルゴリズムは時間に依存しない……言い換えればネットワーク参加者が互いに正確な時間を伝えてくれることに期待しない\cite{tendermint,hashgraph}。ネットワーク上の各ノードはローカル時間のみを参照し、他ノードのローカル時間をまったく意識しない。『信頼できる時間の基準がない』ということは、タイムスタンプをメッセージの承諾・拒否の判断に用いる場合に、すべてのノードがそのメッセージに対する判断を同じように下すとは限らないということになる。ここで紹介するPoHは、ネットワーク上の時間の基準となりえる台帳を提供する設計になっている。ここでいう時間とは、二つのイベントに挟まれた期間やメッセージの順序関係を指す。ネットワーク上のすべてのノードは、そのネットワークがトラストレスであるにも関わらず、PoHが生成した時間の基準に依拠できるようになると期待される。
+\section{本文の構成}
+本資料は次のような構成が取られている。セクション\ref{design}ではシステム設計の全体像が描かれている。セクション\ref{proof_of_history}ではProof of Historyの詳細が語られている。セクション\ref{proof_of_stake}では今回提案されるProof of Stakeによる合意形成アルゴリズムが示されている。セクション\ref{porep}では高速なProof of Replicationの仕組みが詳細に説明されている。セクション\ref{system_architecture}ではシステムアーキテクチャとパフォーマンス上限に関する分析がなされている。セクション\ref{sec:smartcontracts}ではGPU計算向きの高パフォーマンスなスマートコントラクト・エンジンについて詳しい考察がなされている。
+
+\section{ネットワークデザイン}\label{design}
+
+\begin{figure}[h]
+  \begin{center}
+    \centering
+    \includegraphics[width=\textwidth]{../../figures/network_design_001.png}
+    \caption[Fig 1]{Transaction flow throughout the network.\label{fig:design}}
+  \end{center}
+  \end{figure}
+
+図\ref{fig:design}に示されているように、システムノードは常にLeaderとしてProof of Historyの生成を担う。これはネットワーク全体で一貫性のある時間軸を提供する。スループットを最大化するため、他ノードが効率よく処理を進められるよう、Leaderはユーザメッセージを並べて順序付けする。これはRAM（主記憶装置）に格納された状態に基づいてトランザクションを執行し、実行結果を署名付きでVerifierと呼ばれるノードに引き渡す。Verifierは各自がRAM上に保持している状態から同じトランザクションを繰り返し、実行結果を確認してそれに署名を付与する。この計算結果は票となり、ネットワーク上の正史を選び出すための合意形成アルゴリズムに用いられる。
+
+ネットワークが分断されていない状況下では、常にLeaderはネットワーク上にひとつ存在する。各VerifierノードはLeaderと同性能のハードウェアを備えるようにし、PoSに基づいてLeaderとして選出される可能性が与えられる。ここで挙げられたPoSのアルゴリズムはセクション\ref{subsec:elections}で詳しく説明する。
+
+ネットワークの分断が発生してしまった場合、CAP定理に基づくと一貫性は可用性より優先されることになる。大規模な分断が発生する状況を想定して、本資料は任意のサイズで分断された状態からネットワークを復旧させるメカニズムを説明する。詳細はセクション\ref{availability}を参照されたい。
+
+\section{Proof of History}\label{proof_of_history}
+
+Proof of History is a sequence of computation that can provide a way to cryptographically verify passage of time between two events. It uses a cryptographically secure function written so that output cannot be predicted from the input, and must be completely executed to generate the output. The function is run in a sequence on a single core, its previous output as the current input, periodically recording the current output, and how many times it’s been called. The output can then be re-computed and verified by external computers in parallel by checking each sequence segment on a separate core.
+
+Data can be timestamped into this sequence by appending the data (or a hash of some data) into the state of the function. The recording of the state, index and data as it was appended into the sequences provides a timestamp that can guarantee that the data was created sometime before the next hash was generated in the sequence. This design also supports horizontal scaling as multiple generators can synchronize amongst each other by mixing their state into each others sequences. Horizontal scaling is discussed in depth in Section~\ref{poh:scale}\\
+
+\subsection{Description}
+The system is designed to work as follows. With a cryptographic hash function, whose output cannot be predicted without running the function (e.g. \texttt{sha256}, \texttt{ripemd}, etc.), run the function from some random starting value and take its output and pass it as the input into the same function again. Record the number of times the function has been called and the output at each call. The starting random value chosen could be any string, like the headline of the New York times for the day.
+\\\\
+\noindent For example: \noindent
+\begin{center}
+  \begin{tabular}{  l  l  r }
+%    \hline
+    \multicolumn{3}{c}{PoH Sequence} \\
+    \hline
+    Index  & Operation & Output Hash \\ \hline
+    $1$ & sha256(\char`\"any random starting value\char`\") & \texttt{hash1}\\ %\hline
+    $2$ &  sha256(\texttt{hash1}) & \texttt{hash2}\\ %\hline
+    $3$ & sha256(\texttt{hash2}) & \texttt{hash3}\\ %\hline
+    \end{tabular}
+\end{center}
+
+\noindent Where \texttt{hashN} represents the actual hash output.\\
+
+It is only necessary to publish a subset of the hashes and indices at an interval.\\
+
+\noindent For example:\\\\\noindent
+\begin{center}
+  \begin{tabular}{ l  l  r }
+    \multicolumn{3}{c}{PoH Sequence} \\
+    \hline
+    Index & Operation & Output Hash \\ \hline
+    $1$ & sha256(\char`\"any random starting value\char`\") & \texttt{hash1}\\ 
+    $200$ &  sha256(\texttt{hash199}) & \texttt{hash200}\\
+    $300$ & sha256(\texttt{hash299}) & \texttt{hash300} \\
+    \end{tabular}
+\end{center}
+
+As long as the hash function chosen is collision resistant, this set of hashes can only be computed in sequence by a single computer thread. This follows from the fact that there is no way to predict what the hash value at index $300$ is going to be without actually running the algorithm from the starting value $300$ times. Thus we can thus infer from the data structure that real time has passed between index $0$ and index $300$.
+
+In the example in Figure~\ref{fig:poh_seq}, hash \texttt{62f51643c1} was produced on
+count $510144806912$ and hash \texttt{c43d862d88} was produced on
+count $510146904064$. Following the previously discussed properties of the PoH algorithm, we can trust that real time passed between count $510144806912$
+and count $510146904064$.
+
+\begin{figure}[h]
+  \begin{center}
+    \centering
+    \includegraphics[width=0.5\textwidth]{../../figures/poh_sequence_001.png}
+    \caption[Figure 2]{Proof of History sequence\label{fig:poh_seq}}
+  \end{center}
+  \end{figure}
+
+\subsection{Timestamp for Events}
+
+This sequence of hashes can also be used to record that some piece of data was created before a particular hash index was generated. Using a `combine` function to combine the piece of data with the current hash at the current index. The data can simply be a cryptographically unique hash of arbitrary event data. The combine function can be a simple append of data, or any operation that is collision resistant. The next generated hash represents a timestamp of the data, because it could have only been generated after that specific piece of data was inserted.\\
+
+\noindent For example:\\\\\noindent
+\begin{center}
+  \begin{tabular}{ l l r }
+    \multicolumn{3}{c}{PoH Sequence} \\
+    \hline
+    Index  & Operation  & Output Hash\\ \hline
+    $1$ & sha256(\char`\"any random starting value\char`\") & \texttt{hash1}\\ 
+    $200$ & sha256(\texttt{hash199}) & \texttt{hash200}\\ 
+    $300$ & sha256(\texttt{hash299}) & \texttt{hash300}\\ 
+    \end{tabular}
+\end{center}
+
+
+\noindent Some external event occurs, like a photograph was taken, or
+any arbitrary digital data was created:\\\\\noindent
+\begin{center}
+  \begin{tabular}{ l l r}
+    \multicolumn{3}{c}{PoH Sequence With Data} \\
+    \hline
+    Index  & Operation & Output Hash\\ \hline
+    $1$ & sha256(\char`\"any random starting value\char`\") & \texttt{hash1} \\ 
+    $200$ & sha256(\texttt{hash199}) & \texttt{hash200} \\ 
+    $300$  & sha256(\texttt{hash299}) & \texttt{hash300}\\ 
+    $336$ & sha256(append(\texttt{hash335}, photograph\_sha256)) & \texttt{hash336}\\ 
+    \end{tabular}
+\end{center}
+
+
+\texttt{Hash336} is computed from the appended binary data of
+\texttt{hash335} and the \texttt{sha256} of the photograph. The index
+and the \texttt{sha256} of the photograph are recorded as part of the
+sequence output. So anyone verifying this sequence can then recreate
+this change to the sequence. The verifying can still be done in
+parallel and it’s discussed in Section~\ref{poh:verify}
+
+Because the initial process is still sequential, we can then tell that things entered into the sequence must have occurred sometime before the future hashed value was computed.
+
+\begin{center}
+  \begin{table}
+  \begin{tabular}{l l r}
+    \multicolumn{3}{c}{POH Sequence} \\ \hline
+    Index & Operation & Output Hash \\ \hline
+    $1$ & sha256(\char`\"any random starting value\char`\") & \texttt{hash1} \\ 
+    $200$ & sha256(hash199) & \texttt{hash200} \\ 
+    $300$ & sha256(hash299) & \texttt{hash300} \\ 
+    $336$ & sha256(append(hash335, photograph1\_sha256)) & \texttt{hash336}\\ 
+    $400$ & sha256(hash399) & \texttt{hash400} \\ 
+    $500$ & sha256(hash499) & \texttt{hash500}\\ 
+    $600$ & sha256(append(hash599, photograph2\_sha256)) & \texttt{hash600}\\ 
+    $700$ & sha256(hash699) & \texttt{hash700}\\ 
+    \end{tabular}
+    \caption[Table 1]{PoH Sequence With 2 Events\label{table:multievent}}
+    \end{table}
+\end{center}
+
+In the sequence represented by Table~\ref{table:multievent}, \texttt{photograph2} was created before \texttt{hash600}, and
+\texttt{photograph1} was created before \texttt{hash336}. Inserting the data into the sequence of hashes results in a change to all subsequent values in the sequence. As long as the hash function used is collision resistant, and the data was appended, it should be computationally impossible to pre-compute any future sequences based on prior knowledge of what data will be integrated into the sequence.\\
+
+The data that is mixed into the sequence can be the raw data itself, or just a hash of the data with accompanying metadata.\\
+
+\begin{figure}[h]
+  \begin{center}
+    \centering
+    \includegraphics[width=0.9\textwidth]{../../figures/fig_3.png}
+    \caption[Fig 3]{Inserting data into Proof of History\label{fig:poh_insert}}
+  \end{center}
+  \end{figure}
+
+  In the example in Figure~\ref{fig:poh_insert}, input \texttt{cfd40df8\ldots} was inserted into the Proof of History sequence. The count at which it was inserted is $510145855488$ and the state at which it was inserted it is \texttt{3d039eef3}. All the future generated hashes are modified by this change to the sequence, this change is indicated by the color change in the figure.\\
+
+Every node observing this sequence can determine the order at which all events have been inserted and estimate the real time between the insertions.
+
+\subsection{Verification}\label{poh:verify}
+The sequence can be verified correct by a multicore computer in significantly less time than it took to generate it.\\
+
+\noindent For example: \\\noindent
+
+\begin{center}
+
+\begin{tabular}{l l r}
+    \multicolumn{3}{c}{Core 1} \\ \hline
+    Index & Data & Output Hash \\ \hline
+    $200$ & sha256(\texttt{hash199}) & \texttt{hash200} \\ 
+    $300$ & sha256(\texttt{hash299}) & \texttt{hash300}\\ 
+    \end{tabular}\\
+    
+  \begin{tabular}{l l r}
+    \multicolumn{3}{c}{Core 2} \\
+    \hline
+    Index & Data & Output Hash \\ \hline
+    $300$ & sha256(\texttt{hash299}) & \texttt{hash300} \\
+    $400$ & sha256(\texttt{hash399}) & \texttt{hash400}\\ 
+    \end{tabular}
+    
+\end{center}
+
+
+Given some number of cores, like a modern GPU with $4000$ cores, the verifier can split up the sequence of hashes and their indexes into $4000$ slices, and in parallel make sure that each slice is correct from the starting hash to the last hash in the slice. If the expected time to produce the sequence is going to be:\\
+
+
+\[
+\frac{\textrm{Total number of hashes}}{\textrm{Hashes per second for 1 core}}
+\]
+
+\noindent The expected time to verify that the sequence is correct is going to be:\\
+
+\[
+\frac{\textrm{Total number of hashes}}{\textrm{(Hashes per second per core * Number of cores available to verify)}}
+\]
+
+\begin{figure}
+  \begin{center}
+    \centering
+    \includegraphics[width=0.9\textwidth]{../../figures/fig_4.png}
+    \caption[Figure 4]{Verification using multiple cores\label{fig:poh_verify}}
+  \end{center}
+  \end{figure}
+
+In the example in Figure~\ref{fig:poh_verify}, each core is able to verify each slice of the sequence in parallel. Since all input strings are recorded into the output, with the counter and state that they are appended to, the verifiers can replicate each slice in parallel. The red colored hashes indicate that the sequence was modified by a data insertion.
+
+\subsection{Horizontal Scaling}\label{poh:scale}
+It’s possible to synchronize multiple Proof of History generators by mixing the sequence state from each generator to each other generator, and thus achieve horizontal scaling of the Proof of History generator. This scaling is done without sharding. The output of both generators is necessary to reconstruct the full order of events in the system.
+
+\begin{center}
+  \begin{tabular}{|l c r|}
+
+  \hline
+    \multicolumn{3}{|c|}{PoH Generator A} \\
+  %  \hline
+    Index & Hash & Data \\ \hline
+    $1$ & \texttt{hash1a} & \\ 
+    $2$ & \texttt{hash2a} & \texttt{hash1b} \\ 
+    $3$ & \texttt{hash3a} & \\ 
+    $4$ & \texttt{hash4a} & \\
+    \hline
+    \end{tabular}
+  \begin{tabular}{| l  c  r |}
+  \hline
+    \multicolumn{3}{|c|}{PoH Generator B} \\
+%    \hline
+    Index & Hash & Data \\ \hline
+    $1$ & \texttt{hash1b} & \\ 
+    $2$ & \texttt{hash2b} & \texttt{hash1a} \\ 
+    $3$ & \texttt{hash3b} & \\ 
+    $4$ & \texttt{hash4b} & \\
+    \hline
+    \end{tabular}
+\end{center}
+
+Given generators A and B, A receives a data packet from B (hash1b), which contains the last state from Generator B, and the last state generator B observed from Generator A. The next state hash in Generator A then depends on the state from Generator B, so we can derive that hash1b happened sometime before hash3a. This property can be transitive, so if three generators are synchronized through a single common generator \(A \leftrightarrow B \leftrightarrow C\), we can trace the dependency between A and C even though they were not synchronized directly.
+
+By periodically synchronizing the generators, each generator can then handle a portion of external traffic, thus the overall system can handle a larger amount of events to track at the cost of true time accuracy due to network latencies between the generators. A global order can still be achieved by picking some deterministic function to order any events that are within the synchronization window, such as by the value of the hash itself.
+
+
+\begin{figure}
+  \begin{center}
+    \centering
+    \includegraphics[width=0.9\textwidth]{../../figures/fig_5.png}
+    \caption[Fig 5]{Two generators synchronizing\label{fig:poh_scale}}
+  \end{center}
+  \end{figure}
+
+In Figure~\ref{fig:poh_scale}, the two generators insert each other’s output state and record the operation. The color change indicates that data from the peer had modified the sequence. The generated hashes that are mixed into each stream are highlighted in bold.
+
+The synchronization is transitive. \(A \leftrightarrow B \leftrightarrow C\)  There is a provable order of events between A and C through B.
+
+%%It is worth noting that the theoretical $710$k tx/s on a $1$~gb network based on the PoH design does not account for additional capacity offered through  horizontal scaling.
+Scaling in this way comes at the cost of availability. $10 \times 1$~gbps connections with availability of 0.999 would have \(0.999^{10} = 0.99 \) availability.
+
+\subsection{Consistency}
+Users are expected to be able to enforce consistency of the generated sequence and make it resistant to attacks by inserting the last observed output of the sequence they consider valid into their input.\\
+
+\begin{center}
+  \begin{tabular}{ | l c r |}
+    \hline
+    \multicolumn{3}{|c|}{PoH Sequence A} \\
+    Index & Data & Output Hash  \\ \hline
+    $10$ & & \texttt{hash10a} \\ 
+    $20$ & Event1 & \texttt{hash20a} \\ 
+    $30$ & Event2 & \texttt{hash30a} \\ 
+    $40$ & Event3 & \texttt{hash40a} \\
+    \hline
+    \end{tabular}
+  \begin{tabular}{ | l c r |}
+    \hline
+    \multicolumn{3}{|c|}{PoH Hidden Sequence B} \\
+    Index & Data & Output Hash \\ \hline
+    $10$ & & \texttt{hash10b}\\ 
+    $20$ & Event3 & \texttt{hash20b}  \\ 
+    $30$ & Event2 & \texttt{hash30b} \\ 
+    $40$ & Event1 & \texttt{hash40b} \\
+    \hline
+    \end{tabular}
+\end{center}
+
+A malicious PoH generator could produce a second hidden sequence with the events in reverse order, if it has access to all the events at once, or is able to generate a faster hidden sequence.\\
+
+To prevent this attack, each client-generated Event should contain within itself the latest hash that the client observed from what it considers to be a valid sequence. So when a client creates the "Event1" data, they should append the last hash they have observed.\\
+
+\begin{center}
+  \begin{tabular}{  l  c l}
+
+    \multicolumn{3}{c}{PoH Sequence A} \\
+    \hline
+    Index  & Data & Output Hash  \\ \hline
+    $10$ & & \texttt{hash10a} \\ 
+    $20$ & Event1 = append(event1 data, \texttt{hash10a}) & \texttt{hash20a}  \\ 
+    $30$ & Event2 = append(event2 data, \texttt{hash20a}) & \texttt{hash30a} \\ 
+    $40$ &  Event3 = append(event3 data, \texttt{hash30a}) & \texttt{hash40a} \\
+    \end{tabular}
+\end{center}
+
+When the sequence is published, Event3 would be referencing hash30a, and if it’s not in the sequence prior to this Event, the consumers of the sequence know that it’s an invalid sequence. The partial reordering attack would then be limited to the number of hashes produced while the client has observed an event and when the event was entered. Clients should then be able to write software that does not assume the order is correct for the short period of hashes between the last observed and inserted hash.
+
+To prevent a malicious PoH generator from rewriting the client Event hashes, the clients can submit a signature of the event data and the last observed hash instead of just the data.\\
+\begin{center}
+  \begin{tabular}{  l  l  r }
+    \multicolumn{3}{c}{PoH Sequence A} \\
+    \hline
+    Index & Data & Output Hash \\ \hline
+    $10$ & & hash10a  \\ 
+    $20$ & \makecell{Event1 = sign(append(event1 data, hash10a), \\Client Private Key)} & hash20a\\ 
+    $30$ & \makecell{Event2 = sign(append(event2 data, hash20a), \\Client Private Key)} & hash30a \\ 
+    $40$ & \makecell{Event3 = sign(append(event3 data, hash30a), \\Client Private Key)} & hash40a \\
+
+    \end{tabular}
+\end{center}
+
+Verification of this data requires a signature verification, and a lookup of the hash in the sequence of hashes prior to this one.\\
+\noindent Verify:\\
+
+\noindent\texttt{(Signature, PublicKey, hash30a, event3 data) = Event3} \\
+\texttt{Verify(Signature, PublicKey, Event3)}\\
+\texttt{Lookup(hash30a, PoHSequence)}\\
+
+\begin{figure}
+  \begin{center}
+    \centering
+    \includegraphics[width=0.9\textwidth]{../../figures/fig_6.png}
+    \caption[Fig 6]{Input with a back reference.\label{fig:poh_consistency}}
+  \end{center}
+  \end{figure}
+
+In Figure~\ref{fig:poh_consistency}, the user-supplied input is dependent on hash \texttt{0xdeadbeef\ldots} existing in the generated sequence sometime before it’s inserted. The blue top left arrow indicates that the client is referencing a previously produced hash. The client’s message is only valid in a sequence that contains the hash \texttt{0xdeadbeef\ldots}. The red color in the sequence indicates that the sequence has been modified by the clients data.
+
+\subsection{Overhead}
+4000 hashes per second would generate an additional 160 kilobytes of data, and would require access to a GPU with 4000 cores and roughly 0.25-0.75 milliseconds of time to verify.
+
+\subsection{Attacks}
+\subsubsection{Reversal}
+ Generating a reverse order would require an attacker to start the malicious sequence after the second event. This delay should allow any non malicious peer to peer nodes to communicate about the original order.
+
+\subsubsection{Speed}
+Having multiple generators may make deployment more resistant to attacks. One generator could be high bandwidth, and receive many events to mix into its sequence, another generator could be high speed low bandwidth that periodically mixes with the high bandwidth generator.
+
+The high speed sequence would create a secondary sequence of data that an attacker would have to reverse.
+
+\subsubsection{Long Range Attacks}
+
+Long range attacks involve acquiring old discarded client Private Keys, and generating a falsified ledger~\cite{casper}. Proof of History provides some protection against long range attacks. A malicious user that gains access to old private keys would have to recreate a historical record that takes as much time as the original one they are trying to forge. This would require access to a faster processor than the network is currently using, otherwise the attacker would never catch up in history length.
+
+Additionally, a single source of time allows for construction of a simpler Proof of Replication (more on that in Section~\ref{porep}). Since the network is designed so that all participants in the network will rely on a single historical record of events.
+
+PoRep and PoH together should provide a defense of both space and time against a forged ledger.
+
+
+\section{Proof of Stake Consensus}\label{proof_of_stake}
+\subsection{Description}
+This specific instance of Proof of Stake is designed for quick confirmation of the current sequence produced by the Proof of History generator, for voting and selecting the next Proof of History generator, and for punishing any misbehaving validators. This algorithm depends on messages eventually arriving to all participating nodes within a certain timeout.
+\subsection{Terminology}
+\begin{description}
+
+\item[bonds]
+Bonds are equivalent to a capital expense in Proof of Work. A miner buys hardware and electricity, and commits it to a single branch in a Proof of Work blockchain. A bond is coin that the validator commits as collateral while they are validating transactions.
+
+\item[slashing]
+
+The proposed solution to the nothing at stake problem in Proof of Stake systems~\cite{slasher}. When a proof of voting for a different branch is published, that branch can destroy the validator’s bond. This is an economic incentive designed to discourage validators from confirming multiple branches.
+\item[super majority]
+A super majority is \(\frac{2}{3}\)rds of the validators weighted by their bonds. A super majority vote indicates that the network has reached consensus, and at least \(\frac{1}{3}\)rd of the network would have had to vote maliciously for this branch to be invalid. This would put the economic cost of an attack at \(\frac{1}{3}\)rd of the market cap of the coin.
+
+\end{description}
+
+\subsection{Bonding}
+A bonding transaction takes a \hyphenation{user specified} amount of coin and moves it to a bonding account under the user’s identity. Coins in the bonding account cannot be spent and have to remain in the account until the user removes them. The user can only remove stale coins that have timed out. Bonds are valid after super majority of the current stakeholders have confirmed the sequence.
+
+\subsection{Voting}
+It is anticipated that the Proof of History generator will be able to publish a signature of the state at a predefined period. Each bonded identity must confirm that signature by publishing their own signed signature of the state. The vote is a simple yes vote, without a no.
+
+If super majority of the bonded identities have voted within a timeout, then this branch would be accepted as valid.
+
+\subsection{Unbonding}
+
+Missing N number of votes marks the coins as stale and no longer eligible for voting. The user can issue an unbonding transaction to remove them.
+
+N is a dynamic value based on the ratio of stale to active votes. N increases as the number of stale votes increases. In an event of a large network partition, this allows the larger branch to recover faster then the smaller branch.
+
+\subsection{Elections}\label{subsec:elections}
+Election for a new PoH generator occur when the PoH generator failure is detected. The validator with the largest voting power, or highest public key address if there is a tie is picked as the new PoH generator.
+
+A super majority of confirmations are required on the new sequence. If the new leader fails before a super majority confirmations are available, the next highest validator is selected, and a new set of confirmations is required.
+
+To switch votes, a validator needs to vote at a higher PoH sequence counter, and the new vote needs to contain the votes it wants to switch. Otherwise the second vote will be slashable. Vote switching is expected to be designed so that it can only occur at a height that does not have a super majority.
+
+Once a PoH generator is established, a Secondary can be elected to take over the transactional processing duties. If a Secondary exists, it will be considered as the next leader during a Primary failure.
+
+The platform is designed so that the Secondary becomes Primary and lower rank generators are promoted if an exception is detected or on a predefined schedule.
+\subsection{Election Triggers}
+\subsubsection{Forked Proof of History generator}
+
+PoH generators are designed with an identity that signs the generated sequence. A fork can only occur in case the PoH generator’s identity has been compromised. A fork is detected because two different historical records have been published on the same PoH identity.
+
+\subsubsection{Runtime Exceptions}
+A hardware failure or a bug, or a intentional error in the PoH generator could cause it to generate an invalid state and publish a signature of the state that does not match the local validator’s result. Validators will publish the correct signature via gossip and this event would trigger a new round of elections. Any validators who accept an invalid state will have their bonds slashed.
+
+\subsubsection{Network Timeouts}
+
+A network timeout would trigger an election.
+
+\subsection{Slashing}
+Slashing occurs when a validator votes two separate sequences. A proof of malicious vote will remove the bonded coins from circulation and add them to the mining pool.
+
+A vote that includes a previous vote on a contending sequence is not eligible as proof of malicious voting. Instead of slashing the bonds, this vote removes remove the currently cast vote on the contending sequence.
+
+Slashing also occurs if a vote is cast for an invalid hash generated by the PoH generator. The generator is expected to randomly generate an invalid state, which would trigger a fallback to Secondary.
+\subsection{Secondary Elections}
+Secondary and lower ranked Proof of History generators can be proposed and approved. A proposal is cast on the primary generator’s sequence. The proposal contains a timeout, if the motion is approved by a super majority of the vote before the timeout, the Secondary is considered elected, and will take over duties as scheduled. Primary can do a soft handover to Secondary by inserting a message into the generated sequence indicating that a handover will occur, or inserting an invalid state and forcing the network to fallback to Secondary.
+
+If a Secondary is elected, and the primary fails, the Secondary will be considered as the first fallback during an election.
+
+\subsection{Availability}\label{availability}
+CAP systems that deal with partitions have to pick Consistency or Availability. Our approach eventually picks Availability, but because we have an objective measure of time, Consistency is picked with reasonable human timeouts.
+
+Proof of Stake verifiers lock up some amount of coin in a “stake”, which allows them to vote for a particular set of transactions. Locking up coin is a transaction that is entered into a PoH stream, just like any other transaction. To vote, a PoS verifier has to sign the hash of the state, as it was computed after processing all the transactions to a specific position in the PoH ledger. This vote is also entered as a transaction into the PoH stream. Looking at the PoH ledger, we can then infer how much time passed between each vote, and if a partition occurs, for how long each verifier has been unavailable.
+
+To deal with partitions with reasonable human timeframes, we propose a dynamic approach to “unstake” unavailable verifiers. When the number of verifiers is high and above \(\frac{2}{3}\), the “unstaking” process can be fast. The number of hashes that must be generated into the ledger is low before the unavailable verifiers stake is fully unstaked and they are no longer counted for consensus. When the number of verifiers is below \(\frac{2}{3}\)rds but above \(\frac{1}{2}\), the unstaking timer is slower, requiring a larger number of hashes to be generated before the missing verifiers are unstaked. In a large partition, like a partition that is missing \(\frac{1}{2}\) or more of the verifiers, the unstaking process is very very slow. Transactions can still be entered into the stream, and verifiers can still vote, but full \(\frac{2}{3}\)rds consensus will not be achieved until a very large amount of hashes have been generated and the unavailable verifiers have been unstaked. The difference in time for a network to regain liveness allows us as customers of the network human timeframes to pick a partition that we want to continue using.
+
+\subsection{Recovery}\label{availability}
+In the system we propose, the ledger can be fully recovered from any failure. That means, anyone in the world can pick any random spot in the ledger and create a valid fork by appending newly generated hashes and transactions. If all the verifiers are missing from this fork, it would take a very very long time for any additional bonds to become valid and for this branch to achieve \(\frac{2}{3}\)rds super majority consensus. So full recovery with zero available validators would require a very large amount of hashes to be appended to the ledger, and only after all the unavailable validators have been unstaked will any new bonds be able to validate the ledger.
+
+\subsection{Finality}\label{availability}
+PoH allows verifiers of the network to observe what happened in the past with some degree of certainty of the time of those events. As the PoH generator is producing a stream of messages, all the verifiers are required to submit their signatures of the state within 500ms. This number can be reduced further depending on network conditions. Since each verification is entered into the stream, everyone in the network can validate that every verifier submitted their votes within the required timeout without actually observing the voting directly.
+
+\subsection{Attacks}
+\subsubsection{Tragedy of Commons}
+The PoS verifiers simply confirm the state hash generated by the PoH generator. There is an economic incentive for them to do no work and simply approve every generated state hash. To avoid this condition, the PoH generator should inject an invalid hash at a random interval. Any voters for this hash should be slashed. When the hash is generated, the network should immediately promote the Secondary elected PoH generator.
+
+Each verifier is required to respond within a small timeout - 500ms for example. The timeout should be set low enough that a malicious verifier has a low probability of observing another verifiers vote and getting their votes into the stream fast enough.
+
+\subsubsection{Collusion with the PoH generator}\label{subsubsec:collusion}
+A verifier that is colluding with the PoH generator would know in advance when the invalid hash is going to be produced and not vote for it. This scenario is really no different than the PoH identity having a larger verifier stake. The PoH generator still has to do all the work to produce the state hash.
+
+\subsubsection{Censorship}\label{censorship}
+Censorship or denial of service could occur when a \(\frac{1}{3}\)rd of the bond holders refuse to validate any sequences with new bonds. The protocol can defend against this form of attack by dynamically adjusting how fast bonds become stale. In the event of a denial of service, the larger partition will be designed to fork and censor the Byzantine bond holders. The larger network will recover as the Byzantine bonds become stale with time. The smaller Byzantine partition would not be able to move forward for a longer period of time.
+
+The algorithm would work as follows. A majority of the network would elect a new Leader. The Leader would then censor the Byzantine bond holders from participating. Proof of History generator would have to continue generating a sequence, to prove the passage of time, until enough Byzantine bonds have become stale so the bigger network has a super majority. The rate at which bonds become stale would be dynamically based on what percentage of bonds are active. So the Byzantine minority fork of the network would have to wait much longer than the majority fork to recover a super majority. Once a super majority has been established, slashing could be used to permanently punish the Byzantine bond holders.
+
+\subsubsection{Long Range Attacks}\label{censorship}
+PoH provides a natural defense against long range attacks. Recovering the ledger from any point in the past would require the attacker to overtake the valid ledger in time by outpacing the speed of the PoH generator.
+
+The consensus protocol provides a second layer of defense, as any attack would have to take longer then the time it takes to unstake all the valid validators. It also creates an availability “gap” in the history of the ledger. When comparing two ledgers of the same height, the one with the smallest maximum partition can be objectively considered as valid.
+
+\subsubsection{ASIC Attacks}\label{censorship}
+
+Two opportunities for an ASIC attacks exist in this protocol - during partition, and cheating timeouts in Finality.
+
+For ASIC attacks during Partitions, the Rate at which bonds are unstaked is non-linear, and for networks with large partitions the rate is orders of magnitude slower then expected gains from an ASIC attack.
+
+For ASIC attacks during Finality, the vulnerability allows for byzantine validators who have a bonded stake wait for confirmations from other nodes and inject their votes with a collaborating PoH generator. The PoH generator can then use its faster ASIC to generate 500ms worth of hashes in less time, and allow for network communication between PoH generator and the collaborating nodes. But, if the PoH generator is also byzantine, there is no reason why the byzantine generator wouldn’t have communicated the exact counter when they expect to insert the failure. This scenario is no different than a PoH generator and all the collaborators sharing the same identity and having a single combined stake and only using 1 set of hardware.
+
+\section{Streaming Proof of Replication}\label{porep}
+\subsection{Description}
+Filecoin proposed a version of Proof of Replication \cite{filecoinporep}. The goal of this version is to have fast and streaming verifications of Proof of Replication, which are enabled by keeping track of time in Proof of History generated sequence. Replication is not used as a consensus algorithm, but is a useful tool to account for the cost of storing the blockchain history or state at a high availability.
+\subsection{Algorithm}
+As shown in Figure~\ref{fig:encrypt} CBC encryption encrypts each block of data in sequence, using the previously encrypted block to XOR the input data.
+
+\begin{figure}
+  \begin{center}
+    \centering
+    \includegraphics[width=0.6\textwidth]{../../figures/fig_7.png}
+    \caption[Fig 7]{Sequential CBC encryption\label{fig:encrypt}}
+  \end{center}
+  \end{figure}
+
+Each replication identity generates a key by signing a hash that has been generated Proof of History sequence. This ties the key to a replicator’s identity, and to a specific Proof of History sequence. Only specific hashes can be selected. (See Section~\ref{hashselection} on Hash Selection)
+
+The data set is fully encrypted block by block. Then to generate a proof, the key is used to seed a pseudorandom number generator that selects a random 32 bytes from each block.
+
+A merkle hash is computed with the selected PoH hash prepended to the each slice.
+
+\begin{figure}
+  \begin{center}
+    \centering
+    \includegraphics[width=0.6\textwidth]{../../figures/fig_8.png}
+    \caption[Fig 8]{Fast Proof of Replication\label{fig_8}}
+  \end{center}
+  \end{figure}
+
+The root is published, along with the key, and the selected hash that was generated. The replication node is required to publish another proof in N hashes as they are generated by Proof of History generator, where N is approximately \(\frac{1}{2}\) the time it takes to encrypt the data. The Proof of History generator will publish specific hashes for Proof of Replication at a predefined periods. The replicator node must select the next published hash for generating the proof. Again, the hash is signed, and random slices are selected from the blocks to create the merkle root.
+
+After a period of N proofs, the data is re-encrypted with a new CBC key.
+\subsection{Verification}
+
+With N cores, each core can stream encryption for each identity. Total space required is \(2 blocks * N cores\), since the previous encrypted block is necessary to generate the next one. Each core can then be used to generate all the proofs that derived from the current encrypted block.
+
+Total time to verify proofs is expected to be equal to the time it takes to encrypt. The proofs themselves consume few random bytes from the block, so the amount of data to hash is significantly lower then the encrypted block size. The number of replication identities that can be verified at the same time is equal to the number of available cores. Modern GPUs have 3500+ cores available to them, albeit at \(\frac{1}{2}\)-\(\frac{1}{3}\) the clock speed of a CPU.
+
+\subsection{Key Rotation}
+
+Without key rotation the same encrypted replication can generate cheap proofs for multiple Proof of History sequences. Keys are rotated periodically and each replication is re-encrypted with a new key that is tied to a unique Proof of History sequence.
+
+Rotation needs to be slow enough that it’s practical to verify replication proofs on GPU hardware, which is slower per core than CPUs.
+
+\subsection{Hash Selection}\label{hashselection}
+
+Proof of History generator publishes a hash to be used by the entire network for encrypting Proofs of Replication, and for using as the pseudorandom number generator for byte selection in fast proofs.
+
+Hash is published at a periodic counter that is roughly equal to \(\frac{1}{2}\) the time it takes to encrypt the data set. Each replication identity must use the same hash, and use the signed result of the hash as the seed for byte selection, or the encryption key.
+
+The period that each replicator must provide a proof must be smaller than the encryption time. Otherwise the replicator can stream the encryption and delete it for each proof.
+
+A malicious generator could inject data into the sequence prior to this hash to generate a specific hash. This attack is discussed more in \ref{subsubsec:collusion}.
+
+\subsection{Proof Validation}
+The Proof of History node is not expected to validate the submitted Proof of Replication proofs. It is expected to keep track of number of pending and verified proofs submitted by the replicator’s identity. A proof is expected to be verified when the replicator is able to sign the proof by a super majority of the validators in the network.
+
+The verifications are collected by the replicator via p2p gossip network, and submitted as one packet that contains a super majority of the validators in the network. This packet verifies all the proofs prior to a specific hash generated by the Proof of History sequence, and can contain multiple replicator identities at once.
+\subsection{Attacks}
+\subsubsection{Spam}
+A malicious user could create many replicator identities and spam the network with bad proofs. To facilitate faster verification, nodes are required to provide the encrypted data and the entire merkle tree to the rest of the network when they request verification.
+
+The Proof of Replication that is designed in this paper allows for cheap verification of any additional proofs, as they take no additional space. But each identity would consume 1 core of encryption time. The replication target should be set to a maximum size of readily available cores. Modern GPUs ship with 3500+ cores.
+
+\subsubsection{Partial Erasure}
+
+A replicator node could attempt to partially erase some of the data to avoid storing the entire state. The number of proofs and the randomness of the seed should make this attack difficult.
+
+For example, a user storing 1 terabyte of data erases a single byte from each 1 megabyte block. A single proof that samples 1 byte out of every megabyte would have a likelihood of collision with any erased byte \(1 - (1- 1/1,000,0000)^{1,000,000} = 0.63\). After 5 proofs the likelihood is \(0.99\).
+
+\subsubsection{Collusion with PoH generator}
+
+The signed hash is expected to be used to seed the sample. If a replicator could select a specific hash in advance then the replicator could erase all bytes that are not going to be sampled.
+
+A replicator identity that is colluding with the Proof of History generator could inject a specific transaction at the end of the sequence before the predefined hash for random byte selection is generated. With enough cores, an attacker could generate a hash that is preferable to the replicator’s identity.
+
+This attack could only benefit a single replicator identity. Since all the identities have to use the same exact hash that is cryptographically signed with ECDSA (or equivalent), the resulting signature is unique for each replicator identity, and collision resistant. A single replicator identity would only have marginal gains.
+\subsubsection{Denial of Service}
+The cost of adding an additional replicator identity is expected to be equal to the cost of storage. The cost of adding extra computational capacity to verify all the replicator identities is expected to be equal to the cost of a CPU or GPU core per replication identity.
+
+This creates an opportunity for a denial of service attack on the network by creating a large number of valid replicator identities.
+
+To limit this attack, the consensus protocol chosen for the network can select a replication target, and award the replication proofs that meet the desired characteristics, like availability on the network, bandwidth, geolocation etc...
+\subsubsection{Tragedy of Commons}
+
+The PoS verifiers could simply confirm PoRep without doing any work. The economic incentives should be lined up with the PoS verifiers to do work, like by splitting the mining payout between the PoS verifiers and the PoRep replication nodes.
+
+To further avoid this scenario, the PoRep verifiers can submit false proofs a small percentage of the time. They can prove the proof is false by providing the function that generated the false data. Any PoS verifier that confirmed a false proof would be slashed.
+
+\section{System Architecture}\label{system_architecture}
+
+\begin{figure}
+  \begin{center}
+    \centering
+    \includegraphics[width=0.6\textwidth]{../../figures/fig_9.png}
+    \caption[Fig 9]{System Architecture \label{fig_9}}
+  \end{center}
+  \end{figure}
+
+\subsection{Components}
+
+\subsubsection{Leader, Proof of History generator}
+The Leader is an elected Proof of History generator. It consumes arbitrary user transactions and outputs a Proof of History sequence of all the transactions that guarantees a unique global order in the system. After each batch of transactions the Leader outputs a signature of the state that is the result of running the transactions in that order. This signature is signed with the identity of the Leader.
+
+\subsubsection{State}
+A naive hash table indexed by the user’s address. Each cell contains the full user’s address and the memory required for this computation. For example\\
+\noindent Transaction table contains:\\\\\noindent
+\begin{bytefield}[bitwidth=.1em]{256}
+\bitheader{0,31,63,95,127,159,191,223,255} \\
+\bitbox{160}{Ripemd of Users Public Key}
+& \bitbox{64}{Account}
+& \bitbox{32}{unused}
+\end{bytefield}\\
+For a total of 32 bytes.\\
+\noindent Proof of Stake bond’s table contains:\\\\\noindent
+\begin{bytefield}[bitwidth=.1em]{256}
+\bitheader{0,31,63,95,127,159,191,223,255} \\
+\bitbox{160}{Ripemd of Users Public Key}
+& \bitbox{64}{Bond} \\
+& \bitbox{64}{Last Vote} \\
+& \bitbox{224}{unused}
+\end{bytefield}\\
+For a total of 64 bytes.
+\subsubsection{Verifier, State Replication}
+The Verifier nodes replicate the blockchain state and provide high availability of the blockchain state. The replication target is selected by the consensus algorithm, and the validators in the consensus algorithm select and vote the Proof of Replication nodes they approve of based on off-chain defined criteria.
+
+The network could be configured with a minimum Proof of Stake bond size, and a requirement for a single replicator identity per bond.
+\subsubsection{Validators}
+These nodes are consuming bandwidth from Verifiers. They are virtual nodes, and can run on the same machines as the Verifiers or the Leader, or on separate machines that are specific to the consensus algorithm configured for this network.
+
+\subsection{Network Limits}
+
+\begin{figure}
+  \begin{center}
+    \centering
+    \includegraphics[width=0.8\textwidth]{../../figures/fig_10.png}
+    \caption[Fig 10]{Generator network limits\label{fig_10}}
+  \end{center}
+  \end{figure}
+
+Leader is expected to be able to take incoming user packets, orders them the most efficient way possible, and sequences them into a Proof of History sequence that is published to downstream Verifiers. Efficiency is based on memory access patterns of the transactions, so the transactions are ordered to minimize faults and to maximize prefetching.\\\\
+
+\noindent Incoming packet format:\\\\\noindent
+\begin{bytefield}[bitwidth=.1em]{256}
+\bitheader{0,31,63,95,127,159,191,223,255} \\
+\begin{rightwordgroup}{Signed}
+\bitbox{160}{Last Valid Hash}
+& \bitbox{64}{Counter}
+& \bitbox{6}{u} 
+& \bitbox{10}{s} \\
+& \bitbox{64}{Fee} \\
+& \bitbox{256}{From} \\
+\end{rightwordgroup} \\
+& \bitbox{256}{Signature 1 of 2} \\
+& \bitbox{256}{Signature 2 of 2} \\
+\end{bytefield}
+
+\noindent Size \(20 + 8 + 16 + 8 + 32 + 32 32 = 148\) bytes.\\\\
+
+The minimal payload that can be supported would be 1 destination account.
+\noindent With payload:\\\\\noindent
+\begin{bytefield}[bitwidth=.1em]{256}
+\bitheader{0,31,63,95,127,159,191,223,255} \\
+\begin{rightwordgroup}{Signed}
+\bitbox{160}{Last Valid Hash}
+& \bitbox{64}{Counter}
+& \bitbox{6}{u}
+& \bitbox{10}{s} \\ 
+& \bitbox{160}{To}
+& \bitbox{64}{Amount} \\
+& \bitbox{64}{Counter}
+& \bitbox{64}{Fee} \\
+& \bitbox{256}{From} \\
+\end{rightwordgroup} \\
+& \bitbox{256}{Signature 1 of 2} \\
+& \bitbox{256}{Signature 2 of 2} \\
+\end{bytefield}
+
+\noindent With payload the minimum size: 176 bytes\\\\
+
+The Proof of History sequence packet contains the current hash, counter, and the hash of all the new messages added to the PoH sequence and the state signature after processing all the messages. This packet is sent once every N messages are broadcast.\\
+\noindent Proof of History packet:\\\\\noindent
+\begin{bytefield}[bitwidth=.1em]{256}
+\bitheader{0,31,63,95,127,159,191,223,255} \\
+\begin{rightwordgroup}{Signed}
+\bitbox{160}{Current Hash}
+& \bitbox{64}{Counter} \\
+\bitbox{160}{Messages Hash} \\
+\bitbox{160}{State Hash} \\
+\end{rightwordgroup} \\
+& \bitbox{256}{Signature 1 of 2} \\
+& \bitbox{256}{Signature 2 of 2} \\
+\end{bytefield}
+
+\noindent Minimum size of the output packet is: 132 bytes \\\\
+
+On a 1gbps network connection the maximum number of transactions possible is $1$~gigabit per second / $176$~bytes = $710$k tps max. Some loss $1-4\%$ is expected due to Ethernet framing. The spare capacity over the target amount for the network can be used to increase availability by coding the output with Reed-Solomon codes and striping it to the available downstream Verifiers.
+\subsection{Computational Limits}
+Each transaction requires a digest verification. This operation does not use any memory outside of the transaction message itself and can be parallelized independently. Thus throughput is expected to be limited by the number of cores available on the system.
+
+GPU based ECDSA verification servers have had experimental results of 900k operations per second~\cite{gpuecc}.
+\subsection{Memory Limits}
+A naive implementation of the state as a \(50\%\) full hashtable with 32 byte entries for each account, would theoretically fit 10 billion accounts into 640GB. Steady state random access to this table is measured at \(1.1 * 10^7\) writes or reads per second. Based on 2 reads and two writes per transaction, memory throughput can handle 2.75m transactions per second. This was measured on an Amazon Web Services 1TB x1.16xlarge instance.
+
+\subsection{High Performance Smart Contracts}\label{sec:smartcontracts}
+
+Smart contracts are a generalized form of transactions. These are programs that run on each node and modify the state. This design leverages extended Berkeley Packet Filter bytecode as fast and easy to analyze and JIT bytecode as the smart contracts language.
+
+One of its main advantages is a zero cost Foreign Function Interface. Intrinsics, or \hyphenation{high level} functions that are implemented on the platform directly, are callable by \hyphenation{user supplied} programs. Calling the intrinsics suspends that program and schedules the intrinsic on a high performance server. Intrinsics are batched together to execute in parallel on the GPU.
+
+\begin{figure}
+  \begin{center}
+    \centering
+    \includegraphics[width=0.6\textwidth]{../../figures/fig_11.png}
+    \caption[Fig 11]{Executing \hyphenation{user supplied} BPF programs.\label{fig_11}}
+  \end{center}
+  \end{figure}
+
+In the above example, two different user programs call the same intrinsic. Each program is suspended until the batch execution of the intrinsics is complete. An example intrinsic is ECDSA verification. Batching these calls to execute on the GPU can increase throughput by thousands of times.
+
+This trampoline requires no native operating system thread context switches, since the BPF bytecode has a well defined context for all the memory that it is using.
+
+eBPF backend has been included in LLVM since 2015, so any LLVM frontend language can be used to write smart contracts. It’s been in the Linux kernel since 2015, and the first iterations of the bytecode have been around since 1992. A single pass can check eBPF for correctness, ascertain its runtime and memory requirements and convert it to x86 instructions.
+
+\bibliographystyle{abbrv}
+\bibliography{simple}
+
+\begin{thebibliography}{9}
+\bibitem{liskov}
+Liskov, Practical use of Clocks
+\\\texttt{ http://www.dainf.cefetpr.br/~tacla/SDII/PracticalUseOfClocks.pdf}
+
+\bibitem{spanner}
+Google Spanner TrueTime consistency
+\\\texttt{ https://cloud.google.com/spanner/docs/true-time-external-consistency}
+
+\bibitem{ordering}
+Solving Agreement with Ordering Oracles
+\\\texttt{ http://www.inf.usi.ch/faculty/pedone/Paper/2002/2002EDCCb.pdf}
+
+\bibitem{tendermint}
+Tendermint: Consensus without Mining
+\\\texttt{https://tendermint.com/static/docs/tendermint.pdf}
+
+\bibitem{hashgraph}
+Hedera: A Governing Council \& Public Hashgraph Network
+\\\texttt{https://s3.amazonaws.com/hedera-hashgraph/hh-whitepaper-v1.0-180313.pdf}
+
+\bibitem{filecoinporep}
+Filecoin, proof of replication,
+\\\texttt{https://filecoin.io/proof-of-replication.pdf}
+
+\bibitem{slasher}
+Slasher, A punative Proof of Stake algorithm
+\\\texttt{https://blog.ethereum.org/2014/01/15/slasher-a-punitive-proof-of-stake-algorithm/}
+
+\bibitem{delegatedpos}
+BitShares Delegated Proof of Stake
+\\\texttt{https://github.com/BitShares/bitshares/wiki/Delegated-Proof-of-Stake}
+
+\bibitem{gpuecc}
+An Efficient Elliptic Curve Cryptography Signature Server With GPU Acceleration
+\\\texttt{http://ieeexplore.ieee.org/document/7555336/}
+
+\bibitem{casper}
+Casper the Friendly Finality Gadget
+\\\texttt{https://arxiv.org/pdf/1710.09437.pdf}
+\end{thebibliography}
+\end{document}
+This is never printed
