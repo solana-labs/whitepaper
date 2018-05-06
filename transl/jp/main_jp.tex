@@ -95,7 +95,7 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
 
 \begin{center}
   \begin{tabular}{ l  l  r }
-    \multicolumn{3}{c}{PoH Sequence} \\
+    \multicolumn{3}{c}{PoHシーケンス} \\
     \hline
     順番  & 計算内容 & 計算結果 \\ \hline
     $1$ & sha256(\char`\"無作為に選ばれた初期入力値\char`\") & \texttt{hash1}\\
@@ -118,7 +118,7 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
 
 \subsection{イベントのタイムスタンプ}
 
-上述の通り、このハッシュ値のシーケンスは、あるデータがシーケンスに挿入される以前に、対象のデータが作成されていたことの記録として用いることができる。それはデータと現在の順序に弾き出されて来たハッシュ値に`combine`関数を適用することで、順序と値が組み合わされた計算結果が記録として残るためである。このとき任意のイベントデータが暗号学的にユニークなハッシュ値に変換される。'combine'関数は常に強衝突耐性を備え、単純に計算結果を積み重ねていくことができる。結果的に得られたハッシュ値はそのデータにとってのタイムスタンプとなる。それは以前のハッシュ値を基にして生成されたハッシュ値であるため、以前に記録されたデータよりも後に生成されていることが言えるからである。\\
+上述の通り、このハッシュ値のシーケンスは、あるデータがシーケンスに挿入される以前に、対象のデータが作成されていたことの記録として用いることができる。それはデータと現在の順序に弾き出されて来たハッシュ値に「combine」関数を適用することで、順序と値が組み合わされた計算結果が記録として残るためである。このとき任意のイベントデータが暗号学的にユニークなハッシュ値に変換される。combine関数は常に強衝突耐性を備え、単純に計算結果を積み重ねていくことができる。結果的に得られたハッシュ値はそのデータにとってのタイムスタンプとなる。それは以前のハッシュ値を基にして生成されたハッシュ値であるため、以前に記録されたデータよりも後に生成されていることが言えるからである。\\
 
 \begin{center}
   \begin{tabular}{ l l r }
@@ -135,7 +135,7 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
 \noindent 例えば写真撮影など、なにか電子データが作成されるようなイベントが発生したとき、\\\\\noindent
 \begin{center}
   \begin{tabular}{ l l r}
-    \multicolumn{3}{c}{PoH Sequence With Data} \\
+    \multicolumn{3}{c}{データを含むPoHのシーケンス} \\
     \hline
     順番  & 計算内容 & 計算結果 \\ \hline
     $1$ & sha256(\char`\"無作為に選ばれた初期入力値\char`\") & \texttt{hash1}\\
@@ -239,7 +239,7 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
   \hline
     \multicolumn{3}{|c|}{PoH生成者A} \\
   %  \hline
-    順番  & 計算内容 & 計算結果 \\ \hline
+    順番  & ハッシュ値 & データ \\ \hline
     $1$ & \texttt{hash1a} & \\ 
     $2$ & \texttt{hash2a} & \texttt{hash1b} \\ 
     $3$ & \texttt{hash3a} & \\ 
@@ -250,7 +250,7 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
   \hline
     \multicolumn{3}{|c|}{PoH生成者B} \\
 %    \hline
-    順番  & 計算内容 & 計算結果 \\ \hline
+    順番  & ハッシュ値 & データ \\ \hline
     $1$ & \texttt{hash1b} & \\ 
     $2$ & \texttt{hash2b} & \texttt{hash1a} \\ 
     $3$ & \texttt{hash3b} & \\ 
@@ -276,16 +276,16 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
 この同期方法により、\(A \leftrightarrow B \leftrightarrow C\)のように直接同期していない生成者同士でも、三者間のイベント順序は矛盾なく決定することができる。
 
 %%It is worth noting that the theoretical $710$k tx/s on a $1$~gb network based on the PoH design does not account for additional capacity offered through  horizontal scaling.
-このようなスケーリング方法は可用性を犠牲にして成り立ってる。$10 \times 1$~gbpsのネットワーク環境の稼働率が0.999のとき、ネットワーク全体の稼働率は\(0.999^{10} = 0.99 \)となる。
+このようなスケーリング方法は回線稼働率という犠牲の上に成り立ってる。$10 \times 1$~gbpsの回線で構成されているネットワーク環境では、回線稼働率が0.999のとき、ネットワーク全体の回線稼働率は\(0.999^{10} = 0.99 \)となる。
 
 \subsection{一貫性}
-Users are expected to be able to enforce consistency of the generated sequence and make it resistant to attacks by inserting the last observed output of the sequence they consider valid into their input.\\
+生成済みのシーケンス上の最後の計算結果を次回計算の入力値にすることで、一貫性と攻撃耐性が維持されると期待される。\\
 
 \begin{center}
   \begin{tabular}{ | l c r |}
     \hline
-    \multicolumn{3}{|c|}{PoH Sequence A} \\
-    Index & Data & Output Hash  \\ \hline
+    \multicolumn{3}{|c|}{PoHシーケンスA} \\
+    順番 & データ & 計算結果ハッシュ値  \\ \hline
     $10$ & & \texttt{hash10a} \\ 
     $20$ & Event1 & \texttt{hash20a} \\ 
     $30$ & Event2 & \texttt{hash30a} \\ 
@@ -294,8 +294,8 @@ Users are expected to be able to enforce consistency of the generated sequence a
     \end{tabular}
   \begin{tabular}{ | l c r |}
     \hline
-    \multicolumn{3}{|c|}{PoH Hidden Sequence B} \\
-    Index & Data & Output Hash \\ \hline
+    \multicolumn{3}{|c|}{PoH隠れシーケンスB} \\
+    順番 & データ & 計算結果ハッシュ値  \\ \hline
     $10$ & & \texttt{hash10b}\\ 
     $20$ & Event3 & \texttt{hash20b}  \\ 
     $30$ & Event2 & \texttt{hash30b} \\ 
@@ -304,16 +304,16 @@ Users are expected to be able to enforce consistency of the generated sequence a
     \end{tabular}
 \end{center}
 
-A malicious PoH generator could produce a second hidden sequence with the events in reverse order, if it has access to all the events at once, or is able to generate a faster hidden sequence.\\
+悪意を持ったPoH生成者はイベントの発生順序を変えた隠れシーケンスを作る可能性がある。発生するイベントの情報へすぐにアクセスできるなら、正しいシーケンスよりも素早く隠れシーケンスを生成することも可能である。\\
 
-To prevent this attack, each client-generated Event should contain within itself the latest hash that the client observed from what it considers to be a valid sequence. So when a client creates the "Event1" data, they should append the last hash they have observed.\\
+この攻撃を防ぐために、クライアントがイベントを送信するときは、クライアント自身が正規であると認識するシーケンス上の最新ハッシュ値を送信内容に含めることを求められる。クライアントがEvent1を作成するとき、それに最新ハッシュ値を付与する必要がある。\\
 
 \begin{center}
   \begin{tabular}{  l  c l}
 
-    \multicolumn{3}{c}{PoH Sequence A} \\
+    \multicolumn{3}{c}{PoHシーケンスA} \\
     \hline
-    Index  & Data & Output Hash  \\ \hline
+    順番  & データ & 計算結果ハッシュ値 \\ \hline
     $10$ & & \texttt{hash10a} \\ 
     $20$ & Event1 = append(event1 data, \texttt{hash10a}) & \texttt{hash20a}  \\ 
     $30$ & Event2 = append(event2 data, \texttt{hash20a}) & \texttt{hash30a} \\ 
@@ -321,24 +321,24 @@ To prevent this attack, each client-generated Event should contain within itself
     \end{tabular}
 \end{center}
 
-When the sequence is published, Event3 would be referencing hash30a, and if it’s not in the sequence prior to this Event, the consumers of the sequence know that it’s an invalid sequence. The partial reordering attack would then be limited to the number of hashes produced while the client has observed an event and when the event was entered. Clients should then be able to write software that does not assume the order is correct for the short period of hashes between the last observed and inserted hash.
+シーケンス発行時にEvent3がhash30aを参照しているとき、そのハッシュ値がイベント発生以前に存在しない場合に、シーケンス利用者は参照先のシーケンスに異常を検知する。こうして一部分のイベント順序を書き換える攻撃が有効になるのは、クライアントがイベント送信前に検知したハッシュ値の順番から、そのイベント情報はシーケンスに挿入されるまでの間だけに制限される。つまり極めて短期間の間に発生したイベントの前後関係に影響受けない問題を解決するクライアントソフトウェアに絞って利用することが望ましい。
 
-To prevent a malicious PoH generator from rewriting the client Event hashes, the clients can submit a signature of the event data and the last observed hash instead of just the data.\\
+悪意のあるPoH生成者がクライアント側で付与したハッシュ値を書き換えることを防ぐため、クライアントはイベントデータとハッシュ値に署名を付与した上で送信を行う。\\
 \begin{center}
   \begin{tabular}{  l  l  r }
-    \multicolumn{3}{c}{PoH Sequence A} \\
+    \multicolumn{3}{c}{PoHシーケンスA} \\
     \hline
-    Index & Data & Output Hash \\ \hline
+    順番  & データ & 計算結果ハッシュ値 \\ \hline
     $10$ & & hash10a  \\ 
-    $20$ & \makecell{Event1 = sign(append(event1 data, hash10a), \\Client Private Key)} & hash20a\\ 
-    $30$ & \makecell{Event2 = sign(append(event2 data, hash20a), \\Client Private Key)} & hash30a \\ 
-    $40$ & \makecell{Event3 = sign(append(event3 data, hash30a), \\Client Private Key)} & hash40a \\
+    $20$ & \makecell{Event1 = sign(append(event1 data, hash10a), \\利用者の秘密鍵)} & hash20a\\ 
+    $30$ & \makecell{Event2 = sign(append(event2 data, hash20a), \\利用者の秘密鍵)} & hash30a \\ 
+    $40$ & \makecell{Event3 = sign(append(event3 data, hash30a), \\利用者の秘密鍵)} & hash40a \\
 
     \end{tabular}
 \end{center}
 
-Verification of this data requires a signature verification, and a lookup of the hash in the sequence of hashes prior to this one.\\
-\noindent Verify:\\
+このデータの検証を行うためには、署名と付与されたハッシュ値がシーケンス上で保たれていることが必要とされる。\\\\
+\noindent 検証方法：\\
 
 \noindent\texttt{(Signature, PublicKey, hash30a, event3 data) = Event3} \\
 \texttt{Verify(Signature, PublicKey, Event3)}\\
@@ -348,14 +348,14 @@ Verification of this data requires a signature verification, and a lookup of the
   \begin{center}
     \centering
     \includegraphics[width=0.9\textwidth]{../../figures/fig_6.png}
-    \caption[Fig 6]{Input with a back reference.\label{fig:poh_consistency}}
+    \caption[Fig 6]{入力受付時にハッシュの存在性を検証\label{fig:poh_consistency}}
   \end{center}
   \end{figure}
 
-In Figure~\ref{fig:poh_consistency}, the user-supplied input is dependent on hash \texttt{0xdeadbeef\ldots} existing in the generated sequence sometime before it’s inserted. The blue top left arrow indicates that the client is referencing a previously produced hash. The client’s message is only valid in a sequence that contains the hash \texttt{0xdeadbeef\ldots}. The red color in the sequence indicates that the sequence has been modified by the clients data.
+図\ref{fig:poh_consistency}では、クライアントからのインプットに付与されたハッシュ値\texttt{0xdeadbeef\ldots}が、シーケンス上の遠くない過去まで遡り、それが存在していることに依存している。図上部の青い部分はクライアントが生成済みのハッシュ値を参照していることを表している。クライアントからのメッセージはハッシュ値\texttt{0xdeadbeef\ldots}を含む場合においてのみ有効とされる。図中の赤い部分はクライアントからの入力により影響を受けた箇所を指している。
 
-\subsection{Overhead}
-4000 hashes per second would generate an additional 160 kilobytes of data, and would require access to a GPU with 4000 cores and roughly 0.25-0.75 milliseconds of time to verify.
+\subsection{オーバーヘッド}
+秒間4000回のハッシュ計算が可能な環境では、秒間160KBのデータが追加で生成され、その検証のためコア数4000のGPUを使っておよそ0.25-0.75ミリ秒のオーバーヘッドが発生する。
 
 \subsection{Attacks}
 \subsubsection{Reversal}
