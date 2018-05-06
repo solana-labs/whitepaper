@@ -71,7 +71,7 @@
 
 \section{Proof of History}\label{proof_of_history}
 
-Proof of Historyは任意の二つのイベントに挟まれた時間の経過を暗号学に検証できる方法を提供する。これには入力から出力を予測することが不可能な暗号学に安全な関数で計算することが求められる。一連の計算は単一コア上で行われ、前回計算のアウトプットは今回計算のインプットとして使われる。関数が呼び出される度、その計算結果と呼び出し回数を記録する。ここまで行われた計算の入出力を分割して他ノードに並列で（＝複数の異なるコアで）再計算させることで、計算結果に対する正否の検証が行われる。
+Proof of Historyは任意の二つのイベントに挟まれた時間の経過を暗号学に検証できる方法を提供する。これには入力から出力を予測することが不可能な暗号学に安全な関数で計算することが求められる。一連の計算は単一コア上で行われ、前回計算のアウトプットは今回計算のインプットとして使われる。関数が呼び出される度、その計算結果と呼び出し回数を記録する。ここまで行われた計算の入出力を分割して、外部マシンの複数コアに並列で再計算させることで、計算結果に対する正否の検証が行われる。
 データそのもの、あるいはデータのハッシュ値をシーケンスに加えることは、タイムスタンプに相当する情報をそのデータに付与することにあたる。つまりそれは状態、順序、データの記録が、次のハッシュ計算が開始された以前に完了していたことの証明に他ならないからだ。この設計は、複数のシーケンス生成者同士が互いのシーケンスに含まれる情報を提供し、その情報を計算のインプットとして混ぜ込み、同期を取ることができる平行スケーリングをサポートする。この平行スケーリングについてはセクション\ref{poh:scale}で少し踏み込んだ議論を行う。
 
 \subsection{説明}
@@ -104,7 +104,7 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
     \end{tabular}
 \end{center}
 
-ハッシュ関数に強衝突耐性が備わっている限り、この一連のハッシュ値はシングルスレッドのみで計算可能である（＝マルチスレッドによる計算のメリットは皆無である）。これは$300$番目のハッシュ計算結果は、当該ハッシュ計算を$300$回繰り返すまで求まらないことから明らかである。この制約から$0$番目から$300$番目までの計算が終わるまでには、相応の時間が経過していることが分かる。
+ハッシュ関数に強衝突耐性が備わっている限り、この一連のハッシュ値はシングルスレッドのみで計算可能である。これは$300$番目のハッシュ計算結果は、当該ハッシュ計算を$300$回繰り返すまで求まらないことから明らかである。この制約から$0$番目から$300$番目までの計算が終わるまでには、相応の時間が経過していることが分かる。
 
 図\ref{fig:poh_seq}中にあるハッシュ値\texttt{62f51643c1}は$510144806912$番目に求められ、ハッシュ値\texttt{c43d862d88}は$510146904064$番目に求められたことを表している。既に説明した通り、$510144806912$番目と$510146904064$番目の間にかかった計算時間の分だけ現実世界の時間も経過することがわかる。
 
@@ -180,7 +180,7 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
   \end{center}
   \end{figure}
 
-  図\ref{fig:poh_insert}では入力値\texttt{cfd40df8\ldots}がProof of Historyのシーケンスへ挿入されている。挿入された順番は$510145855488$で、その時点の状態（＝ひとつ手前の順番のハッシュ計算結果）は\texttt{3d039eef3}である。将来生成されるすべてのハッシュ値は、今回のシーケンスに対するデータ挿入により影響を受ける。その影響範囲を図中では色付きで表現している。\\
+  図\ref{fig:poh_insert}では入力値\texttt{cfd40df8\ldots}がProof of Historyのシーケンスへ挿入されている。挿入された順番は$510145855488$で、その時点の状態は\texttt{3d039eef3}である。将来生成されるすべてのハッシュ値は、今回のシーケンスに対するデータ挿入により影響を受ける。その影響範囲を図中では色付きで表現している。\\
 
 シーケンスを観察しているノードは、すべてのイベントが挿入された順序と、任意のふたつの挿入時点の間で経過した時間を見積もることができる。
 
@@ -231,15 +231,15 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
 図\ref{fig:poh_verify}では分割されたシーケンスを各コアが並列で検証している。すべてのインプットは順番と状態と併せて計算結果に記録され、検証者は同じ計算を繰り返すことでシーケンスを複製していく。赤色に染められたハッシュ値は、シーケンスがデータ挿入により変更されたことを指している。
 
 \subsection{平行スケーリング}\label{poh:scale}
-It’s possible to synchronize multiple Proof of History generators by mixing the sequence state from each generator to each other generator, and thus achieve horizontal scaling of the Proof of History generator. This scaling is done without sharding. The output of both generators is necessary to reconstruct the full order of events in the system.
+複数のProof of History生成者同士でシーケンスの状態を共有することで、平行スケーリングの実現を可能とする。このスケーリングはシャーディングを使わずに果たせる。２つの生成者でスケーリングする場合、双方のシーケンスに記録されている全てのイベントの順序を分かるフルシーケンスを構築するためには、各生成者が導き出した計算結果が必要となる。
 
 \begin{center}
   \begin{tabular}{|l c r|}
 
   \hline
-    \multicolumn{3}{|c|}{PoH Generator A} \\
+    \multicolumn{3}{|c|}{PoH生成者A} \\
   %  \hline
-    Index & Hash & Data \\ \hline
+    順番  & 計算内容 & 計算結果 \\ \hline
     $1$ & \texttt{hash1a} & \\ 
     $2$ & \texttt{hash2a} & \texttt{hash1b} \\ 
     $3$ & \texttt{hash3a} & \\ 
@@ -248,9 +248,9 @@ It’s possible to synchronize multiple Proof of History generators by mixing th
     \end{tabular}
   \begin{tabular}{| l  c  r |}
   \hline
-    \multicolumn{3}{|c|}{PoH Generator B} \\
+    \multicolumn{3}{|c|}{PoH生成者B} \\
 %    \hline
-    Index & Hash & Data \\ \hline
+    順番  & 計算内容 & 計算結果 \\ \hline
     $1$ & \texttt{hash1b} & \\ 
     $2$ & \texttt{hash2b} & \texttt{hash1a} \\ 
     $3$ & \texttt{hash3b} & \\ 
@@ -259,27 +259,26 @@ It’s possible to synchronize multiple Proof of History generators by mixing th
     \end{tabular}
 \end{center}
 
-Given generators A and B, A receives a data packet from B (hash1b), which contains the last state from Generator B, and the last state generator B observed from Generator A. The next state hash in Generator A then depends on the state from Generator B, so we can derive that hash1b happened sometime before hash3a. This property can be transitive, so if three generators are synchronized through a single common generator \(A \leftrightarrow B \leftrightarrow C\), we can trace the dependency between A and C even though they were not synchronized directly.
+図中のように生成者AとBが参加している場合、AはBから直近の状態をデータパケット（hash1b）として受け取る。生成者Aが次に取る状態のハッシュ値は、生成者Bから提供された状態を含めて計算される。よってhash1bはhash3aより以前に計算済みであったことを示すことができる。この仕組みは、例えば３つ生成者が存在しているとき、\(A \leftrightarrow B \leftrightarrow C\)のように１組（AとC）が直接同期を取っていなくても、弊害なくA、B、C間のフルシーケンスを求めることが可能である。
 
-By periodically synchronizing the generators, each generator can then handle a portion of external traffic, thus the overall system can handle a larger amount of events to track at the cost of true time accuracy due to network latencies between the generators. A global order can still be achieved by picking some deterministic function to order any events that are within the synchronization window, such as by the value of the hash itself.
-
+定期的に同期することで、各生成者は外部のトラフィックを処理することが可能となり、システム全体として対処可能なイベント数を増幅させることができるようになる。ただしネットワークを通した同期であるため、生成者間で生じるレイテンシ分だけ時間の計測精度が犠牲となる。この同期中に発生するグローバルな順序決定の問題は、ハッシュ値順にするなどの事前に取り決めた方法で順序を決定づける。
 
 \begin{figure}
   \begin{center}
     \centering
     \includegraphics[width=0.9\textwidth]{../../figures/fig_5.png}
-    \caption[Fig 5]{Two generators synchronizing\label{fig:poh_scale}}
+    \caption[Fig 5]{同期する二つの生成者\label{fig:poh_scale}}
   \end{center}
   \end{figure}
 
-In Figure~\ref{fig:poh_scale}, the two generators insert each other’s output state and record the operation. The color change indicates that data from the peer had modified the sequence. The generated hashes that are mixed into each stream are highlighted in bold.
+図\ref{fig:poh_scale}は二つの生成者が出力した状態を共有し合い、互いのシーケンスに挿入している様子を表している。色の変化は同期によりシーケンスに影響を受けたことを表現している。同期時に共有されたハッシュ値は色付きの太字で表現されている。
 
-The synchronization is transitive. \(A \leftrightarrow B \leftrightarrow C\)  There is a provable order of events between A and C through B.
+この同期方法により、\(A \leftrightarrow B \leftrightarrow C\)のように直接同期していない生成者同士でも、三者間のイベント順序は矛盾なく決定することができる。
 
 %%It is worth noting that the theoretical $710$k tx/s on a $1$~gb network based on the PoH design does not account for additional capacity offered through  horizontal scaling.
-Scaling in this way comes at the cost of availability. $10 \times 1$~gbps connections with availability of 0.999 would have \(0.999^{10} = 0.99 \) availability.
+このようなスケーリング方法は可用性を犠牲にして成り立ってる。$10 \times 1$~gbpsのネットワーク環境の稼働率が0.999のとき、ネットワーク全体の稼働率は\(0.999^{10} = 0.99 \)となる。
 
-\subsection{Consistency}
+\subsection{一貫性}
 Users are expected to be able to enforce consistency of the generated sequence and make it resistant to attacks by inserting the last observed output of the sequence they consider valid into their input.\\
 
 \begin{center}
