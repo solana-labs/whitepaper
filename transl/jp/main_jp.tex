@@ -44,12 +44,12 @@
 本文はSolanaの事業やトークンの発展性、利用価値、金銭的価値を確約したものではない。このホワイトペーパーに記載される内容は現時点における予定を記したもので、それはプロジェクトの方針により変更されうる。またデータ、暗号通貨の市況やその他の要因、つまりSolanaプロジェクトが持つ影響力の範疇を超えたことに起因して、この目論見の成否に影響を与えることも予想される。本文中の未来事象に関する記述はSolanaプロジェクトの分析に基づいたものであり、その見込みは確約されたものではない。
 
 \begin{abstract}
-本文ではProof of History（PoH）による新たなブロックチェーンのアーキテクチャを提言する。PoHはトラストレスなネットワークにあって、一連のイベント発生タイミングの前後関係を記帳し、それを証明する仕組みである──この台帳においては記帳済みの情報は変更不可能、追記のみを可能とする。PoHはProof of Work（PoW）あるいはProof of Stake（PoS）などの合意形成アルゴリズムと併用することで、Byzantine Fault Tolerantによるステートマシーンの状態共有のオーバーヘッドを低減し、結果的に合意完了にかかる時間を短縮することができる。またPoHによる時間管理の性能をより効果的にする二つのアルゴリズムを紹介する。ひとつは任意のサイズに分断されたネットワークから復旧可能なPoSアルゴリズム、もうひとつはProof of Replication（PoRep）を効率的にストリーミングするアルゴリズムである。PoRepとPoHの組み合わせは、時間（順序）とデータ保管を司る台帳の偽造に対する防衛手段となる。現代のハードウェア性能と1Gbpsのネットワーク環境が備えられていることを前提として、このプロトコルによる実装は最大710,000TPS（transaction per-second）のスループットが実現可能であることを示す。
+本文ではProof of History（PoH）による新たなブロックチェーンのアーキテクチャを提言する。PoHはトラストレスなネットワークにあって、一連のイベント発生タイミングの前後関係を記帳し、それを証明する仕組みである──この台帳は記帳済みの情報は変更不可能で、追記のみ可能なものである。PoHはProof of Work（PoW）あるいはProof of Stake（PoS）などの合意形成アルゴリズムと併用することで、Byzantine Fault Tolerantによるステートマシーンの状態共有のオーバーヘッドを低減し、結果的に合意形成にかかる時間を短縮することができる。またPoHによる時間管理の性能をより強固にする二つのアルゴリズムを紹介する。ひとつは任意のサイズに分断されたネットワークから復旧可能なPoSアルゴリズム、もうひとつはProof of Replication（PoRep）を効率的にストリーミングするアルゴリズムである。PoRepとPoHの組み合わせは、時間（順序）とデータ保管を司る台帳の偽造に対する防衛手段となる。現代のハードウェア性能と1Gbpsのネットワーク環境が備えられていることを前提として、このプロトコルによる実装は最大710,000TPS（transaction per-second）のスループットが実現可能であることを示す。
 \end{abstract}
 
 
 \section{はじめに}\normalsize
-ブロックチェーンは耐障害性を備える複製されたステートマシンの実装である。現在パブリックに利用可能なブロックチェーンの生成アルゴリズムは時間に依存しない……言い換えればネットワーク参加者が互いに正確な時間を伝えてくれることに期待しない\cite{tendermint,hashgraph}。ネットワーク上の各ノードはローカル時間のみを参照し、他ノードのローカル時間をまったく意識しない。『信頼できる時間の基準がない』ということは、タイムスタンプをメッセージの承諾・拒否の判断に用いる場合に、すべてのノードがそのメッセージに対する判断を同じように下すとは限らないということになる。ここで紹介するPoHは、ネットワーク上の時間の基準となりえる台帳を提供する設計になっている。ここでいう時間とは、二つのイベントに挟まれた期間やメッセージの順序関係を指す。ネットワーク上のすべてのノードは、そのネットワークがトラストレスであるにも関わらず、PoHが生成した時間の基準に依拠できるようになると期待される。
+ブロックチェーンは耐障害性を備える複製されたステートマシンの実装である。現在パブリックに利用可能なブロックチェーンの生成アルゴリズムは時間に依存しない、あるいはネットワーク参加者が正確な時間を管理できていることに期待しない\cite{tendermint,hashgraph}。ネットワーク上の各ノードはローカル時間のみを参照し、他ノードのローカル時間をまったく意識しない。『信頼できる時間の基準がない』ということは、タイムスタンプをメッセージの承諾・拒否の判断に用いる場合に、すべてのノードがそのメッセージに対する判断を同じように下すとは限らないということになる。ここで紹介するPoHは、ネットワーク上の時間の基準となりえる台帳を提供する設計になっている。ここでいう時間とは、二つのイベントに挟まれた期間やメッセージの順序関係を指す。ネットワーク上のすべてのノードは、そのネットワークがトラストレスであるにも関わらず、PoHが生成した時間の基準に依拠できるようになると期待される。
 \section{本文の構成}
 本資料は次のような構成が取られている。セクション\ref{design}ではシステム設計の全体像が描かれている。セクション\ref{proof_of_history}ではProof of Historyの詳細が語られている。セクション\ref{proof_of_stake}では今回提案されるProof of Stakeによる合意形成アルゴリズムが示されている。セクション\ref{porep}では高速なProof of Replicationの仕組みが詳細に説明されている。セクション\ref{system_architecture}ではシステムアーキテクチャとパフォーマンス上限に関する分析がなされている。セクション\ref{sec:smartcontracts}ではGPU計算向きの高パフォーマンスなスマートコントラクト・エンジンについて詳しい考察がなされている。
 
@@ -59,32 +59,32 @@
   \begin{center}
     \centering
     \includegraphics[width=\textwidth]{../../figures/network_design_001.png}
-    \caption[Fig 1]{Transaction flow throughout the network.\label{fig:design}}
+    \caption[Fig 1]{ネットワーク上のトランザクションフロー\label{fig:design}}
   \end{center}
   \end{figure}
 
-図\ref{fig:design}に示されているように、システムノードは常にLeaderとしてProof of Historyの生成を担う。これはネットワーク全体で一貫性のある時間軸を提供する。スループットを最大化するため、他ノードが効率よく処理を進められるよう、Leaderはユーザメッセージを並べて順序付けする。これはRAM（主記憶装置）に格納された状態に基づいてトランザクションを執行し、実行結果を署名付きでVerifierと呼ばれるノードに引き渡す。Verifierは各自がRAM上に保持している状態から同じトランザクションを繰り返し、実行結果を確認してそれに署名を付与する。この計算結果は票となり、ネットワーク上の正史を選び出すための合意形成アルゴリズムに用いられる。
+図\ref{fig:design}に示されているように、システムノードは常にLeaderとしてProof of Historyの生成を担う。これはネットワーク全体で一貫性のある時間軸を提供する。スループットを最大化するため、他ノードが効率よく処理を進められるよう、Leaderはユーザメッセージを並べて順序付けする。これはRAM（主記憶装置）に格納された状態に基づいてトランザクションを執行し、実行結果を署名付きでVerifierと呼ばれるノードに引き渡す。Verifierは各自がRAM上に保持している状態から同じトランザクションを繰り返し、実行結果を確認してそれに署名を付与する。この署名付きの計算結果は票となり、ネットワーク上の正史を選び出すための合意形成アルゴリズムに用いられる。
 
 ネットワークが分断されていない状況下では、常にLeaderはネットワーク上にひとつ存在する。各VerifierノードはLeaderと同性能のハードウェアを備えるようにし、PoSに基づいてLeaderとして選出される可能性が与えられる。ここで挙げられたPoSのアルゴリズムはセクション\ref{subsec:elections}で詳しく説明する。
 
-ネットワークの分断が発生してしまった場合、CAP定理に基づくと一貫性は可用性より優先されることになる。大規模な分断が発生する状況を想定して、本資料は任意のサイズで分断された状態からネットワークを復旧させるメカニズムを説明する。詳細はセクション\ref{availability}を参照されたい。
+ネットワークの分断が発生してしまった場合、CAP定理に基づくと一貫性は可用性より優先される。大規模な分断が発生する状況を想定して、本資料は任意のサイズで分断された状態からネットワークを復旧させるメカニズムを説明する。詳細はセクション\ref{availability}を参照されたい。
 
 \section{Proof of History}\label{proof_of_history}
 
-Proof of Historyは任意の二つのイベントに挟まれた時間の経過を暗号理論的に検証できる方法を提供する。これには入力から出力を予測することが不可能な暗号理論的に安全な関数で計算することが求められる。一連の計算は単一コア上で行われ、前回計算のアウトプットは今回計算のインプットとして使われる。関数が呼び出される度、その計算結果と呼び出し回数を記録する。ここまで行われた計算の入出力を分割して他ノードに並列で（＝複数の異なるコアで）再計算させることで、計算結果に対する正否の検証が行われる。
-データそのもの、あるいはデータのハッシュ値をシーケンスに加えることは、タイムスタンプに相当する情報をそのデータに付与することにあたる。つまりそれは状態、順序、データの記録が、次のハッシュ計算が開始された以前に完了していたことの証明に他ならないからだ。この設計は、複数のシーケンス生成者同士が互いのシーケンスに含まれる情報を提供し、絡み合い、同期を取ることができる平行スケーリングをサポートする。この平行スケーリングについてはセクション\ref{poh:scale}で踏み込んだ議論を行う。
+Proof of Historyは任意の二つのイベントに挟まれた時間の経過を暗号学に検証できる方法を提供する。これには入力から出力を予測することが不可能な暗号学に安全な関数で計算することが求められる。一連の計算は単一コア上で行われ、前回計算のアウトプットは今回計算のインプットとして使われる。関数が呼び出される度、その計算結果と呼び出し回数を記録する。ここまで行われた計算の入出力を分割して他ノードに並列で（＝複数の異なるコアで）再計算させることで、計算結果に対する正否の検証が行われる。
+データそのもの、あるいはデータのハッシュ値をシーケンスに加えることは、タイムスタンプに相当する情報をそのデータに付与することにあたる。つまりそれは状態、順序、データの記録が、次のハッシュ計算が開始された以前に完了していたことの証明に他ならないからだ。この設計は、複数のシーケンス生成者同士が互いのシーケンスに含まれる情報を提供し、その情報を計算のインプットとして混ぜ込み、同期を取ることができる平行スケーリングをサポートする。この平行スケーリングについてはセクション\ref{poh:scale}で少し踏み込んだ議論を行う。
 
 \subsection{説明}
-システムは次のように設計される。実行前に計算結果を導くことができない暗号学的ハッシュ関数(例：\texttt{sha256}、\texttt{ripemd}など)をつかう。ランダムな値を初期入力値としてハッシュ計算を開始、今回計算結果を次回計算の入力値として使う。今回計算も次回計算も実行するハッシュ関数は同じである。関数の呼び出し回数および計算結果はは毎回記録される。またここで登場した初期入力値は、当日のニューヨークタイムズ紙のヘッドラインなど、任意の文字列を選択して良い。
+システムは次のように設計される。実行前に計算結果を予測できない暗号学的ハッシュ関数(例：\texttt{sha256}、\texttt{ripemd}など)を用いる。無作為に選ばれた値を初期入力値としてハッシュ計算を開始、今回の計算結果を次回計算の入力値として使う。今回計算も次回計算も実行するハッシュ関数は同じである。関数の呼び出し回数および計算結果は順次記録される。またここで登場した初期入力値は、当日のニューヨークタイムズ紙のヘッドラインなど、任意の文字列を選択して良い。
 \\\\
 \noindent 例 \noindent
 \begin{center}
   \begin{tabular}{  l  l  r }
 %    \hline
-    \multicolumn{3}{c}{PoH Sequence} \\
+    \multicolumn{3}{c}{PoHシーケンス} \\
     \hline
     順番  & 計算内容 & 計算結果 \\ \hline
-    $1$ & sha256(\char`\"any random starting value\char`\") & \texttt{hash1}\\ %\hline
+    $1$ & sha256(\char`\"無作為に選ばれた初期入力値\char`\") & \texttt{hash1}\\ %\hline
     $2$ &  sha256(\texttt{hash1}) & \texttt{hash2}\\ %\hline
     $3$ & sha256(\texttt{hash2}) & \texttt{hash3}\\ %\hline
     \end{tabular}
@@ -100,13 +100,13 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
     \multicolumn{3}{c}{PoH Sequence} \\
     \hline
     順番  & 計算内容 & 計算結果 \\ \hline
-    $1$ & sha256(\char`\"any random starting value\char`\") & \texttt{hash1}\\ 
+    $1$ & sha256(\char`\"無作為に選ばれた初期入力値\char`\") & \texttt{hash1}\\
     $200$ &  sha256(\texttt{hash199}) & \texttt{hash200}\\
     $300$ & sha256(\texttt{hash299}) & \texttt{hash300} \\
     \end{tabular}
 \end{center}
 
-ハッシュ関数に強衝突耐性が備わっている限り、この一連のハッシュ値はシングルスレッドのみで計算可能である（＝マルチスレッド計算のメリットは皆無である）。これは$300$番目のハッシュ計算結果は、当該ハッシュ計算を$300$回繰り返すまで求まらないことから明らかである。この制約から$0$番目から$300$番目までの計算が終わるまでには、相応の時間が経過していることが分かる。
+ハッシュ関数に強衝突耐性が備わっている限り、この一連のハッシュ値はシングルスレッドのみで計算可能である（＝マルチスレッドによる計算のメリットは皆無である）。これは$300$番目のハッシュ計算結果は、当該ハッシュ計算を$300$回繰り返すまで求まらないことから明らかである。この制約から$0$番目から$300$番目までの計算が終わるまでには、相応の時間が経過していることが分かる。
 
 図\ref{fig:poh_seq}中にあるハッシュ値\texttt{62f51643c1}は$510144806912$番目に求められ、ハッシュ値\texttt{c43d862d88}は$510146904064$番目に求められたことを表している。既に説明した通り、$510144806912$番目と$510146904064$番目の間にかかった計算時間の分だけ現実世界の時間も経過することがわかる。
 
@@ -114,87 +114,80 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
   \begin{center}
     \centering
     \includegraphics[width=0.5\textwidth]{../../figures/poh_sequence_001.png}
-    \caption[Figure 2]{Proof of History sequence\label{fig:poh_seq}}
+    \caption[Figure 2]{Proof of Historyシーケンス\label{fig:poh_seq}}
   \end{center}
   \end{figure}
 
-\subsection{Timestamp for Events}
+\subsection{イベントのタイムスタンプ}
 
-This sequence of hashes can also be used to record that some piece of data was created before a particular hash index was generated. Using a `combine` function to combine the piece of data with the current hash at the current index. The data can simply be a cryptographically unique hash of arbitrary event data. The combine function can be a simple append of data, or any operation that is collision resistant. The next generated hash represents a timestamp of the data, because it could have only been generated after that specific piece of data was inserted.\\
+上述の通り、このハッシュ値のシーケンスは、あるデータがシーケンスに含められる以前に、対象のデータが作成されていたことの記録として用いることができる。それはデータと現在の順序に弾き出されて来たハッシュ値に`combine`関数を適用することで、順序と値が組み合わされた計算結果が記録として残るためである。このとき任意のイベントデータが暗号学的にユニークなハッシュ値に変換される。'combine'関数は常に強衝突耐性を備え、単純に計算結果を積み重ねていくことができる。結果的に得られたハッシュ値はそのデータにとってのタイムスタンプとなる。それは以前のハッシュ値を基にして生成されたハッシュ値であるため、以前に記録されたデータよりも後に生成されていることが言えるからである。\\
 
-\noindent For example:\\\\\noindent
+\noindent 例\\\\\noindent
 \begin{center}
   \begin{tabular}{ l l r }
-    \multicolumn{3}{c}{PoH Sequence} \\
+    \multicolumn{3}{c}{PoHシーケンス} \\
     \hline
-    Index  & Operation  & Output Hash\\ \hline
-    $1$ & sha256(\char`\"any random starting value\char`\") & \texttt{hash1}\\ 
+    順番  & 計算内容 & 計算結果 \\ \hline
+    $1$ & sha256(\char`\"無作為に選ばれた初期入力値\char`\") & \texttt{hash1}\\
     $200$ & sha256(\texttt{hash199}) & \texttt{hash200}\\ 
     $300$ & sha256(\texttt{hash299}) & \texttt{hash300}\\ 
     \end{tabular}
 \end{center}
 
 
-\noindent Some external event occurs, like a photograph was taken, or
-any arbitrary digital data was created:\\\\\noindent
+\noindent 例えば写真撮影など、なにか電子データが作成されるようなイベントが発生したとき、\\\\\noindent
 \begin{center}
   \begin{tabular}{ l l r}
     \multicolumn{3}{c}{PoH Sequence With Data} \\
     \hline
-    Index  & Operation & Output Hash\\ \hline
-    $1$ & sha256(\char`\"any random starting value\char`\") & \texttt{hash1} \\ 
+    順番  & 計算内容 & 計算結果 \\ \hline
+    $1$ & sha256(\char`\"無作為に選ばれた初期入力値\char`\") & \texttt{hash1}\\
     $200$ & sha256(\texttt{hash199}) & \texttt{hash200} \\ 
     $300$  & sha256(\texttt{hash299}) & \texttt{hash300}\\ 
-    $336$ & sha256(append(\texttt{hash335}, photograph\_sha256)) & \texttt{hash336}\\ 
+    $336$ & sha256(append(\texttt{hash335}, 撮影データのsha256値)) & \texttt{hash336}\\ 
     \end{tabular}
 \end{center}
 
 
-\texttt{Hash336} is computed from the appended binary data of
-\texttt{hash335} and the \texttt{sha256} of the photograph. The index
-and the \texttt{sha256} of the photograph are recorded as part of the
-sequence output. So anyone verifying this sequence can then recreate
-this change to the sequence. The verifying can still be done in
-parallel and it’s discussed in Section~\ref{poh:verify}
+\texttt{Hash336}は\texttt{hash335}と撮影データの\texttt{sha256}値を入力値として計算されている。こうして撮影データの\texttt{sha256}値とその順番はシーケンスに記録される。つまり入力値さえ特定できていれば、誰でもこのシーケンスに対する変更内容を再現して検証することができるのだ。シーケンス上の各部分は並列で検証できることになるが、詳しくはセクション\ref{poh:verify}で説明する。
 
-Because the initial process is still sequential, we can then tell that things entered into the sequence must have occurred sometime before the future hashed value was computed.
+一連の計算はひとつずつ順番に行わざるを得ない仕組みから、ある情報がシーケンスに含められたタイミングは、それ以降に計算されたハッシュ計算が完了するより以前であることを明らかにできる。
 
 \begin{center}
   \begin{table}
   \begin{tabular}{l l r}
-    \multicolumn{3}{c}{POH Sequence} \\ \hline
-    Index & Operation & Output Hash \\ \hline
-    $1$ & sha256(\char`\"any random starting value\char`\") & \texttt{hash1} \\ 
+    \multicolumn{3}{c}{POHシーケンス} \\ \hline
+    順番  & 計算内容 & 計算結果 \\ \hline
+    $1$ & sha256(\char`\"無作為に選ばれた初期入力値\char`\") & \texttt{hash1}\\
     $200$ & sha256(hash199) & \texttt{hash200} \\ 
     $300$ & sha256(hash299) & \texttt{hash300} \\ 
-    $336$ & sha256(append(hash335, photograph1\_sha256)) & \texttt{hash336}\\ 
+    $336$ & sha256(append(hash335, 撮影データ１のsha256値)) & \texttt{hash336}\\ 
     $400$ & sha256(hash399) & \texttt{hash400} \\ 
     $500$ & sha256(hash499) & \texttt{hash500}\\ 
-    $600$ & sha256(append(hash599, photograph2\_sha256)) & \texttt{hash600}\\ 
+    $600$ & sha256(append(hash599, 撮影データ２のsha256値)) & \texttt{hash600}\\ 
     $700$ & sha256(hash699) & \texttt{hash700}\\ 
     \end{tabular}
-    \caption[Table 1]{PoH Sequence With 2 Events\label{table:multievent}}
+    \caption[Table 1]{２つのイベントを含めたPoHシーケンス\label{table:multievent}}
     \end{table}
 \end{center}
 
-In the sequence represented by Table~\ref{table:multievent}, \texttt{photograph2} was created before \texttt{hash600}, and
-\texttt{photograph1} was created before \texttt{hash336}. Inserting the data into the sequence of hashes results in a change to all subsequent values in the sequence. As long as the hash function used is collision resistant, and the data was appended, it should be computationally impossible to pre-compute any future sequences based on prior knowledge of what data will be integrated into the sequence.\\
+表\ref{table:multievent}のシーケンスから\texttt{撮影データ２}が\texttt{hash600}の計算完了より以前に、\texttt{撮影データ１}が\texttt{hash336}の計算完了より以前に作成されたことが分かる。ハッシュ値をシーケンスに書き込むことは、結果的に後続すべての計算結果に影響を与えることになる。シーケンスに含めたいデータに適用されるハッシュ関数が衝突耐性を備える限り、今後どのようなデータが追加されるか分かっていたとしても、未来のシーケンスを事前に予測することは不可能である。\\
 
-The data that is mixed into the sequence can be the raw data itself, or just a hash of the data with accompanying metadata.\\
+シーケンスに含められるデータは無加工でも、メタデータ付きハッシュ値でも良い。\\
 
 \begin{figure}[h]
   \begin{center}
     \centering
     \includegraphics[width=0.9\textwidth]{../../figures/fig_3.png}
-    \caption[Fig 3]{Inserting data into Proof of History\label{fig:poh_insert}}
+    \caption[Fig 3]{Proof of Historyへのデータの挿入\label{fig:poh_insert}}
   \end{center}
   \end{figure}
 
-  In the example in Figure~\ref{fig:poh_insert}, input \texttt{cfd40df8\ldots} was inserted into the Proof of History sequence. The count at which it was inserted is $510145855488$ and the state at which it was inserted it is \texttt{3d039eef3}. All the future generated hashes are modified by this change to the sequence, this change is indicated by the color change in the figure.\\
+  図\ref{fig:poh_insert}では入力値\texttt{cfd40df8\ldots}がProof of Historyのシーケンスへ挿入されている。挿入された順番は$510145855488$で、その時点の状態（＝ひとつ手前の順番のハッシュ計算結果）は\texttt{3d039eef3}である。将来生成されるすべてのハッシュ値は、今回のシーケンスに対するデータ挿入により影響を受ける。その影響範囲を図中では色付きで表現している。\\
 
-Every node observing this sequence can determine the order at which all events have been inserted and estimate the real time between the insertions.
+シーケンスを観察しているノードは、すべてのイベントが挿入された順序と、任意のふたつの挿入時点の間で経過した時間を見積もることができる。
 
-\subsection{Verification}\label{poh:verify}
+\subsection{承認}\label{poh:verify}
 The sequence can be verified correct by a multicore computer in significantly less time than it took to generate it.\\
 
 \noindent For example: \\\noindent
