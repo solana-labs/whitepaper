@@ -77,7 +77,6 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
 \subsection{説明}
 システムは次のように設計される。実行前に計算結果を予測できない暗号学的ハッシュ関数(例：\texttt{sha256}、\texttt{ripemd}など)を用いる。無作為に選ばれた値を初期入力値としてハッシュ計算を開始、今回の計算結果を次回計算の入力値として使う。今回計算も次回計算も実行するハッシュ関数は同じである。関数の呼び出し回数および計算結果は順次記録される。またここで登場した初期入力値は、当日のニューヨークタイムズ紙のヘッドラインなど、任意の文字列を選択して良い。
 \\\\
-\noindent 例 \noindent
 \begin{center}
   \begin{tabular}{  l  l  r }
 %    \hline
@@ -94,7 +93,6 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
 
 ここで要求されるのは都度ハッシュ計算結果と順序番号を発行することに尽きる。\\
 
-\noindent 例\\\\\noindent
 \begin{center}
   \begin{tabular}{ l  l  r }
     \multicolumn{3}{c}{PoH Sequence} \\
@@ -120,9 +118,8 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
 
 \subsection{イベントのタイムスタンプ}
 
-上述の通り、このハッシュ値のシーケンスは、あるデータがシーケンスに含められる以前に、対象のデータが作成されていたことの記録として用いることができる。それはデータと現在の順序に弾き出されて来たハッシュ値に`combine`関数を適用することで、順序と値が組み合わされた計算結果が記録として残るためである。このとき任意のイベントデータが暗号学的にユニークなハッシュ値に変換される。'combine'関数は常に強衝突耐性を備え、単純に計算結果を積み重ねていくことができる。結果的に得られたハッシュ値はそのデータにとってのタイムスタンプとなる。それは以前のハッシュ値を基にして生成されたハッシュ値であるため、以前に記録されたデータよりも後に生成されていることが言えるからである。\\
+上述の通り、このハッシュ値のシーケンスは、あるデータがシーケンスに挿入される以前に、対象のデータが作成されていたことの記録として用いることができる。それはデータと現在の順序に弾き出されて来たハッシュ値に`combine`関数を適用することで、順序と値が組み合わされた計算結果が記録として残るためである。このとき任意のイベントデータが暗号学的にユニークなハッシュ値に変換される。'combine'関数は常に強衝突耐性を備え、単純に計算結果を積み重ねていくことができる。結果的に得られたハッシュ値はそのデータにとってのタイムスタンプとなる。それは以前のハッシュ値を基にして生成されたハッシュ値であるため、以前に記録されたデータよりも後に生成されていることが言えるからである。\\
 
-\noindent 例\\\\\noindent
 \begin{center}
   \begin{tabular}{ l l r }
     \multicolumn{3}{c}{PoHシーケンス} \\
@@ -151,7 +148,7 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
 
 \texttt{Hash336}は\texttt{hash335}と撮影データの\texttt{sha256}値を入力値として計算されている。こうして撮影データの\texttt{sha256}値とその順番はシーケンスに記録される。つまり入力値さえ特定できていれば、誰でもこのシーケンスに対する変更内容を再現して検証することができるのだ。シーケンス上の各部分は並列で検証できることになるが、詳しくはセクション\ref{poh:verify}で説明する。
 
-一連の計算はひとつずつ順番に行わざるを得ない仕組みから、ある情報がシーケンスに含められたタイミングは、それ以降に計算されたハッシュ計算が完了するより以前であることを明らかにできる。
+一連の計算はひとつずつ順番に行わざるを得ない仕組みから、ある情報がシーケンスに挿入されたタイミングは、それ以降に計算されたハッシュ計算が完了するより以前であることを明らかにできる。
 
 \begin{center}
   \begin{table}
@@ -167,13 +164,13 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
     $600$ & sha256(append(hash599, 撮影データ２のsha256値)) & \texttt{hash600}\\ 
     $700$ & sha256(hash699) & \texttt{hash700}\\ 
     \end{tabular}
-    \caption[Table 1]{２つのイベントを含めたPoHシーケンス\label{table:multievent}}
+    \caption[Table 1]{２つのイベントを挿入したPoHシーケンス\label{table:multievent}}
     \end{table}
 \end{center}
 
-表\ref{table:multievent}のシーケンスから\texttt{撮影データ２}が\texttt{hash600}の計算完了より以前に、\texttt{撮影データ１}が\texttt{hash336}の計算完了より以前に作成されたことが分かる。ハッシュ値をシーケンスに書き込むことは、結果的に後続すべての計算結果に影響を与えることになる。シーケンスに含めたいデータに適用されるハッシュ関数が衝突耐性を備える限り、今後どのようなデータが追加されるか分かっていたとしても、未来のシーケンスを事前に予測することは不可能である。\\
+表\ref{table:multievent}のシーケンスから\texttt{撮影データ２}が\texttt{hash600}の計算完了より以前に、\texttt{撮影データ１}が\texttt{hash336}の計算完了より以前に作成されたことが分かる。ハッシュ値をシーケンスに書き込むことは、結果的に後続すべての計算結果に影響を与えることになる。シーケンスへ挿入したいデータに適用されるハッシュ関数が衝突耐性を備える限り、今後どのようなデータが追加されるか分かっていたとしても、未来のシーケンスを事前に予測することは不可能である。\\
 
-シーケンスに含められるデータは無加工でも、メタデータ付きハッシュ値でも良い。\\
+シーケンスに挿入されるデータは無加工でも、メタデータ付きハッシュ値でも良い。\\
 
 \begin{figure}[h]
   \begin{center}
@@ -187,24 +184,22 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
 
 シーケンスを観察しているノードは、すべてのイベントが挿入された順序と、任意のふたつの挿入時点の間で経過した時間を見積もることができる。
 
-\subsection{承認}\label{poh:verify}
-The sequence can be verified correct by a multicore computer in significantly less time than it took to generate it.\\
-
-\noindent For example: \\\noindent
+\subsection{検証}\label{poh:verify}
+検証時の計算はマルチコアで実行可能なので、生成時よりも圧倒的に短い時間で完了することができる。\\
 
 \begin{center}
 
 \begin{tabular}{l l r}
-    \multicolumn{3}{c}{Core 1} \\ \hline
-    Index & Data & Output Hash \\ \hline
+    \multicolumn{3}{c}{コア１} \\ \hline
+    順番  & 計算内容 & 計算結果 \\ \hline
     $200$ & sha256(\texttt{hash199}) & \texttt{hash200} \\ 
     $300$ & sha256(\texttt{hash299}) & \texttt{hash300}\\ 
     \end{tabular}\\
     
   \begin{tabular}{l l r}
-    \multicolumn{3}{c}{Core 2} \\
+    \multicolumn{3}{c}{コア２} \\
     \hline
-    Index & Data & Output Hash \\ \hline
+    順番  & 計算内容 & 計算結果 \\ \hline
     $300$ & sha256(\texttt{hash299}) & \texttt{hash300} \\
     $400$ & sha256(\texttt{hash399}) & \texttt{hash400}\\ 
     \end{tabular}
@@ -212,30 +207,30 @@ The sequence can be verified correct by a multicore computer in significantly le
 \end{center}
 
 
-Given some number of cores, like a modern GPU with $4000$ cores, the verifier can split up the sequence of hashes and their indexes into $4000$ slices, and in parallel make sure that each slice is correct from the starting hash to the last hash in the slice. If the expected time to produce the sequence is going to be:\\
+例えば$4000$コアを備えるGPUを使って計算する場合、検証者は生成されたシーケンスを$4000$に分割して、先頭から末尾までのハッシュ計算が正しく行われていたかを並列計算で確認できる。シーケンス生成にかかる計算時間を次のように計算できるとすると、\\
 
 
 \[
-\frac{\textrm{Total number of hashes}}{\textrm{Hashes per second for 1 core}}
+\frac{\textrm{ハッシュ計算の総回数}}{\textrm{１コアで処理される秒間ハッシュ計算回数}}
 \]
 
-\noindent The expected time to verify that the sequence is correct is going to be:\\
+\noindent 検証にかかる計算時間は、\\
 
 \[
-\frac{\textrm{Total number of hashes}}{\textrm{(Hashes per second per core * Number of cores available to verify)}}
+\frac{\textrm{ハッシュ計算の総回数}}{\textrm{(１コアで処理される秒間ハッシュ計算回数 * 検証に使えるコア数)}}
 \]
 
 \begin{figure}
   \begin{center}
     \centering
     \includegraphics[width=0.9\textwidth]{../../figures/fig_4.png}
-    \caption[Figure 4]{Verification using multiple cores\label{fig:poh_verify}}
+    \caption[Figure 4]{複数コアによる検証\label{fig:poh_verify}}
   \end{center}
   \end{figure}
 
-In the example in Figure~\ref{fig:poh_verify}, each core is able to verify each slice of the sequence in parallel. Since all input strings are recorded into the output, with the counter and state that they are appended to, the verifiers can replicate each slice in parallel. The red colored hashes indicate that the sequence was modified by a data insertion.
+図\ref{fig:poh_verify}では分割されたシーケンスを各コアが並列で検証している。すべてのインプットは順番と状態と併せて計算結果に記録され、検証者は同じ計算を繰り返すことでシーケンスを複製していく。赤色に染められたハッシュ値は、シーケンスがデータ挿入により変更されたことを指している。
 
-\subsection{Horizontal Scaling}\label{poh:scale}
+\subsection{平行スケーリング}\label{poh:scale}
 It’s possible to synchronize multiple Proof of History generators by mixing the sequence state from each generator to each other generator, and thus achieve horizontal scaling of the Proof of History generator. This scaling is done without sharding. The output of both generators is necessary to reconstruct the full order of events in the system.
 
 \begin{center}
