@@ -75,7 +75,7 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
 データそのもの、あるいはデータのハッシュ値をシーケンスに加えることは、タイムスタンプに相当する情報をそのデータに付与することにあたる。つまりそれは状態、順序、データの記録が、次のハッシュ計算が開始された以前に完了していたことの証明に他ならないからだ。この設計は、複数のシーケンス生成者同士が互いのシーケンスに含まれる情報を提供し、その情報を計算のインプットとして混ぜ込み、同期を取ることができる平行スケーリングをサポートする。この平行スケーリングについてはセクション\ref{poh:scale}で少し踏み込んだ議論を行う。
 
 \subsection{概要説明}
-システムは次のように設計される。実行前に計算結果を予測できない暗号学的ハッシュ関数(例：\texttt{sha256}、\texttt{ripemd}など)を用いる。無作為に選ばれた値を初期入力値としてハッシュ計算を開始、今回の計算結果を次回計算の入力値として使う。今回計算も次回計算も実行するハッシュ関数は同じである。関数の呼び出し回数および計算結果は順次記録される。またここで登場した初期入力値は、当日のニューヨークタイムズ紙のヘッドラインなど、任意の文字列を選択して良い。
+システムは次のように設計される。実行前に計算結果を予測できない暗号学的ハッシュ関数(例：\texttt{sha256}、\texttt{ripemd}など)を用いる。無作為に選ばれた値を初期入力値としてハッシュ計算を開始、今回の計算結果を次回計算の入力値として使う。今回計算も次回計算も実行するハッシュ関数は同じである。関数の呼び出し回数および計算結果は順次記録される。またここで登場した初期入力値は、当日のニューヨークタイムズ紙の見出しなど、任意の文字列を選択して良い。
 \\\\
 \begin{center}
   \begin{tabular}{  l  l  r }
@@ -259,7 +259,7 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
     \end{tabular}
 \end{center}
 
-図中のように生成者AとBが参加している場合、AはBから直近の状態をデータパケット（hash1b）として受け取る。生成者Aが次に取る状態のハッシュ値は、生成者Bから提供された状態を含めて計算される。よってhash1bはhash3aより以前に計算済みであったことを示すことができる。この仕組みは、例えば３つ生成者が存在しているとき、\(A \leftrightarrow B \leftrightarrow C\)のように１組（AとC）が直接同期を取っていなくても、弊害なくA、B、C間のフルシーケンスを求めることが可能である。
+図中のように生成者AとBが参加している場合、AはBから直近の状態をデータパケット（hash1b）として受け取る。生成者Aが次に取る状態のハッシュ値は、生成者Bから提供された状態を含めて計算される。よってhash1bはhash3aより以前に計算済みであったことを示すことができる。この仕組みは、例えば３つ生成者が存在しているとき、\(A \leftrightarrow B \leftrightarrow C\)のように１組（AとC）が直接同期を取っていなくてもA、B、C間のフルシーケンスを求めることは可能である。
 
 定期的に同期することで、各生成者は外部のトラフィックを処理することが可能となり、システム全体として対処可能なイベント数を増幅させることができるようになる。ただしネットワークを通した同期であるため、生成者間で生じるレイテンシ分だけ時間の計測精度が犠牲となる。この同期中に発生するグローバルな順序決定の問題は、ハッシュ値順にするなどの事前に取り決めた方法で順序を決定づける。
 
@@ -381,18 +381,19 @@ PoRepとPoHを一緒に活用することで空間的にも時間的にも堅牢
 \subsection{用語の説明}
 \begin{description}
 
-\item[債（ボンド）]
-Bonds are equivalent to a capital expense in Proof of Work. A miner buys hardware and electricity, and commits it to a single branch in a Proof of Work blockchain. A bond is coin that the validator commits as collateral while they are validating transactions.
+\item[ボンド]
+Proof of Workにおける設備コストに相当する。Proof of Workでは、採掘者はハードウェアや電気にお金を支払い、ブロックチェーンのブランチのひとつを支持する。つまりボンドとは、トランザクションを承認する権利を得るために承認者たちが担保として献上する価値のことを指す。
 
 \item[スラッシング]
 
-The proposed solution to the nothing at stake problem in Proof of Stake systems~\cite{slasher}. When a proof of voting for a different branch is published, that branch can destroy the validator’s bond. This is an economic incentive designed to discourage validators from confirming multiple branches.
+Proof of Stakeにおけるnothing at stake問題への対処法のひとつ\cite{slasher}。承認者が異なるブランチを支持していたことが証明された場合、正規のブランチは承認者がステークしていた資本を処分することができる。つまり承認者の支持するブランチが発散しないよう設計された経済的インセンティブである。
+
 \item[大多数派]
-A super majority is \(\frac{2}{3}\)rds of the validators weighted by their bonds. A super majority vote indicates that the network has reached consensus, and at least \(\frac{1}{3}\)rd of the network would have had to vote maliciously for this branch to be invalid. This would put the economic cost of an attack at \(\frac{1}{3}\)rd of the market cap of the coin.
+承認者全体が保有するリソースのうち\(\frac{2}{3}\)以上を指す。大多数派からの支持によりネットワークは合意形成を完了する。つまり少なくとも\(\frac{1}{3}\)の支持を不正なブランチに流さなくては、正規ブランチへの合意形成を避けることができない。この攻撃を仕掛けるためには、通貨の時価総額の\(\frac{1}{3}\)近いコストが必要であることが示唆される。
 
 \end{description}
 
-\subsection{Bonding}
+\subsection{ボンディング}
 A bonding transaction takes a \hyphenation{user specified} amount of coin and moves it to a bonding account under the user’s identity. Coins in the bonding account cannot be spent and have to remain in the account until the user removes them. The user can only remove stale coins that have timed out. Bonds are valid after super majority of the current stakeholders have confirmed the sequence.
 
 \subsection{Voting}
