@@ -411,9 +411,7 @@ A super majority is \(\frac{2}{3}\)rds of the validators weighted by their bonds
 A bonding transaction takes a \hyphenation{user specified} amount of coin and moves it to a bonding account under the user’s identity. Coins in the bonding account cannot be spent and have to remain in the account until the user removes them. The user can only remove stale coins that have timed out. Bonds are valid after super majority of the current stakeholders have confirmed the sequence.
 
 \subsection{Voting}
-It is anticipated that the Proof of History generator will be able to publish a signature of the state at a predefined period. Each bonded identity must confirm that signature by publishing their own signed signature of the state. The vote is a simple yes vote, without a no.
-
-If super majority of the bonded identities have voted within a timeout, then this branch would be accepted as valid.
+It is anticipated that the Proof of History generator will be able to publish a signature of the state at a predefined period. Each bonded identity must confirm that signature by publishing their own signed signature of the state. The vote is a simple yes vote, without a no. If super majority of the bonded identities have voted within a timeout, then this branch would be accepted as valid.
 
 \subsection{Unbonding}
 
@@ -503,7 +501,7 @@ As shown in Figure~\ref{fig:encrypt} CBC encryption encrypts each block of data 
 \begin{figure}
   \begin{center}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/fig_7.png}
+    \includegraphics[width=0.9\textwidth]{figures/fig_7.png}
     \caption[Fig 7]{Sequential CBC encryption\label{fig:encrypt}}
   \end{center}
   \end{figure}
@@ -517,7 +515,7 @@ A merkle hash is computed with the selected PoH hash prepended to the each slice
 \begin{figure}
   \begin{center}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/fig_8.png}
+    \includegraphics[width=0.9\textwidth]{figures/por_001.png}
     \caption[Fig 8]{Fast Proof of Replication\label{fig_8}}
   \end{center}
   \end{figure}
@@ -617,7 +615,7 @@ for a total of 32 bytes.\\
 \end{bytefield}\\
 for a total of 64 bytes.
 \subsubsection{Verifier, State Replication}
-The Verifier nodes replicate the blockchain state and provide high availability of the blockchain state. The replication target is selected by the consensus algorithm, and the validators in the consensus algorithm select and vote for the Proof of Replication nodes they approve of based on off-chain defined criteria.
+The Verifier nodes replicate and provide high availability of the blockchain state. The replication target is selected by the consensus algorithm, and the validators in the consensus algorithm select and vote the Proof of Replication nodes they approve of based on off-chain defined criteria.
 
 The network could be configured with a minimum Proof of Stake bond size, and a requirement for a single replicator identity per bond.
 \subsubsection{Validators}
