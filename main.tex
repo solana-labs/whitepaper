@@ -615,11 +615,8 @@ for a total of 32 bytes.\\
 \end{bytefield}\\
 for a total of 64 bytes.
 \subsubsection{Verifier, State Replication}
-<<<<<<< HEAD
+
 The Verifier nodes replicate and provide high availability of the blockchain state. The replication target is selected by the consensus algorithm, and the validators in the consensus algorithm select and vote for the Proof of Replication nodes they approve of based on off-chain defined criteria.
-=======
-The Verifier nodes replicate and provide high availability of the blockchain state. The replication target is selected by the consensus algorithm, and the validators in the consensus algorithm select and vote the Proof of Replication nodes they approve of based on off-chain defined criteria.
->>>>>>> figure tweaks
 
 The network could be configured with a minimum Proof of Stake bond size, and a requirement for a single replicator identity per bond.
 \subsubsection{Validators}
@@ -655,6 +652,7 @@ The leader is expected to be able to take incoming user packets, order them in t
 \noindent Size \(20 + 8 + 16 + 8 + 32 + 32 + 32 = 148\) bytes.\\\\
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 The minimal payload that can be supported would be 1 destination account with a minimum size of 176 bytes.\\\\
 
 
@@ -663,6 +661,14 @@ The minimal payload that can be supported would be 1 destination account with a 
 
 The minimal payload that can be supported would be 1 destination account with a minimum size of 176 bytes.\\\\
 >>>>>>> figure tweaks
+=======
+
+The minimal payload that can be supported would be 1 destination account with a minimum size of 176 bytes.\\\\
+=======
+The minimal payload that can be supported would be 1 destination account.\\\\
+
+>>>>>>> cooper WP edits
+>>>>>>> cooper WP edits
 \noindent \textbf{With payload:}\\\\\noindent
 
 \begin{bytefield}[bitwidth=.1em]{256}
