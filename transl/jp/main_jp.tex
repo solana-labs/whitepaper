@@ -74,7 +74,7 @@
 Proof of Historyは任意の二つのイベントに挟まれた時間の経過を暗号学に検証できる方法を提供する。これには入力から出力を予測することが不可能な暗号学に安全な関数で計算することが求められる。一連の計算は単一コア上で行われ、前回計算のアウトプットは今回計算のインプットとして使われる。関数が呼び出される度、その計算結果と呼び出し回数を記録する。ここまで行われた計算の入出力を分割して、外部マシンの複数コアに並列で再計算させることで、計算結果に対する正否の検証が行われる。
 データそのもの、あるいはデータのハッシュ値をシーケンスに加えることは、タイムスタンプに相当する情報をそのデータに付与することにあたる。つまりそれは状態、順序、データの記録が、次のハッシュ計算が開始された以前に完了していたことの証明に他ならないからだ。この設計は、複数のシーケンス生成者同士が互いのシーケンスに含まれる情報を提供し、その情報を計算のインプットとして混ぜ込み、同期を取ることができる平行スケーリングをサポートする。この平行スケーリングについてはセクション\ref{poh:scale}で少し踏み込んだ議論を行う。
 
-\subsection{説明}
+\subsection{概要説明}
 システムは次のように設計される。実行前に計算結果を予測できない暗号学的ハッシュ関数(例：\texttt{sha256}、\texttt{ripemd}など)を用いる。無作為に選ばれた値を初期入力値としてハッシュ計算を開始、今回の計算結果を次回計算の入力値として使う。今回計算も次回計算も実行するハッシュ関数は同じである。関数の呼び出し回数および計算結果は順次記録される。またここで登場した初期入力値は、当日のニューヨークタイムズ紙のヘッドラインなど、任意の文字列を選択して良い。
 \\\\
 \begin{center}
@@ -104,7 +104,7 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
     \end{tabular}
 \end{center}
 
-ハッシュ関数に強衝突耐性が備わっている限り、この一連のハッシュ値はシングルスレッドのみで計算可能である。これは$300$番目のハッシュ計算結果は、当該ハッシュ計算を$300$回繰り返すまで求まらないことから明らかである。この制約から$0$番目から$300$番目までの計算が終わるまでには、相応の時間が経過していることが分かる。
+ハッシュ関数に衝突耐性が備わっている限り、この一連のハッシュ値はシングルスレッドのみで計算可能である。これは$300$番目のハッシュ計算結果は、当該ハッシュ計算を$300$回繰り返すまで求まらないことから明らかである。この制約から$0$番目から$300$番目までの計算が終わるまでには相応の時間が経過していることが分かる。
 
 図\ref{fig:poh_seq}中にあるハッシュ値\texttt{62f51643c1}は$510144806912$番目に求められ、ハッシュ値\texttt{c43d862d88}は$510146904064$番目に求められたことを表している。既に説明した通り、$510144806912$番目と$510146904064$番目の間にかかった計算時間の分だけ現実世界の時間も経過することがわかる。
 
@@ -118,7 +118,7 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
 
 \subsection{イベントのタイムスタンプ}
 
-上述の通り、このハッシュ値のシーケンスは、あるデータがシーケンスに挿入される以前に、対象のデータが作成されていたことの記録として用いることができる。それはデータと現在の順序に弾き出されて来たハッシュ値に「combine」関数を適用することで、順序と値が組み合わされた計算結果が記録として残るためである。このとき任意のイベントデータが暗号学的にユニークなハッシュ値に変換される。combine関数は常に強衝突耐性を備え、単純に計算結果を積み重ねていくことができる。結果的に得られたハッシュ値はそのデータにとってのタイムスタンプとなる。それは以前のハッシュ値を基にして生成されたハッシュ値であるため、以前に記録されたデータよりも後に生成されていることが言えるからである。\\
+上述の通り、このハッシュ値のシーケンスは、あるデータがシーケンスに挿入される以前に、対象のデータが作成されていたことの記録として用いることができる。それはデータと現在の順序に弾き出されて来たハッシュ値に「combine」関数を適用することで、順序と値が組み合わされた計算結果が記録として残るためである。このとき任意のイベントデータが暗号学的にユニークなハッシュ値に変換される。combine関数は常に衝突耐性を備え、単純に計算結果を積み重ねていくことができる。結果的に得られたハッシュ値はそのデータにとってのタイムスタンプとなる。それは以前のハッシュ値を基にして生成されたハッシュ値であるため、以前に記録されたデータよりも後に生成されていることが言えるからである。\\
 
 \begin{center}
   \begin{tabular}{ l l r }
@@ -180,7 +180,7 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
   \end{center}
   \end{figure}
 
-  図\ref{fig:poh_insert}では入力値\texttt{cfd40df8\ldots}がProof of Historyのシーケンスへ挿入されている。挿入された順番は$510145855488$で、その時点の状態は\texttt{3d039eef3}である。将来生成されるすべてのハッシュ値は、今回のシーケンスに対するデータ挿入により影響を受ける。その影響範囲を図中では色付きで表現している。\\
+  図\ref{fig:poh_insert}では入力値\texttt{cfd40df8\ldots}がProof of Historyのシーケンスへ挿入されている。挿入された順番は$510145855488$で、その時点の状態は\texttt{3d039eef3}である。将来生成されるすべてのハッシュ値は、今回のシーケンスに対するデータ挿入により影響を受ける。その影響範囲を図中では色付きで表現している。\\\\
 
 シーケンスを観察しているノードは、すべてのイベントが挿入された順序と、任意のふたつの挿入時点の間で経過した時間を見積もることができる。
 
@@ -276,7 +276,7 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
 この同期方法により、\(A \leftrightarrow B \leftrightarrow C\)のように直接同期していない生成者同士でも、三者間のイベント順序は矛盾なく決定することができる。
 
 %%It is worth noting that the theoretical $710$k tx/s on a $1$~gb network based on the PoH design does not account for additional capacity offered through  horizontal scaling.
-このようなスケーリング方法は回線稼働率という犠牲の上に成り立ってる。$10 \times 1$~gbpsの回線で構成されているネットワーク環境では、回線稼働率が0.999のとき、ネットワーク全体の回線稼働率は\(0.999^{10} = 0.99 \)となる。
+このスケーリング方法は回線稼働率が枷になる。$10 \times 1$~gbpsの回線で構成されるネットワーク環境では、回線稼働率が0.999のとき、ネットワーク全体の回線稼働率は\(0.999^{10} = 0.99 \)となる。
 
 \subsection{一貫性}
 生成済みのシーケンス上の最後の計算結果を次回計算の入力値にすることで、一貫性と攻撃耐性が維持されると期待される。\\
@@ -337,7 +337,7 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
     \end{tabular}
 \end{center}
 
-このデータの検証を行うためには、署名と付与されたハッシュ値がシーケンス上で保たれていることが必要とされる。\\\\
+このデータの検証を行うためには、署名と付与されたハッシュ値がシーケンス上で保たれていることが必要とされる。\newpage
 \noindent 検証方法：\\
 
 \noindent\texttt{(Signature, PublicKey, hash30a, event3 data) = Event3} \\
@@ -357,37 +357,37 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
 \subsection{オーバーヘッド}
 秒間4000回のハッシュ計算が可能な環境では、秒間160KBのデータが追加で生成され、その検証のためコア数4000のGPUを使っておよそ0.25-0.75ミリ秒のオーバーヘッドが発生する。
 
-\subsection{Attacks}
-\subsubsection{Reversal}
- Generating a reverse order would require an attacker to start the malicious sequence after the second event. This delay should allow any non malicious peer to peer nodes to communicate about the original order.
+\subsection{攻撃}
+\subsubsection{順序の逆転}
+ イベントの順序を逆転させるためには、攻撃者は次のイベントを受け取った後から不正なシーケンスを生成し始めなければならない。この遅れにより、悪意のないノード同士で不正のない情報の交換が可能となる。
 
-\subsubsection{Speed}
-Having multiple generators may make deployment more resistant to attacks. One generator could be high bandwidth, and receive many events to mix into its sequence, another generator could be high speed low bandwidth that periodically mixes with the high bandwidth generator.
+\subsubsection{速度}
+複数の生成者が稼働することでより強力な攻撃耐性を得られる。生成者は広帯域な通信を教授でき、他の生成者と共有する状態をシーケンスに混ぜ込む機会を増やせる。また高速低帯域の生成者であっても、周期的に広帯域の生成者とイベントを混ぜ合うことができる。
 
-The high speed sequence would create a secondary sequence of data that an attacker would have to reverse.
+こうした高速なシーケンスにより、悪意のあるノードが生成する不正なシーケンスは矯正されることになる。
 
-\subsubsection{Long Range Attacks}
+\subsubsection{ロングレンジアタック}
 
-Long range attacks involve acquiring old discarded client Private Keys, and generating a falsified ledger~\cite{casper}. Proof of History provides some protection against long range attacks. A malicious user that gains access to old private keys would have to recreate a historical record that takes as much time as the original one they are trying to forge. This would require access to a faster processor than the network is currently using, otherwise the attacker would never catch up in history length.
+ロングレンジアタックとは、かつて利用されていた古い秘密鍵を悪用して、不正な台帳を作ることを指す\cite{casper}。Proof of Historyはロングレンジアタックに対する防衛手段となりえる。攻撃に利用できる秘密鍵を入手した悪意のあるノードは、再作成しようとする履歴範囲の開始時点から経過したのと同程度の時間を再現する必要がある。それにはネットワーク上のノードが備える計算速度よりも高速なプロセッサを利用する必要がある。さもなくば攻撃者が作成する不正なシーケンス上で再現される時間は、正規のシーケンスには永遠に追いつくことができない。
 
-Additionally, a single source of time allows for construction of a simpler Proof of Replication (more on that in Section~\ref{porep}). Since the network is designed so that all participants in the network will rely on a single historical record of events.
+さらに時間の基準を統一することで、Proof of Replicationの構築をよりシンプルにすることができる（詳細はセクション\ref{porep}を参照）。すべてのネットワーク参加者が一箇所のシーケンス上に記録されたイベントに依拠するためである。
 
-PoRep and PoH together should provide a defense of both space and time against a forged ledger.
+PoRepとPoHを一緒に活用することで空間的にも時間的にも堅牢性を高めることができる。
 
 
-\section{Proof of Stake Consensus}\label{proof_of_stake}
-\subsection{Description}
-This specific instance of Proof of Stake is designed for quick confirmation of the current sequence produced by the Proof of History generator, for voting and selecting the next Proof of History generator, and for punishing any misbehaving validators. This algorithm depends on messages eventually arriving to all participating nodes within a certain timeout.
-\subsection{Terminology}
+\section{Proof of Stakeによる合意形成}\label{proof_of_stake}
+\subsection{概要説明}
+ここで取り上げるProof of Stakeは次に挙げる要件を満たすために設計されている。Proof of Historyの生成者が生み出したシーケンスを迅速に承認できること、逐次Proof of History生成者を選出できること、そして不正を働いている検証者たちへの懲罰ができること。このアルゴリズムはすべてのネットワーク参加ノードがタイムアウト発生前にメッセージを受け取れることを前提としている。
+\subsection{用語の説明}
 \begin{description}
 
-\item[bonds]
+\item[債（ボンド）]
 Bonds are equivalent to a capital expense in Proof of Work. A miner buys hardware and electricity, and commits it to a single branch in a Proof of Work blockchain. A bond is coin that the validator commits as collateral while they are validating transactions.
 
-\item[slashing]
+\item[スラッシング]
 
 The proposed solution to the nothing at stake problem in Proof of Stake systems~\cite{slasher}. When a proof of voting for a different branch is published, that branch can destroy the validator’s bond. This is an economic incentive designed to discourage validators from confirming multiple branches.
-\item[super majority]
+\item[大多数派]
 A super majority is \(\frac{2}{3}\)rds of the validators weighted by their bonds. A super majority vote indicates that the network has reached consensus, and at least \(\frac{1}{3}\)rd of the network would have had to vote maliciously for this branch to be invalid. This would put the economic cost of an attack at \(\frac{1}{3}\)rd of the market cap of the coin.
 
 \end{description}
