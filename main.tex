@@ -501,7 +501,11 @@ As shown in Figure~\ref{fig:encrypt} CBC encryption encrypts each block of data 
 \begin{figure}[h]
   \begin{center}
     \centering
+<<<<<<< HEAD
     \includegraphics[width=0.9\textwidth]{figures/cbc_encryption_001.png}
+=======
+    \includegraphics[width=0.9\textwidth]{figures/fig_7.png}
+>>>>>>> figure tweaks
     \caption[Fig 7]{Sequential CBC encryption\label{fig:encrypt}}
   \end{center}
   \end{figure}
@@ -615,7 +619,11 @@ for a total of 32 bytes.\\
 \end{bytefield}\\
 for a total of 64 bytes.
 \subsubsection{Verifier, State Replication}
+<<<<<<< HEAD
 The Verifier nodes replicate and provide high availability of the blockchain state. The replication target is selected by the consensus algorithm, and the validators in the consensus algorithm select and vote for the Proof of Replication nodes they approve of based on off-chain defined criteria.
+=======
+The Verifier nodes replicate and provide high availability of the blockchain state. The replication target is selected by the consensus algorithm, and the validators in the consensus algorithm select and vote the Proof of Replication nodes they approve of based on off-chain defined criteria.
+>>>>>>> figure tweaks
 
 The network could be configured with a minimum Proof of Stake bond size, and a requirement for a single replicator identity per bond.
 \subsubsection{Validators}
@@ -650,14 +658,10 @@ The leader is expected to be able to take incoming user packets, order them in t
 
 \noindent Size \(20 + 8 + 16 + 8 + 32 + 32 + 32 = 148\) bytes.\\\\
 
-The minimal payload that can be supported would be 1 destination account.\\\\
 
-<<<<<<< HEAD
+The minimal payload that can be supported would be 1 destination account with a minimum size of 176 bytes.\\\\
 \noindent \textbf{With payload:}\\\\\noindent
-=======
-The minimal payload that can be supported would be 1 destination account with a minimum size of 176 bytes.
-\noindent With payload:\\\\\noindent
->>>>>>> typo updates
+
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
 \begin{rightwordgroup}{Signed}
