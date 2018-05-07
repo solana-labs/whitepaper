@@ -498,10 +498,10 @@ Filecoin proposed a version of Proof of Replication \cite{filecoinporep}. The go
 \subsection{Algorithm}
 As shown in Figure~\ref{fig:encrypt} CBC encryption encrypts each block of data in sequence, using the previously encrypted block to XOR the input data.
 
-\begin{figure}
+\begin{figure}[h]
   \begin{center}
     \centering
-    \includegraphics[width=0.9\textwidth]{figures/fig_7.png}
+    \includegraphics[width=0.9\textwidth]{figures/cbc_encryption_001.png}
     \caption[Fig 7]{Sequential CBC encryption\label{fig:encrypt}}
   \end{center}
   \end{figure}
@@ -512,7 +512,7 @@ The data set is fully encrypted block by block. Then to generate a proof, the ke
 
 A merkle hash is computed with the selected PoH hash prepended to the each slice.
 
-\begin{figure}
+\begin{figure}[h]
   \begin{center}
     \centering
     \includegraphics[width=0.9\textwidth]{figures/por_001.png}
@@ -585,7 +585,7 @@ To further avoid this scenario, the PoRep verifiers can submit false proofs a sm
 \begin{figure}
   \begin{center}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/fig_9.png}
+    \includegraphics[width=0.9\textwidth]{figures/system_arch_001.png}
     \caption[Fig 9]{System Architecture \label{fig_9}}
   \end{center}
   \end{figure}
@@ -626,14 +626,14 @@ These nodes are consuming bandwidth from Verifiers. They are virtual nodes, and 
 \begin{figure}
   \begin{center}
     \centering
-    \includegraphics[width=0.8\textwidth]{figures/fig_10.png}
+    \includegraphics[width=0.8\textwidth]{figures/generator_network_limits_001.png}
     \caption[Fig 10]{Generator network limits\label{fig_10}}
   \end{center}
   \end{figure}
 
 Leader is expected to be able to take incoming user packets, orders them the most efficient way possible, and sequences them into a Proof of History sequence that is published to downstream Verifiers. Efficiency is based on memory access patterns of the transactions, so the transactions are ordered to minimize faults and to maximize prefetching.\\\\
 
-\noindent Incoming packet format:\\\\\noindent
+\noindent \textbf{Incoming packet format:}\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
 \begin{rightwordgroup}{Signed}
@@ -648,10 +648,11 @@ Leader is expected to be able to take incoming user packets, orders them the mos
 & \bitbox{256}{Signature 2 of 2} \\
 \end{bytefield}
 
-\noindent Size \(20 + 8 + 16 + 8 + 32 + 32 32 = 148\) bytes.\\\\
+\noindent Size \(20 + 8 + 16 + 8 + 32 + 32 + 32 = 148\) bytes.\\\\
 
-The minimal payload that can be supported would be 1 destination account.
-\noindent With payload:\\\\\noindent
+The minimal payload that can be supported would be 1 destination account.\\\\
+
+\noindent \textbf{With payload:}\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
 \begin{rightwordgroup}{Signed}
@@ -704,7 +705,7 @@ One of its main advantages is a zero cost Foreign Function Interface. Intrinsics
 \begin{figure}
   \begin{center}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/fig_11.png}
+    \includegraphics[width=0.9\textwidth]{figures/bpf_programs_001.png}
     \caption[Fig 11]{Executing \hyphenation{user supplied} BPF programs.\label{fig_11}}
   \end{center}
   \end{figure}
