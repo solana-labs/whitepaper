@@ -394,18 +394,18 @@ Proof of Stakeにおけるnothing at stake問題への対処法のひとつ\cite
 \end{description}
 
 \subsection{ボンディング}
-A bonding transaction takes a \hyphenation{user specified} amount of coin and moves it to a bonding account under the user’s identity. Coins in the bonding account cannot be spent and have to remain in the account until the user removes them. The user can only remove stale coins that have timed out. Bonds are valid after super majority of the current stakeholders have confirmed the sequence.
+ボンディングには一定量以上の通貨を必要とし、実行すると所有者に紐づく形でボンディング用の口座へ出金される。ボンディング中の残高は消費できず、所有者が引き出すまでボンディング用の口座に置かれ続ける。ボンディングされた残高は一定時間が経過するまで引き出すことはできない。ボンディング中の承認者たちから大多数派の承諾をもってボンドは有効化される。
 
-\subsection{Voting}
-It is anticipated that the Proof of History generator will be able to publish a signature of the state at a predefined period. Each bonded identity must confirm that signature by publishing their own signed signature of the state. The vote is a simple yes vote, without a no.
+\subsection{投票}
+Proof of History生成者は、予め決まった期間の状態に対し署名を行うことができる。ボンディング中の参加者たちは各自が状態に行った署名によって、生成者の署名内容に対する承認を行わなければならない。つまり単純なYes票による投票で、否定票はない。
 
-If super majority of the bonded identities have voted within a timeout, then this branch would be accepted as valid.
+大多数派のボンディング中の参加者から所定時間内に支持を受けた場合、そのブランチは正式に受け入れられる。
 
-\subsection{Unbonding}
+\subsection{アンボンディング}
 
-Missing N number of votes marks the coins as stale and no longer eligible for voting. The user can issue an unbonding transaction to remove them.
+N票を失った通貨は枯れたものとみなされ、投票に参加する権利を失う。所有者はアンボンディングの手続きを踏んで資本を取り戻すことができる。
 
-N is a dynamic value based on the ratio of stale to active votes. N increases as the number of stale votes increases. In an event of a large network partition, this allows the larger branch to recover faster then the smaller branch.
+ここに挙げられたNの値は有効票数に対する枯れた通貨量の比率により動的に変わる。Nは枯れた通貨量の増加に合わせて増えていく。大規模なネットワークの分断が起きた状況で、この仕組みにより大きなブランチが小さなブランチよりも速く復旧する。
 
 \subsection{Elections}\label{subsec:elections}
 Election for a new PoH generator occur when the PoH generator failure is detected. The validator with the largest voting power, or highest public key address if there is a tie is picked as the new PoH generator.
