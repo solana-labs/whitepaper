@@ -440,41 +440,41 @@ PoH生成者が生成した不正なハッシュへ票が投じられた場合�
 \subsection{副系の選挙}
 副系あるいはそれ下位のProof of History生成者の選挙も開催される。選挙開催の提案はリーダー生成者のシーケンス上で行われる。タイムアウト前に合意形成がなされると副系は選出され、その役割を担う。リーダーから権限の引き渡しが行われる旨のメッセージがシーケンスに挿入される。不正な状態がシーケンスへ挿入された場合は、副系へのフォールバックが強制される。
 
-副系が選出されている状況でリーダーがエラーを起こした場合、選挙中は副系がリーダー相当の役割を担う。
+副系が選出されている状況でリーダーがエラーを起こした場合、選挙中は副系が最初のフォールバック先を担う。
 
 \subsection{可用性}\label{availability}
-CAP systems that deal with partitions have to pick Consistency or Availability. Our approach eventually picks Availability, but because we have an objective measure of time, Consistency is picked with reasonable human timeouts.
+分断状態を扱うCAPに基づいたシステムは、一貫性と可用性のいずれかを優先しなければならない。Solanaは可用性を選択したが、時間の計測者という立場から、実時間に基づくタイムアウト以前においては一貫性が保たれる設計を採用する。
 
-Proof of Stake verifiers lock up some amount of coin in a “stake”, which allows them to vote for a particular set of transactions. Locking up coin is a transaction that is entered into a PoH stream, just like any other transaction. To vote, a PoS verifier has to sign the hash of the state, as it was computed after processing all the transactions to a specific position in the PoH ledger. This vote is also entered as a transaction into the PoH stream. Looking at the PoH ledger, we can then infer how much time passed between each vote, and if a partition occurs, for how long each verifier has been unavailable.
+Proof of Stakeの承認者は一定量の通貨をステイク状態にロックアップすることで、所定の取引に投票する権利を得る。ロックアップの実行も他の取引と同様、PoHのストリームに挿入する取引である。投票するためにPoS承認者は状態ハッシュ値に署名する必要がある。これはPoHの台帳で発生したすべての取引完了後の状態から投票の処理が行われるためである。この投票自体もPoHのストリームに取り込まれる。PoHの台帳をみれば各投票がどのぐらいの間隔で行われたか推測することも可能である。さらに分断が起きたときには承認者たちが利用不可に陥っていた時間も推し量ることができる。
 
-To deal with partitions with reasonable human timeframes, we propose a dynamic approach to “unstake” unavailable verifiers. When the number of verifiers is high and above \(\frac{2}{3}\), the “unstaking” process can be fast. The number of hashes that must be generated into the ledger is low before the unavailable verifiers stake is fully unstaked and they are no longer counted for consensus. When the number of verifiers is below \(\frac{2}{3}\)rds but above \(\frac{1}{2}\), the unstaking timer is slower, requiring a larger number of hashes to be generated before the missing verifiers are unstaked. In a large partition, like a partition that is missing \(\frac{1}{2}\) or more of the verifiers, the unstaking process is very very slow. Transactions can still be entered into the stream, and verifiers can still vote, but full \(\frac{2}{3}\)rds consensus will not be achieved until a very large amount of hashes have been generated and the unavailable verifiers have been unstaked. The difference in time for a network to regain liveness allows us as customers of the network human timeframes to pick a partition that we want to continue using.
+一定時間内に分断を解決するため、利用不可になった承認者のステイキングを解除できる動的アプローチを提言する。\(\frac{2}{3}\)以上の承認者が利用可能であれば、承認に必要なハッシュ計算回数は抑えられるので、ステイキング解除はすぐに可能である。ステイキング解除された承認者は、合意形成の頭数に数えられなくなる。利用可能な承認者の数が\(\frac{2}{3}\)未満かつ\(\frac{1}{2}\)を超えるときは、承認にかかるハッシュ計算回数が増加するためステイキング解除にかかる時間が延びてしまう。半数以上の承認者が利用不可になる規模の大きな分断が発生した状況では、ステイキング解除の処理に多大な時間がかかる。そのような状況でも取引することも投票することも可能だが、\(\frac{2}{3}\)の合意形成に至るには相当数のハッシュ計算をこなし、利用不可に陥った承認者のステイキング解除が完了している必要がある。復旧にかかるネットワークの時間差は、どのパーティションを使い続けるか選択するための猶予にあたる。
 
-\subsection{Recovery}\label{availability}
-In the system we propose, the ledger can be fully recovered from any failure. That means, anyone in the world can pick any random spot in the ledger and create a valid fork by appending newly generated hashes and transactions. If all the verifiers are missing from this fork, it would take a very very long time for any additional bonds to become valid and for this branch to achieve \(\frac{2}{3}\)rds super majority consensus. So full recovery with zero available validators would require a very large amount of hashes to be appended to the ledger, and only after all the unavailable validators have been unstaked will any new bonds be able to validate the ledger.
+\subsection{復旧}\label{availability}
+ここで紹介するシステムはどんな障害が起きても台帳を完全に復旧させることができる。つまり誰でも台帳上の任意の位置にハッシュ値や取引を追記することで分岐を作成できる。もし分岐したシーケンス上において承認者が不在の場合、新たな承認者が\(\frac{2}{3}\)の支持を得るまでに極めて長い時間が必要とされる。よって承認者不在の状態から完全復旧を果たすためには相当数のハッシュ計算が台帳上で行われなければならない。利用不可になった承認者全てのステイキングが解除されるまで、新たなボンドにより台帳の承認を行うことは不可能となる。
 
-\subsection{Finality}\label{availability}
-PoH allows verifiers of the network to observe what happened in the past with some degree of certainty of the time of those events. As the PoH generator is producing a stream of messages, all the verifiers are required to submit their signatures of the state within 500ms. This number can be reduced further depending on network conditions. Since each verification is entered into the stream, everyone in the network can validate that every verifier submitted their votes within the required timeout without actually observing the voting directly.
+\subsection{確定}\label{availability}
+過去に何が起きたか、それらがいつ頃に起きたかを、承認者から監視することがPoHにより可能になる。PoH生成者がメッセージストリームを流し出すごとに、承認者はそれらの状態に対して署名を付けて500ミリ秒以内に提出することが求められる。ネットワークの状況によっては、この時間はさらに短縮される。その承認内容自体がストリームへ挿入されるため、投票そのものを直接観測していなかったとしても、それがタイムアウト発生前に完了したかを後から確認することは誰にでも可能である。
 
-\subsection{Attacks}
-\subsubsection{Tragedy of Commons}
+\subsection{攻撃}
+\subsubsection{コモンズの悲劇}
 The PoS verifiers simply confirm the state hash generated by the PoH generator. There is an economic incentive for them to do no work and simply approve every generated state hash. To avoid this condition, the PoH generator should inject an invalid hash at a random interval. Any voters for this hash should be slashed. When the hash is generated, the network should immediately promote the Secondary elected PoH generator.
 
 Each verifier is required to respond within a small timeout - 500ms for example. The timeout should be set low enough that a malicious verifier has a low probability of observing another verifiers vote and getting their votes into the stream fast enough.
 
-\subsubsection{Collusion with the PoH generator}\label{subsubsec:collusion}
+\subsubsection{PoH生成者との談合}\label{subsubsec:collusion}
 A verifier that is colluding with the PoH generator would know in advance when the invalid hash is going to be produced and not vote for it. This scenario is really no different than the PoH identity having a larger verifier stake. The PoH generator still has to do all the work to produce the state hash.
 
-\subsubsection{Censorship}\label{censorship}
+\subsubsection{検閲}\label{censorship}
 Censorship or denial of service could occur when a \(\frac{1}{3}\)rd of the bond holders refuse to validate any sequences with new bonds. The protocol can defend against this form of attack by dynamically adjusting how fast bonds become stale. In the event of a denial of service, the larger partition will be designed to fork and censor the Byzantine bond holders. The larger network will recover as the Byzantine bonds become stale with time. The smaller Byzantine partition would not be able to move forward for a longer period of time.
 
 The algorithm would work as follows. A majority of the network would elect a new Leader. The Leader would then censor the Byzantine bond holders from participating. Proof of History generator would have to continue generating a sequence, to prove the passage of time, until enough Byzantine bonds have become stale so the bigger network has a super majority. The rate at which bonds become stale would be dynamically based on what percentage of bonds are active. So the Byzantine minority fork of the network would have to wait much longer than the majority fork to recover a super majority. Once a super majority has been established, slashing could be used to permanently punish the Byzantine bond holders.
 
-\subsubsection{Long Range Attacks}\label{censorship}
+\subsubsection{ロングレンジアタック}\label{censorship}
 PoH provides a natural defense against long range attacks. Recovering the ledger from any point in the past would require the attacker to overtake the valid ledger in time by outpacing the speed of the PoH generator.
 
 The consensus protocol provides a second layer of defense, as any attack would have to take longer then the time it takes to unstake all the valid validators. It also creates an availability “gap” in the history of the ledger. When comparing two ledgers of the same height, the one with the smallest maximum partition can be objectively considered as valid.
 
-\subsubsection{ASIC Attacks}\label{censorship}
+\subsubsection{ASIC攻撃}\label{censorship}
 
 Two opportunities for an ASIC attacks exist in this protocol - during partition, and cheating timeouts in Finality.
 
