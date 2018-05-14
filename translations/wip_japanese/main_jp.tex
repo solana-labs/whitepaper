@@ -374,7 +374,6 @@ Proof of Historyは任意の二つのイベントに挟まれた時間の経過�
 
 PoRepとPoHを一緒に活用することで空間的にも時間的にも堅牢性を高めることができる。
 
-
 \section{Proof of Stakeによる合意形成}\label{proof_of_stake}
 \subsection{概要説明}
 ここで取り上げるProof of Stakeは次に挙げる要件を満たすために設計されている。Proof of Historyの生成者が生み出したシーケンスを迅速に承認できること、逐次Proof of History生成者を選出できること、そして不正を働いている検証者たちへの懲罰ができること。このアルゴリズムはすべてのネットワーク参加ノードがタイムアウト発生前にメッセージを受け取れることを前提としている。
@@ -382,41 +381,41 @@ PoRepとPoHを一緒に活用することで空間的にも時間的にも堅牢
 \begin{description}
 
 \item[ボンド]
-Proof of Workにおける設備コストに相当する。Proof of Workでは、採掘者はハードウェアや電気にお金を支払い、ブロックチェーンのブランチのひとつを支持する。つまりボンドとは、トランザクションを承認する権利を得るために承認者たちが担保として献上する価値のことを指す。
+Proof of Workにおける設備コストに相当する。Proof of Workでは、採掘者はハードウェアや電気にお金を支払い、ブロックチェーンのブランチのひとつを支持する。つまりボンドとは、トランザクションを承認する権利を得るために検証者たちが担保として献上する価値のことを指す。
 
 \item[スラッシング]
 
-Proof of Stakeにおけるnothing at stake問題への対処法のひとつ\cite{slasher}。承認者が異なるブランチを支持していたことが証明された場合、正規のブランチは承認者がステークしていた資本を処分することができる。つまり承認者の支持するブランチが発散しないよう設計された経済的インセンティブである。
+Proof of Stakeにおけるnothing at stake問題への対処法のひとつ\cite{slasher}。検証者が他のブランチを支持していたことが証明された場合、正規のブランチは検証者がステークしていた資本を処分することができる。つまり検証者の支持するブランチが発散しないよう設計された経済的インセンティブである。
 
 \item[大多数派]
-承認者全体が保有するリソースのうち\(\frac{2}{3}\)以上を指す。大多数派からの支持によりネットワークは合意形成を完了する。つまり少なくとも\(\frac{1}{3}\)の支持を不正なブランチに流さなくては、正規ブランチへの合意形成を避けることができない。この攻撃を仕掛けるためには、通貨の時価総額の\(\frac{1}{3}\)近いコストが必要であることが示唆される。
+全検証者をボンドで重み付けしたときの\(\frac{2}{3}\)以上の割合を指す。大多数派からの支持によりネットワークは合意形成を完了する。つまり少なくとも\(\frac{1}{3}\)の支持を不正なブランチに流さなくては、正規ブランチへの合意形成を避けることができない。この攻撃を仕掛けるためには、通貨の時価総額の\(\frac{1}{3}\)近いコストが必要であることが示唆される。
 
 \end{description}
 
 \subsection{ボンディング}
-ボンディングには一定量以上の通貨を必要とし、実行すると所有者に紐づく形でボンディング用の口座へ出金される。ボンディング中の残高は消費できず、所有者が引き出すまでボンディング用の口座に置かれ続ける。ボンディングされた残高は一定時間が経過するまで引き出すことはできない。ボンディング中の承認者たちから大多数派の承諾をもってボンドは有効化される。
+ボンディングには一定量以上の通貨を必要とし、実行すると所有者に紐づく形でボンディング用の口座へ出金される。ボンディング中の残高は消費できず、所有者が引き出すまでボンディング用の口座に置かれ続ける。ボンディングされた残高は一定時間が経過するまで引き出すことはできない。ボンディング中の参加者たちから大多数の承諾を受けてボンドは有効化される。
 
 \subsection{投票}
-Proof of History生成者は、予め決まった期間の状態に対し署名を行うことができる。ボンディング中の参加者たちは各自が状態に行った署名によって、生成者の署名内容に対する承認を行わなければならない。つまり単純なYes票による投票で、否定票はない。
+Proof of History生成者は、予め決められた期間の状態に対し署名を行うことができる。ボンディング中の参加者たちは各自が状態に行った署名によって、生成者の署名内容に対する承認を行わなければならない。つまり単純なYes票による投票で、否定票はない。
 
-大多数派のボンディング中の参加者から所定時間内に支持を受けた場合、そのブランチは正式に受け入れられる。
+ボンディング中の参加者から所定時間内に大多数の支持を受けた場合、そのブランチは正式に受け入れられる。
 
 \subsection{アンボンディング}
 
-N票を失った通貨は枯れたものとみなされ、投票に参加する権利を失う。所有者はアンボンディングの手続きを踏んで資本を取り戻すことができる。
+N票を失った通貨は枯れたものとみなされ投票に参加する権利を失う。所有者はアンボンディングの手続きを踏んで資本を取り戻すことができるようになる。
 
-ここに挙げられたNの値は有効票数に対する枯れた通貨量の比率により動的に変わる。Nは枯れた通貨量の増加に合わせて増えていく。大規模なネットワークの分断が起きた状況で、この仕組みにより大きなブランチが小さなブランチよりも速く復旧する。
+ここに挙げられたNの値は、有効票数に対し枯れた通貨量の比率により動的に変わる。Nは枯れた通貨量の増加に合わせて増えていく。これにより規模の大きいネットワークの分断が起きたとき、大きなブランチが小さなブランチよりも速く復旧する仕組みができる。
 
 \subsection{選挙}\label{subsec:elections}
 PoH生成者の選挙は生成者からエラーが検出されたときに開かれる。票をもっとも多く集めた検証者が次の生成者として選出される。同票の場合は公開鍵アドレスの値が大きい方が選択される。
 
-新しいシーケンス開始時にはネットワークの合意が要求されるが、合意形成前にリーダーがエラーを起こした場合は、得票率が次点だった承認者が新たなリーダーとして選択される。このとき改めて合意形成を行わなければならない。
+新しいシーケンス開始時にはネットワークの合意が要求されるが、合意形成前にリーダーがエラーを起こした場合は、得票率が次点だった検証者が新たなリーダーとして選択される。このとき改めて合意形成を行わなければならない。
 
 決議を変更するにはより高速なPoHシーケンス上で投票を行う必要がある。また改めて投じる票には変更前の情報を含める必要がある。これを怠るとスラッシングされる恐れがある。シーケンスへの承認が一定以上蓄積されたとき、決議の変更が可能となる。
 
 リーダーが選出されると、その役割を引き継ぐことのできる副系を決めることができる。リーダーに異常が起きたとき副系はその役割を引き継ぎ、代わりを担う。
 
-あらかじめ定められたスケジュールに例外が検出されたとき副系はリーダーを代わり、さらに下位の生成者も繰り上がるようプラットフォームは設計される。
+例外が検出された、あるいは予め定められた時点で、副系はリーダーを代わり、下位の生成者も繰り上がるような設計になる。
 
 \subsection{選挙の開催条件}
 \subsubsection{PoH生成者の分断}
@@ -424,14 +423,14 @@ PoH生成者の選挙は生成者からエラーが検出されたときに開�
 PoH生成者は生成したシーケンスに署名をおこなう。PoH生成者の鍵が攻撃者に利用できる状況下においてのみ分断は発生しうる。異なるシーケンスに同じPoH生成者の署名が与えられることで分断が検知される。
 
 \subsubsection{実行系の例外}
-PoH生成者にハードウェアの誤動作やバグ、あるいは意図的に起こされたエラーにより、不正な状態や検証者の計算結果と不一致する状態が生成されることがある。これを検知した検証者はゴシップを流し、それが引き金となって新たに選挙が開催される。不正なシーケンス状態を受け入れた検証者は必ずスラッシングを受けてボンドを没収される。
+PoH生成者にハードウェアの誤動作やバグ、あるいは意図的に起こされたエラーにより、不正な状態や検証者の計算結果が不一致する状態が生成されることがある。これを検知した検証者はゴシップを流し、それが引き金となって新たに選挙が開催される。不正なシーケンス状態を受け入れた検証者は必ずスラッシングを受けてボンドを没収される。
 
 \subsubsection{ネットワークのタイムアウト}
 
 ネットワークにタイムアウトが発生した場合は選挙が開催される。
 
 \subsection{スラッシング}
-検証者が２つの異なるシーケンスに票を投じるとスラッシングにより罰せられる。悪意のある投票が検知されると、ボンドされていた資本は没収されて採掘プールへ送られる。
+検証者が分断したシーケンス両方に票を投じるとスラッシングにより罰せられる。悪意のある投票が検知されると、ボンドされていた資本は没収されて採掘プールへ送られる。
 
 前回分断を起こしたシーケンスへ投票していた場合でも、それは悪意のある投票とみなされず、ボンドへのスラッシングは執行されない。ただし今回分断を起こしたシーケンスへの票が無効化される。
 
@@ -440,50 +439,50 @@ PoH生成者が生成した不正なハッシュへ票が投じられた場合�
 \subsection{副系の選挙}
 副系あるいはそれ下位のProof of History生成者の選挙も開催される。選挙開催の提案はリーダー生成者のシーケンス上で行われる。タイムアウト前に合意形成がなされると副系は選出され、その役割を担う。リーダーから権限の引き渡しが行われる旨のメッセージがシーケンスに挿入される。不正な状態がシーケンスへ挿入された場合は、副系へのフォールバックが強制される。
 
-副系が選出されている状況でリーダーがエラーを起こした場合、選挙中は副系が最初のフォールバック先を担う。
+副系が選出済みの状態でリーダーが障害を起こした場合、選挙中はその副系が最初のフォールバック先として扱われる。
 
 \subsection{可用性}\label{availability}
-分断状態を扱うCAPに基づいたシステムは、一貫性と可用性のいずれかを優先しなければならない。Solanaは可用性を選択したが、時間の計測者という立場から、実時間に基づくタイムアウト以前においては一貫性が保たれる設計を採用する。
+分断状態になりうるCAPに基づいたシステムは、一貫性あるいは可用性のいずれかを優先しなければならない。我々のシステムは可用性を選択したが、時間の計測者という立場から、実時間に基づくタイムアウト以前においては一貫性が保たれる設計を採用する。
 
-Proof of Stakeの承認者は一定量の通貨をステイク状態にロックアップすることで、所定の取引に投票する権利を得る。ロックアップの実行も他の取引と同様、PoHのストリームに挿入する取引である。投票するためにPoS承認者は状態ハッシュ値に署名する必要がある。これはPoHの台帳で発生したすべての取引完了後の状態から投票の処理が行われるためである。この投票自体もPoHのストリームに取り込まれる。PoHの台帳をみれば各投票がどのぐらいの間隔で行われたか推測することも可能である。さらに分断が起きたときには承認者たちが利用不可に陥っていた時間も推し量ることができる。
+Proof of Stakeの承認者は一定量の通貨をステーク状態にロックアップすることで、所定の取引に投票する権利を得る。ロックアップの実施も他の取引と同様PoHのストリームに挿入される取引として扱われる。投票するためにPoS承認者は状態ハッシュ値に署名する必要がある。PoHの台帳で発生したすべての取引完了後の状態を基に、投票が行われるためである。投票の実施もPoHのストリームに挿入される。PoHの台帳をみれば、各投票がどのぐらいの時間間隔で行われていたか推測できる。分断発生時にはどのぐらいの期間、承認者たちが利用不可に陥っていたか推し測ることもできる。
 
-一定時間内に分断を解決するため、利用不可になった承認者のステイキングを解除できる動的アプローチを提言する。\(\frac{2}{3}\)以上の承認者が利用可能であれば、承認に必要なハッシュ計算回数は抑えられるので、ステイキング解除はすぐに可能である。ステイキング解除された承認者は、合意形成の頭数に数えられなくなる。利用可能な承認者の数が\(\frac{2}{3}\)未満かつ\(\frac{1}{2}\)を超えるときは、承認にかかるハッシュ計算回数が増加するためステイキング解除にかかる時間が延びてしまう。半数以上の承認者が利用不可になる規模の大きな分断が発生した状況では、ステイキング解除の処理に多大な時間がかかる。そのような状況でも取引することも投票することも可能だが、\(\frac{2}{3}\)の合意形成に至るには相当数のハッシュ計算をこなし、利用不可に陥った承認者のステイキング解除が完了している必要がある。復旧にかかるネットワークの時間差は、どのパーティションを使い続けるか選択するための猶予にあたる。
+分断の解決にかかる実時間を圧縮するため、利用不可に陥った承認者のステーキングを解除する動的アプローチを検討したい。ステーキングを解除された承認者は合意形成の頭数に入らないので、合意形成にかかる時間が圧縮される仕組みである。\(\frac{2}{3}\)を越える承認者が利用可能ならば合意形成に至るまでに必要なハッシュ計算回数は抑えられるため、ステーキング解除はすぐに完了できる。利用可能な承認者の割合が\(\frac{2}{3}\)以下かつ\(\frac{1}{2}\)を超えるときは、合意形成までに必要なハッシュ計算回数が増加するため、ステーキング解除にかかる時間が延びてしまう。半数以上の承認者が利用不可になる規模の大きな分断が発生した状況では、ステーキング解除の処理に多大な時間がかかる。そのような状況でも取引や投票は可能だが、\(\frac{2}{3}\)の合意形成に至るには相当数のハッシュ計算をこなし、利用不可に陥った承認者のステーキング解除が完了している必要がある。復旧にかかるネットワークの時間差は、ネットワーク利用者たちがどのパーティションを使い続けたいか選択するための猶予にあたる。
 
 \subsection{復旧}\label{availability}
-ここで紹介するシステムはどんな障害が起きても台帳を完全に復旧させることができる。つまり誰でも台帳上の任意の位置にハッシュ値や取引を追記することで分岐を作成できる。もし分岐したシーケンス上において承認者が不在の場合、新たな承認者が\(\frac{2}{3}\)の支持を得るまでに極めて長い時間が必要とされる。よって承認者不在の状態から完全復旧を果たすためには相当数のハッシュ計算が台帳上で行われなければならない。利用不可になった承認者全てのステイキングが解除されるまで、新たなボンドにより台帳の承認を行うことは不可能となる。
+ここで紹介するシステムはどんな障害が起きても台帳を完全に復旧させることができる。つまり誰でも台帳上の任意の位置にハッシュ値や取引を追記することで分岐を作成して良い。もし分岐したシーケンス上において承認者が不在の場合、ボンドの追加がブランチ上で\(\frac{2}{3}\)の支持を集めて合意形成に至るには、極めて長い時間が必要とされる。よって検証者不在の状態から完全復旧を果たすためには相当数のハッシュ計算が台帳上で行われなければならない。つまり利用不可になった検証者全てのステーキングが解除されるまで、新たなボンドにより台帳の承認を行うことは不可能となる。
 
-\subsection{確定}\label{availability}
-過去に何が起きたか、それがいつ頃に起きたか監視することをPoHは可能にする。PoH生成者がメッセージストリームを流し出すごとに、承認者はそれらの状態に対して署名を付けて500ミリ秒以内に提出することが求められる。この時間はネットワークの状況次第でさらに短縮される。その承認行為自体がストリームへ挿入されるため、投票そのものを直接観測してなかったとしても、それがタイムアウト発生前に完了していたか確認することは誰にでもできる。
+\subsection{状態確定}\label{availability}
+過去に何が起きたか、それがいつ頃に起きたか照合することをPoHは可能にする。PoH生成者がメッセージストリームを流し出すごとに、承認者はその内容に署名を付けて500ミリ秒以内に提出することが求められる。この制限時間はネットワークの状況次第でさらに短縮される。その承認行為自体がストリームへ挿入されるため、投票そのものを直接観測してなかったとしても、それがタイムアウト発生前に完了していたか確認することは誰にでもできる。
 
 \subsection{攻撃}
 \subsubsection{コモンズの悲劇}
-PoH生成者から流れてきた状態ハッシュ値に対して、PoS承認者が検証を行わずひたすら承認を出し続ける状況を指す。経済的インセンティブに起因する問題である。これを回避するため、PoH生成者は無作為なタイミングで不正なハッシュを生成し、これに投票した承認者はスラッシングされる仕掛けを用意する。不正なハッシュ値が生成されたとき適切な検証と投票が行われることで、ネットワークは副系のPoH生成者へ即座に切り替えることになる。
+PoH生成者から流れてきた状態ハッシュ値に対してPoS承認者が検証を行わず、ひたすら承認を出し続ける状況を指す。経済的インセンティブに起因する問題である。これを回避するため、PoH生成者は無作為なタイミングで不正なハッシュを生成し、これに投票した承認者はスラッシングされる仕掛けを用意する。不正なハッシュ値が生成されたとき適切な検証と投票が行われることで、ネットワークは副系のPoH生成者へ即座に切り替えることになる。
 
 検証者は500ミリ秒等の短い時間内に回答を返すことが求められる。悪意を持った検証者が他の検証者の投票内容を観測して、それをいち早くストリームへ挿入できてしまう確率を低減するため、タイムアウトは十分短い時間を設定される必要がある。
 
 \subsubsection{PoH生成者との談合}\label{subsubsec:collusion}
-PoH生成者と談合している承認者は、不正なハッシュが流れてくるタイミングを事前に知ることができる問題を指す。ただしこのシナリオはPoH生成者が承認者を担うために必要な通貨量以上をステイキングしている状況と同じである。結局PoH生成者は状態ハッシュ値の計算を行うことが求められる。
+PoH生成者と談合している承認者は、不正なハッシュが流れてくるタイミングを事前に知ることができる問題を指す。ただしこれはPoH生成者が承認者の役割も賄える通貨量以上をステーキングしていることと違いがない。結局PoH生成者は状態ハッシュ値の計算を行わなくてはならない。
 
 \subsubsection{検閲}\label{censorship}
-Censorship or denial of service could occur when a \(\frac{1}{3}\)rd of the bond holders refuse to validate any sequences with new bonds. The protocol can defend against this form of attack by dynamically adjusting how fast bonds become stale. In the event of a denial of service, the larger partition will be designed to fork and censor the Byzantine bond holders. The larger network will recover as the Byzantine bonds become stale with time. The smaller Byzantine partition would not be able to move forward for a longer period of time.
+\(\frac{1}{3}\)のボンド保有者が新規ボンド含むシーケンスの受け入れを拒否したとき、検閲が起きているかDoSが発生していると考えられる。ここでは受け入れを拒否している\(\frac{1}{3}\)のボンド保有者を”ビザンチン・ボンド保有者”と呼ぶ。この種の攻撃に対しては、ボンドが枯れていくサイクルを動的に調整することでプロトコルは耐性を身につけることができる。DoS発生時、ビザンチン・ボンド保有者よりも規模の大きい側の保有者たちがビザンチン・ボンド保有者を検閲し、ネットワークを切り離す。これにより規模の大きい側の保有者たちは、ビザンチン・ボンドを時間経過とともに無力化していくことができるので、規模の小さい側のビザンチン・パーティションは長く生き残ることができない。
 
-The algorithm would work as follows. A majority of the network would elect a new Leader. The Leader would then censor the Byzantine bond holders from participating. Proof of History generator would have to continue generating a sequence, to prove the passage of time, until enough Byzantine bonds have become stale so the bigger network has a super majority. The rate at which bonds become stale would be dynamically based on what percentage of bonds are active. So the Byzantine minority fork of the network would have to wait much longer than the majority fork to recover a super majority. Once a super majority has been established, slashing could be used to permanently punish the Byzantine bond holders.
+アルゴリズムは次のように動作する。多数派の合意によりリーダーが選出される。リーダーはビザンチン・ボンド保有者の参加権を取り上げる。Proof of History生成者はビザンチン・ボンド所有者の数が十分に減り、多数派の割合が大多数派の規模に至るまでの経過時間を記録するためシーケンス生成を継続する。どの程度のボンドが有効化されているかに依って、ボンドが枯れていく速度が動的に決まる。そして分岐した少数派のネットワークは、多数派のネットワークが大多数派に格上げされるまで以上の長い時間を待たされることになる。大多数派が成立したとき、ビザンチン・ボンド保有者にスラッシングの罰を下すことができる。
 
 \subsubsection{ロングレンジアタック}\label{censorship}
-PoH provides a natural defense against long range attacks. Recovering the ledger from any point in the past would require the attacker to overtake the valid ledger in time by outpacing the speed of the PoH generator.
+PoHは本質的にロングレンジアタックに対する耐性を持つ。過去の一時点からロングレンジアタックを試みる攻撃者は、PoH生成者の計算能力を越える速度で計算しない限り、永遠に正規台帳を差し替えることはできない。
 
-The consensus protocol provides a second layer of defense, as any attack would have to take longer then the time it takes to unstake all the valid validators. It also creates an availability “gap” in the history of the ledger. When comparing two ledgers of the same height, the one with the smallest maximum partition can be objectively considered as valid.
+合意形成プロトコルは第二の防壁である。これは如何なる攻撃も全検証者をステーク解除するより長い時間をかける必要があるためである。これは台帳の履歴に刻まれる可用性に”差”を生み出す要因ともなる。つまり二つの台帳を同じハッシュ計算回数時点で比べた時、最大断片数が最小の台帳が正規のものと考えることができる。
 
 \subsubsection{ASIC攻撃}\label{censorship}
 
-Two opportunities for an ASIC attacks exist in this protocol - during partition, and cheating timeouts in Finality.
+このプロトコルではASICによる攻撃のタイミングが二つ存在する──ネットワーク分断時と状態確定時における作為的タイムアウトである。
 
-For ASIC attacks during Partitions, the Rate at which bonds are unstaked is non-linear, and for networks with large partitions the rate is orders of magnitude slower then expected gains from an ASIC attack.
+分断時のASIC攻撃については、ステーキング解除速度が非線形であり、大規模な分断を起こしているネットワークでは圧倒的に遅いオーダーを弾き出すため、ASICを用いるメリットが極めて低い。
 
-For ASIC attacks during Finality, the vulnerability allows for byzantine validators who have a bonded stake wait for confirmations from other nodes and inject their votes with a collaborating PoH generator. The PoH generator can then use its faster ASIC to generate 500ms worth of hashes in less time, and allow for network communication between PoH generator and the collaborating nodes. But, if the PoH generator is also byzantine, there is no reason why the byzantine generator wouldn’t have communicated the exact counter when they expect to insert the failure. This scenario is no different than a PoH generator and all the collaborators sharing the same identity and having a single combined stake and only using 1 set of hardware.
+状態確定時のASIC攻撃については、ビザンチン側の検証者たちにボンドのステーキング承認待ちを許し、協力者のPoH生成者を使って票をねじ込めてしまうという弱点である。PoH生成者はASICを使って500ミリ秒分のハッシュ計算をそれより短い時間で完了し、計算結果を協力者ノードに伝えることができてしまう。だが、そもそもPoH生成者がビザンチン側に属していれば、不正なハッシュ値を挿入するタイミングを協力者ノードへ事前に知らせておかない理由がない。この状況はちょうどPoH生成者と協力者が各ボンドのステークを組み合わせて同じ身元を共有し、さらに同じハードウェア一式を使っている状況と何ら変わりはない。
 
-\section{Streaming Proof of Replication}\label{porep}
-\subsection{Description}
+\section{Proof of Replicationのストリーミング}\label{porep}
+\subsection{概要説明}
 Filecoin proposed a version of Proof of Replication \cite{filecoinporep}. The goal of this version is to have fast and streaming verifications of Proof of Replication, which are enabled by keeping track of time in Proof of History generated sequence. Replication is not used as a consensus algorithm, but is a useful tool to account for the cost of storing the blockchain history or state at a high availability.
 \subsection{Algorithm}
 As shown in Figure~\ref{fig:encrypt} CBC encryption encrypts each block of data in sequence, using the previously encrypted block to XOR the input data.
