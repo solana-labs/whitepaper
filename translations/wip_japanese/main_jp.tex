@@ -479,12 +479,13 @@ PoHは本質的にロングレンジアタックに対する耐性を持つ。�
 
 分断時のASIC攻撃については、ステーキング解除速度が非線形であり、大規模な分断を起こしているネットワークでは圧倒的に遅いオーダーを弾き出すため、ASICを用いるメリットが極めて低い。
 
-状態確定時のASIC攻撃については、ビザンチン側の検証者たちにボンドのステーキング承認待ちを許し、協力者のPoH生成者を使って票をねじ込めてしまうという弱点である。PoH生成者はASICを使って500ミリ秒分のハッシュ計算をそれより短い時間で完了し、計算結果を協力者ノードに伝えることができてしまう。だが、そもそもPoH生成者がビザンチン側に属していれば、不正なハッシュ値を挿入するタイミングを協力者ノードへ事前に知らせておかない理由がない。この状況はちょうどPoH生成者と協力者が各ボンドのステークを組み合わせて同じ身元を共有し、さらに同じハードウェア一式を使っている状況と何ら変わりはない。
+状態確定時のASIC攻撃については、ビザンチン側の検証者たちにボンドのステーキング承認待ちを許し、協力者のPoH生成者を使って投票内容をねじ込めてしまうという弱点を指す。PoH生成者はASICを使って500ミリ秒分のハッシュ計算をそれより短い時間で完了し、計算結果を協力者ノードに伝えることができてしまう。だがそもそもPoH生成者がビザンチン側に属しているならば、不正なハッシュ値を挿入するタイミングを協力者ノードへ事前に知らせておかない理由がない。つまりこの状況はちょうどPoH生成者と協力者が各ボンドのステークを組み合わせて同じ身元を共有し、さらに同じハードウェア一式を使っている状況と何ら変わりはない。
 
 \section{Proof of Replicationのストリーミング}\label{porep}
 \subsection{概要説明}
-Filecoin proposed a version of Proof of Replication \cite{filecoinporep}. The goal of this version is to have fast and streaming verifications of Proof of Replication, which are enabled by keeping track of time in Proof of History generated sequence. Replication is not used as a consensus algorithm, but is a useful tool to account for the cost of storing the blockchain history or state at a high availability.
-\subsection{Algorithm}
+FilecoinはProof of Replicationの一つの設計を示した\cite{filecoinporep}。ここで説明する設計はProof of Replicationの高速な承認をストリーミング形式で提供することを目的としている。これはProof of Historyのシーケンスにより時間の追跡が可能になったことの恩恵である。複製そのものは合意形成アルゴリズムに使われることはないが、ブロックチェーンの履歴や状態の保管にかかったコストを説明するのに役立つツールである。
+
+\subsection{アルゴリズム}
 As shown in Figure~\ref{fig:encrypt} CBC encryption encrypts each block of data in sequence, using the previously encrypted block to XOR the input data.
 
 \begin{figure}
