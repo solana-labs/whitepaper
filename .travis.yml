@@ -4,3 +4,11 @@ before_install:
 - sudo apt-get -qq update && sudo apt-get install -y --no-install-recommends texlive-full
 script:
 - pdflatex -interaction=nonstopmode -halt-on-error *.tex
+deploy:
+  provider: releases
+  api_key:
+    secure: bOuClY74uZwnWC8j9vAembEAlvaLZVrBe0QgRXeynJKMibgfCKD/6x84gYqkhJ8bC85uyNZeGtlFrEeoewYE5DupMQaRgjWF/Ogm17JEQjTE7rvfNRcsBV1GnbxKigiUUATNxhfORlanKIJoz1i+xD9ED6KMUuGRBVdvgzAZ6nXVdEhsc+5TlWvWj9SPBl2YkWjMOk9ewEL/CpkkcD57pHQoEiLMt2spgYNGaycneIzTk1/KkjoyNdlr2ziXXB0UT09lNN/++f584YU6cu36l/g4BMUGUUdioEmFKJ6OZButCH9SffsktPl7Wqza6csBXv9xFiQ3YG+3milKexpjEGCRffDvwgzm6HaBgayvwz2LxhLfXin5N3TT5poI9n/0XLoYwXcMhxLUglgS04WDM/OnAEUPsXvS+MNgRlQraDR+UGFx10783jPUWEib1wnBbbza1E9WDN1Wk1e5WiE071iG1hlPe3VIvJWUSF40BcmwnszkWXZGoLav4TSHw9e7I87bFsz0ZJu+LrN5s5cASQsiEkS7wLK2iSnbXZKD69e2nwRRHlU+gPUc1nkGq1VDNVA/BguMCDrJ9t4gigPC6WDcFTtc5r771QVfSorw1yrd5+838mtuDC21cweCtOCV3ACpkBCmfkOQLkD3rXMEmdLfVXbXQ0hyyU4wmklxZHM=
+  file: main.pdf
+  skip_cleanup: true
+  on:
+    repo: solana-labs/whitepaper
