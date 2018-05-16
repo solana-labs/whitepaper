@@ -12,3 +12,4 @@ deploy:
   skip_cleanup: true
   on:
     repo: solana-labs/whitepaper
+    tags: true
