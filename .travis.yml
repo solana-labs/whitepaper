@@ -4,3 +4,14 @@ before_install:
 - sudo apt-get -qq update && sudo apt-get install -y --no-install-recommends texlive-full
 script:
 - pdflatex -interaction=nonstopmode -halt-on-error *.tex
+before_deploy:
+- mv main.pdf solana-whitepaper.pdf # TODO: rename main.tex then remove this line
+deploy:
+  provider: releases
+  api_key:
+    secure: uiTO/2wWXmuHnX+lEaJZWGFVJVWLYZ2a7M2kHuQaODTREaBio/HaST5ycDFcU/OEpTLOk14IZvMVi9dAkgc94Ql9PU44VlhyCwN2d6/hw6RVxS8XTSyj8KGkyofHf4pYpmeec6rf8MHAd8NOyr3oAPra1CeT+DDV2enjYMJuG2vkScJqfVO4FN17B5jtIYadB23Veh6T9hu9PWytIOVQsAK/Awvvvi6fTJyEYI6Di/Ore0plaKNxrYmmTMSBpMVv2M6tlFximBf6WjOn7HYZvm6yWXX9ae6hA3ukt3915IzAsYr9xjznZhVi9uaNoFXNwVqe/UlHWfdfSeORWTpfg/kUSu4ibd7//XIzlogJhBgB7RK3zb+SbxeAuJf7M069U6AJF9Y3br5F6lcII3vfvVD/qQWtaxBDS3OyOSYqGaVvVIM5Pv5ix6yUhxTrHv4i8YUo7GCMdxsvUrZvV0wfCDWRZkHuYplvAzYE14y2nrZIpVya9fBPx8sKUIDSSfjAWSLmRp/p/bPdZ4B3EYJ8zXfgHH5hmgFxxBmMvHeqiERVtgyHhxub4FMxHBNJtxtvwOhhk0rYrMGoTlkTSVqwaBVWzkRsvKVL9EZdD0pcmWyLFkw7tep0i03sIjwjrmciXFuPXehU09rNQseaJbTvxFBk3VGP5c/TsQwgtkF4BJk=
+  file: solana-whitepaper.pdf
+  skip_cleanup: true
+  on:
+    repo: solana-labs/whitepaper
+    tags: true
