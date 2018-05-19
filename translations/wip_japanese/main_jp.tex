@@ -561,19 +561,20 @@ PoH生成者と談合しているデータ複製ノードはサンプリング�
 
 この攻撃は単体のデータ複製ノードにしか利益をもたらさない。すべてのノードはECDSA（あるいは相当の）計算で署名された同一ハッシュ値を使わなくてはならず、署名されたハッシュ値は各ノードに特有のものとなり衝突耐性を備える。結局この攻撃者はその談合ノードから生み出される僅かな利益しか得ることができない。
 
-\subsubsection{Denial of Service}
-The cost of adding an additional replicator identity is expected to be equal to the cost of storage. The cost of adding extra computational capacity to verify all the replicator identities is expected to be equal to the cost of a CPU or GPU core per replication identity.
+\subsubsection{DoS}
+データ複製ノードを増やすコストは、ストレージを用意するコストに等しいと考えられる。一方でデータ複製ノードが増えたときに必要となる追加の計算能力は、ノード一つあたりCPUあるいはGPUの１コアとなる。
 
-This creates an opportunity for a denial of service attack on the network by creating a large number of valid replicator identities.
+これはネットワーク上でデータ複製ノードを大量に作成することでDoS攻撃を実行できる可能性を示唆する。
 
-To limit this attack, the consensus protocol chosen for the network can select a replication target, and award the replication proofs that meet the desired characteristics, like availability on the network, bandwidth, geolocation etc...
-\subsubsection{Tragedy of Commons}
+合意プロトコルがデータ複製ノードを指名でき、可用性・帯域・配置などの面で適切な複製データから導かれる証拠のみを評価することで、この攻撃を制限することができる。
 
-The PoS verifiers could simply confirm PoRep without doing any work. The economic incentives should be lined up with the PoS verifiers to do work, like by splitting the mining payout between the PoS verifiers and the PoRep replication nodes.
+\subsubsection{コモンズの悲劇}
 
-To further avoid this scenario, the PoRep verifiers can submit false proofs a small percentage of the time. They can prove the proof is false by providing the function that generated the false data. Any PoS verifier that confirmed a false proof would be slashed.
+PoS承認者は検証を行わずに、PoRepから提供された証拠をひたすら承認する可能性がある。経済的インセンティブはPoS承認者たちに検証の実施を促す設計にすべきである。ひとつの対策として、PoS承認者とデータ複製ノードの間で採掘報酬を分け合う仕組みにする。
 
-\section{System Architecture}\label{system_architecture}
+さらなる対策として、PoRep承認者が低確率で虚偽の証拠を提出する仕組みが考えられる。PoRep承認者は虚偽のデータを作ったプロセスを明かすことで、証拠が偽物だったことを証明することができる。PoS承認者が偽物の証拠を承認した場合、ただちにスラッシングで罰せられる。
+
+\section{システムアーキテクチャ}\label{system_architecture}
 
 \begin{figure}
   \begin{center}
