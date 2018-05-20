@@ -448,10 +448,10 @@ Proof of Stakeの承認者は一定量の通貨をステーク状態にロック
 
 分断の解決にかかる実時間を圧縮するため、利用不可に陥った承認者のステーキングを解除する動的アプローチを検討したい。ステーキングを解除された承認者は合意形成の頭数に入らないので、合意形成にかかる時間が圧縮される仕組みである。\(\frac{2}{3}\)を越える承認者が利用可能ならば合意形成に至るまでに必要なハッシュ計算回数は抑えられるため、ステーキング解除はすぐに完了できる。利用可能な承認者の割合が\(\frac{2}{3}\)以下かつ\(\frac{1}{2}\)を超えるときは、合意形成までに必要なハッシュ計算回数が増加するため、ステーキング解除にかかる時間が延びてしまう。半数以上の承認者が利用不可になる規模の大きな分断が発生した状況では、ステーキング解除の処理に多大な時間がかかる。そのような状況でも取引や投票は可能だが、\(\frac{2}{3}\)の合意形成に至るには相当数のハッシュ計算をこなし、利用不可に陥った承認者のステーキング解除が完了している必要がある。復旧にかかるネットワークの時間差は、ネットワーク利用者たちがどのパーティションを使い続けたいか選択するための猶予にあたる。
 
-\subsection{復旧}\label{availability}
+\subsection{復旧}
 ここで紹介するシステムはどんな障害が起きても台帳を完全に復旧させることができる。つまり誰でも台帳上の任意の位置にハッシュ値や取引を追記することで分岐を作成して良い。もし分岐したシーケンス上において承認者が不在の場合、ボンドの追加がブランチ上で\(\frac{2}{3}\)の支持を集めて合意形成に至るには、極めて長い時間が必要とされる。よって検証者不在の状態から完全復旧を果たすためには相当数のハッシュ計算が台帳上で行われなければならない。つまり利用不可になった検証者全てのステーキングが解除されるまで、新たなボンドにより台帳の承認を行うことは不可能となる。
 
-\subsection{状態確定}\label{availability}
+\subsection{状態確定}
 過去に何が起きたか、それがいつ頃に起きたか照合することをPoHは可能にする。PoH生成者がメッセージストリームを流し出すごとに、承認者はその内容に署名を付けて500ミリ秒以内に提出することが求められる。この制限時間はネットワークの状況次第でさらに短縮される。その承認行為自体がストリームへ挿入されるため、投票そのものを直接観測してなかったとしても、それがタイムアウト発生前に完了していたか確認することは誰にでもできる。
 
 \subsection{攻撃}
@@ -468,12 +468,12 @@ PoH生成者と談合している承認者は、不正なハッシュが流れ�
 
 アルゴリズムは次のように動作する。多数派の合意によりリーダーが選出される。リーダーはビザンチン・ボンド保有者の参加権を取り上げる。Proof of History生成者はビザンチン・ボンド所有者の数が十分に減り、多数派の割合が大多数派の規模に至るまでの経過時間を記録するためシーケンス生成を継続する。どの程度のボンドが有効化されているかに依って、ボンドが枯れていく速度が動的に決まる。そして分岐した少数派のネットワークは、多数派のネットワークが大多数派に格上げされるまで以上の長い時間を待たされることになる。大多数派が成立したとき、ビザンチン・ボンド保有者にスラッシングの罰を下すことができる。
 
-\subsubsection{ロングレンジアタック}\label{censorship}
+\subsubsection{ロングレンジアタック}
 PoHは本質的にロングレンジアタックに対する耐性を持つ。過去の一時点からロングレンジアタックを試みる攻撃者は、PoH生成者の計算能力を越える速度で計算しない限り、永遠に正規台帳を差し替えることはできない。
 
 合意形成プロトコルは第二の防壁である。これは如何なる攻撃も全検証者をステーク解除するより長い時間をかける必要があるためである。これは台帳の履歴に刻まれる可用性に”差”を生み出す要因ともなる。つまり二つの台帳を同じハッシュ計算回数時点で比べた時、最大断片数が最小の台帳が正規のものと考えることができる。
 
-\subsubsection{ASIC攻撃}\label{censorship}
+\subsubsection{ASIC攻撃}
 
 このプロトコルではASICによる攻撃のタイミングが二つ存在する──ネットワーク分断時と状態確定時における作為的タイムアウトである。
 
@@ -580,106 +580,109 @@ PoS承認者は検証を行わずに、PoRepから提供された証拠をひた
   \begin{center}
     \centering
     \includegraphics[width=0.6\textwidth]{../../figures/fig_9.png}
-    \caption[Fig 9]{System Architecture \label{fig_9}}
+    \caption[図9]{システムアーキテクチャ \label{fig_9}}
   \end{center}
   \end{figure}
 
-\subsection{Components}
+\subsection{構成要素}
 
-\subsubsection{Leader, Proof of History generator}
-The Leader is an elected Proof of History generator. It consumes arbitrary user transactions and outputs a Proof of History sequence of all the transactions that guarantees a unique global order in the system. After each batch of transactions the Leader outputs a signature of the state that is the result of running the transactions in that order. This signature is signed with the identity of the Leader.
+\subsubsection{リーダー、Proof of History生成者}
+リーダーは投票で選ばれたProof of History生成者のことである。不特定多数のユーザから提出された全取引情報に対し、唯一性のある順序付けをしたPoHシーケンスを生成する。ある程度の数の取引を挿入し終えると、シーケンスの状態にリーダーは署名を行う。リーダー固有の署名が付与される。
 
-\subsubsection{State}
-A naive hash table indexed by the user’s address. Each cell contains the full user’s address and the memory required for this computation. For example\\
-\noindent Transaction table contains:\\\\\noindent
+\subsubsection{状態}
+利用者からの入力を含めて作られた純粋なハッシュテーブルである。各ハッシュ値は利用者の入力内容と、計算に必要な記録を含んでいる。\\
+
+\noindent 取引テーブルは合計32バイト分の以下の情報を含む:\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
-\bitbox{160}{Ripemd of Users Public Key}
-& \bitbox{64}{Account}
-& \bitbox{32}{unused}
+\bitbox{160}{利用者の公開鍵によるRIPEMD}
+& \bitbox{64}{アカウント}
+& \bitbox{32}{未使用}
 \end{bytefield}\\
-For a total of 32 bytes.\\
-\noindent Proof of Stake bond’s table contains:\\\\\noindent
+
+\noindent Proof of Stakeボンドのテーブルは合計64バイト分の以下の情報を含む:\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
-\bitbox{160}{Ripemd of Users Public Key}
-& \bitbox{64}{Bond} \\
-& \bitbox{64}{Last Vote} \\
-& \bitbox{224}{unused}
+\bitbox{160}{利用者の公開鍵によるRIPEMD}
+& \bitbox{64}{ボンド} \\
+& \bitbox{64}{前回の投票} \\
+& \bitbox{224}{未使用}
 \end{bytefield}\\
-For a total of 64 bytes.
-\subsubsection{Verifier, State Replication}
-The Verifier nodes replicate the blockchain state and provide high availability of the blockchain state. The replication target is selected by the consensus algorithm, and the validators in the consensus algorithm select and vote the Proof of Replication nodes they approve of based on off-chain defined criteria.
 
-The network could be configured with a minimum Proof of Stake bond size, and a requirement for a single replicator identity per bond.
-\subsubsection{Validators}
-These nodes are consuming bandwidth from Verifiers. They are virtual nodes, and can run on the same machines as the Verifiers or the Leader, or on separate machines that are specific to the consensus algorithm configured for this network.
+\subsubsection{承認者、状態の複製}
+承認者ノードが複製を行うことで、ブロックチェーン状態の高い可用性が実現する。複製対象は合意形成アルゴリズムに従って決まり、検証者はオフチェーンの評価基準で承認されたProof of Replicationノードに対し投票を行う。
 
-\subsection{Network Limits}
+PoS承認者の最低ボンド量、データ複製ノードの必要ボンド量からネットワークの性能も変更される。
+
+\subsubsection{検証者}
+検証者ノードは承認者から流れて来た情報を消化する。検証者は仮想ノードであるため、同一機体上で承認者またはリーダーとして稼働することも、特定の合意形成に参加する離れた機体上で稼働することも可能である。
+
+\subsection{ネットワークの制約}
 
 \begin{figure}
   \begin{center}
     \centering
     \includegraphics[width=0.8\textwidth]{../../figures/fig_10.png}
-    \caption[Fig 10]{Generator network limits\label{fig_10}}
+    \caption[図10]{生成者ネットワークの制約\label{fig_10}}
   \end{center}
   \end{figure}
 
-Leader is expected to be able to take incoming user packets, orders them the most efficient way possible, and sequences them into a Proof of History sequence that is published to downstream Verifiers. Efficiency is based on memory access patterns of the transactions, so the transactions are ordered to minimize faults and to maximize prefetching.\\\\
+リーダーは利用者から送られてくるパケットを受けて、最適な方法で順序付けし、承認者に向けてPoHシーケンスを送出する。効率化は取引のメモリアクセスパターンに基づいてなされる。これは障害の発生を最小化し、データ取得速度を最大化するためである。\newpage
 
-\noindent Incoming packet format:\\\\\noindent
+\noindent 利用者から受け取るパケットのフォーマット:\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
-\begin{rightwordgroup}{Signed}
-\bitbox{160}{Last Valid Hash}
-& \bitbox{64}{Counter}
+\begin{rightwordgroup}{署名済み}
+\bitbox{160}{前回の正規ハッシュ}
+& \bitbox{64}{カウンター}
 & \bitbox{6}{u} 
 & \bitbox{10}{s} \\
-& \bitbox{64}{Fee} \\
-& \bitbox{256}{From} \\
+& \bitbox{64}{手数料} \\
+& \bitbox{256}{送金元} \\
 \end{rightwordgroup} \\
-& \bitbox{256}{Signature 1 of 2} \\
-& \bitbox{256}{Signature 2 of 2} \\
+& \bitbox{256}{署名１／２）} \\
+& \bitbox{256}{署名２／２）} \\
 \end{bytefield}
 
-\noindent Size \(20 + 8 + 16 + 8 + 32 + 32 32 = 148\) bytes.\\\\
+\noindent サイズは\(20 + 8 + 16 + 8 + 32 + 32 32 = 148\)バイト\\\\
 
-The minimal payload that can be supported would be 1 destination account.
-\noindent With payload:\\\\\noindent
+サポート可能な最小ペイロードは１送金先アカウントが含まれるものとなる。
+\noindent ペイロードを含むもの:\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
-\begin{rightwordgroup}{Signed}
-\bitbox{160}{Last Valid Hash}
-& \bitbox{64}{Counter}
+\begin{rightwordgroup}{署名済み}
+\bitbox{160}{前回の正規ハッシュ}
+& \bitbox{64}{カウンター}
 & \bitbox{6}{u}
 & \bitbox{10}{s} \\ 
-& \bitbox{160}{To}
-& \bitbox{64}{Amount} \\
-& \bitbox{64}{Counter}
-& \bitbox{64}{Fee} \\
-& \bitbox{256}{From} \\
+& \bitbox{160}{送金先}
+& \bitbox{64}{送金額} \\
+& \bitbox{64}{カウンター}
+& \bitbox{64}{手数料} \\
+& \bitbox{256}{送金元} \\
 \end{rightwordgroup} \\
-& \bitbox{256}{Signature 1 of 2} \\
-& \bitbox{256}{Signature 2 of 2} \\
+& \bitbox{256}{署名１／２} \\
+& \bitbox{256}{署名２／２} \\
 \end{bytefield}
 
-\noindent With payload the minimum size: 176 bytes\\\\
+\noindent ペイロードを含む場合の最小サイズ: 176バイト\\\\
 
-The Proof of History sequence packet contains the current hash, counter, and the hash of all the new messages added to the PoH sequence and the state signature after processing all the messages. This packet is sent once every N messages are broadcast.\\
-\noindent Proof of History packet:\\\\\noindent
+Proof of Historyシーケンスのパケットは現在のハッシュ値、カウンター、PoHシーケンスに追加される全メッセージのハッシュ値、全メッセージ処理後の署名付き状態を含む。このパケットはN個のメッセージがブロードキャストされる毎に送信される。\\
+
+\noindent Proof of Historyのパケット:\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
-\begin{rightwordgroup}{Signed}
-\bitbox{160}{Current Hash}
-& \bitbox{64}{Counter} \\
-\bitbox{160}{Messages Hash} \\
-\bitbox{160}{State Hash} \\
+\begin{rightwordgroup}{署名済み}
+\bitbox{160}{現在ハッシュ値}
+& \bitbox{64}{カウンター} \\
+\bitbox{160}{メッセージハッシュ値} \\
+\bitbox{160}{状態ハッシュ値} \\
 \end{rightwordgroup} \\
-& \bitbox{256}{Signature 1 of 2} \\
-& \bitbox{256}{Signature 2 of 2} \\
+& \bitbox{256}{署名１／２} \\
+& \bitbox{256}{署名２／２} \\
 \end{bytefield}
 
-\noindent Minimum size of the output packet is: 132 bytes \\\\
+\noindent 最小パケットサイズ: 132 bytes \\\\
 
 On a 1gbps network connection the maximum number of transactions possible is $1$~gigabit per second / $176$~bytes = $710$k tps max. Some loss $1-4\%$ is expected due to Ethernet framing. The spare capacity over the target amount for the network can be used to increase availability by coding the output with Reed-Solomon codes and striping it to the available downstream Verifiers.
 \subsection{Computational Limits}
