@@ -10,6 +10,18 @@ cd $(dirname $0)/..
 mv main.pdf solana-whitepaper.pdf
 
 if [[ -n "$BUILDKITE_TAG" ]]; then
+  if ! which wget; then
+    if [[ "$BUILDKITE" = "true" ]]; then
+      # The "blang/latex:ubuntu" image is missing wget, install it manually for
+      # now to avoid having to maintain a custom docker image
+      echo --- Installing wget
+      apt-get update
+      apt-get install -y wget
+    else
+      echo Warning: wget not found
+    fi
+  fi
+
   echo --- Uploading assets for $BUILDKITE_TAG
   ci/upload-release-asset.sh solana-labs whitepaper \"$BUILDKITE_TAG\" \
     solana-whitepaper.pdf

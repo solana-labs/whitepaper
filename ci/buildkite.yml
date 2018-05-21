@@ -6,3 +6,4 @@ steps:
         image: "blang/latex:ubuntu"
         environment:
           - BUILDKITE_TAG=$BUILDKITE_TAG
+          - BUILDKITE=$BUILDKITE
