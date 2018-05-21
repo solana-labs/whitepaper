@@ -1,0 +1,6 @@
+steps:
+  - command: "ci/script"
+    label: "build [public]"
+    plugins:
+      docker#v1.1.1:
+        image: "blang/latex:ubuntu"
