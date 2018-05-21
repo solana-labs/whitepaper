@@ -7,3 +7,4 @@ steps:
         environment:
           - BUILDKITE_TAG=$BUILDKITE_TAG
           - BUILDKITE=$BUILDKITE
+          - GITHUB_TOKEN=$GITHUB_TOKEN
