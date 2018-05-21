@@ -36,7 +36,7 @@ os=$(uname | tr DL dl)
 if [[ ! -x  bin/$os/amd64/github-release ]]; then
   rm -f $os-amd64-github-release.tar.bz2 bin/$os/amd64/github-release
   wget https://github.com/aktau/github-release/releases/download/v0.7.2/$os-amd64-github-release.tar.bz2
-  tar jxf $os-amd64-github-release.tar.bz2
+  tar jxof $os-amd64-github-release.tar.bz2
   ls -l bin/$os/amd64/github-release
 fi
 
