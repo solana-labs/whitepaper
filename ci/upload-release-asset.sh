@@ -32,18 +32,18 @@ shift
 
 [[ -n "$1" ]] || usage No artifacts provided
 
-os=$(uname | tr DL dl)
-if [[ ! -x  bin/$os/amd64/github-release ]]; then
-  rm -f $os-amd64-github-release.tar.bz2 bin/$os/amd64/github-release
+if [[ ! -x  ./github-release ]]; then
+  os=$(uname | tr DL dl)
+  rm -f $os-amd64-github-release.tar.bz2
   wget https://github.com/aktau/github-release/releases/download/v0.7.2/$os-amd64-github-release.tar.bz2
-  tar jxf $os-amd64-github-release.tar.bz2
-  ls -l bin/$os/amd64/github-release
+  tar --strip-components=3 -jxof $os-amd64-github-release.tar.bz2
+  ls -l ./github-release
 fi
 
 for file in "$@"; do
   (
     set -x
-    bin/$os/amd64/github-release upload \
+    ./github-release upload \
       --tag "$TAG" \
       --user "$ORG" \
       --repo "$REPO" \

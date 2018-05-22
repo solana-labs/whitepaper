@@ -9,10 +9,4 @@ cd $(dirname $0)/..
 # TODO: rename main.tex then remove this line
 mv main.pdf solana-whitepaper.pdf
 
-if [[ -n "$BUILDKITE_TAG" ]]; then
-  echo --- Uploading assets for $BUILDKITE_TAG
-  ci/upload-release-asset.sh solana-labs whitepaper \"$BUILDKITE_TAG\" \
-    solana-whitepaper.pdf
-fi
-
 exit 0

@@ -1,8 +1,15 @@
 steps:
-  - command: "ci/script"
+  - command: "ci/build.sh"
     label: "build [public]"
+    plugins:
+      docker#v1.1.1:
+        image: "blang/latex:ubuntu"
+  - command: "ci/release.sh"
+    label: "release"
     plugins:
       docker#v1.1.1:
         image: "blang/latex:ubuntu"
         environment:
           - BUILDKITE_TAG=$BUILDKITE_TAG
+          - BUILDKITE=$BUILDKITE
+          - GITHUB_TOKEN=$GITHUB_TOKEN
