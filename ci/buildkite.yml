@@ -1,6 +1,11 @@
 steps:
-  - command: "ci/script"
+  - command: "ci/build.sh"
     label: "build [public]"
+    plugins:
+      docker#v1.1.1:
+        image: "blang/latex:ubuntu"
+  - command: "ci/release.sh"
+    label: "release"
     plugins:
       docker#v1.1.1:
         image: "blang/latex:ubuntu"
