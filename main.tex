@@ -411,9 +411,7 @@ A super majority is \(\frac{2}{3}\)rds of the validators weighted by their bonds
 A bonding transaction takes a \hyphenation{user specified} amount of coin and moves it to a bonding account under the user’s identity. Coins in the bonding account cannot be spent and have to remain in the account until the user removes them. The user can only remove stale coins that have timed out. Bonds are valid after super majority of the current stakeholders have confirmed the sequence.
 
 \subsection{Voting}
-It is anticipated that the Proof of History generator will be able to publish a signature of the state at a predefined period. Each bonded identity must confirm that signature by publishing their own signed signature of the state. The vote is a simple yes vote, without a no.
-
-If super majority of the bonded identities have voted within a timeout, then this branch would be accepted as valid.
+It is anticipated that the Proof of History generator will be able to publish a signature of the state at a predefined period. Each bonded identity must confirm that signature by publishing their own signed signature of the state. The vote is a simple yes vote, without a no. If super majority of the bonded identities have voted within a timeout, then this branch would be accepted as valid.
 
 \subsection{Unbonding}
 
@@ -500,10 +498,10 @@ Filecoin proposed a version of Proof of Replication \cite{filecoinporep}. The go
 \subsection{Algorithm}
 As shown in Figure~\ref{fig:encrypt} CBC encryption encrypts each block of data in sequence, using the previously encrypted block to XOR the input data.
 
-\begin{figure}
+\begin{figure}[h]
   \begin{center}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/fig_7.png}
+    \includegraphics[width=0.9\textwidth]{figures/cbc_encryption_001.png}
     \caption[Fig 7]{Sequential CBC encryption\label{fig:encrypt}}
   \end{center}
   \end{figure}
@@ -514,10 +512,10 @@ The data set is fully encrypted block by block. Then to generate a proof, the ke
 
 A merkle hash is computed with the selected PoH hash prepended to the each slice.
 
-\begin{figure}
+\begin{figure}[h]
   \begin{center}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/fig_8.png}
+    \includegraphics[width=0.9\textwidth]{figures/por_001.png}
     \caption[Fig 8]{Fast Proof of Replication\label{fig_8}}
   \end{center}
   \end{figure}
@@ -587,7 +585,7 @@ To further avoid this scenario, the PoRep verifiers can submit false proofs a sm
 \begin{figure}
   \begin{center}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/fig_9.png}
+    \includegraphics[width=0.9\textwidth]{figures/system_arch_001.png}
     \caption[Fig 9]{System Architecture \label{fig_9}}
   \end{center}
   \end{figure}
@@ -617,7 +615,11 @@ for a total of 32 bytes.\\
 \end{bytefield}\\
 for a total of 64 bytes.
 \subsubsection{Verifier, State Replication}
-The Verifier nodes replicate the blockchain state and provide high availability of the blockchain state. The replication target is selected by the consensus algorithm, and the validators in the consensus algorithm select and vote for the Proof of Replication nodes they approve of based on off-chain defined criteria.
+
+
+
+The Verifier nodes replicate and provide high availability of the blockchain state. The replication target is selected by the consensus algorithm, and the validators in the consensus algorithm select and vote the Proof of Replication nodes they approve of based on off-chain defined criteria.
+
 
 The network could be configured with a minimum Proof of Stake bond size, and a requirement for a single replicator identity per bond.
 \subsubsection{Validators}
@@ -628,14 +630,14 @@ These nodes are consuming bandwidth from Verifiers. They are virtual nodes, and 
 \begin{figure}
   \begin{center}
     \centering
-    \includegraphics[width=0.8\textwidth]{figures/fig_10.png}
+    \includegraphics[width=0.8\textwidth]{figures/generator_network_limits_001.png}
     \caption[Fig 10]{Generator network limits\label{fig_10}}
   \end{center}
   \end{figure}
 
 The leader is expected to be able to take incoming user packets, order them in the most efficient way possible, and sequence them into a Proof of History sequence that is published to downstream Verifiers. Efficiency is based on memory access patterns of the transactions, so the transactions are ordered to minimize faults and to maximize prefetching.\\\\
 
-\noindent Incoming packet format:\\\\\noindent
+\noindent \textbf{Incoming packet format:}\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
 \begin{rightwordgroup}{Signed}
@@ -650,10 +652,12 @@ The leader is expected to be able to take incoming user packets, order them in t
 & \bitbox{256}{Signature 2 of 2} \\
 \end{bytefield}
 
-\noindent Size \(20 + 8 + 16 + 8 + 32 + 32 32 = 148\) bytes.\\\\
+\noindent Size \(20 + 8 + 16 + 8 + 32 + 32 + 32 = 148\) bytes.\\\\
 
-The minimal payload that can be supported would be 1 destination account with a minimum size of 176 bytes.
-\noindent With payload:\\\\\noindent
+The minimal payload that can be supported would be 1 destination account with a minimum size of 176 bytes.\\\\
+
+\noindent \textbf{With payload:}\\\\\noindent
+
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
 \begin{rightwordgroup}{Signed}
@@ -706,7 +710,7 @@ One of its main advantages is a zero cost Foreign Function Interface. Intrinsics
 \begin{figure}
   \begin{center}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/fig_11.png}
+    \includegraphics[width=0.9\textwidth]{figures/bpf_programs_001.png}
     \caption[Fig 11]{Executing \hyphenation{user supplied} BPF programs.\label{fig_11}}
   \end{center}
   \end{figure}
