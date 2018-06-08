@@ -1,11 +1,16 @@
 steps:
   - command: "ci/build.sh"
     label: "build [public]"
+    timeout_in_minutes: 10
     plugins:
       docker#v1.1.1:
         image: "blang/latex:ubuntu"
+        environment:
+          - BUILDKITE
+  - wait
   - command: "ci/release.sh"
     label: "release [public]"
+    timeout_in_minutes: 10
     plugins:
       docker#v1.1.1:
         image: "blang/latex:ubuntu"

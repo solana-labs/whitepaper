@@ -48,7 +48,7 @@ for file in "$@"; do
       --user "$ORG" \
       --repo "$REPO" \
       --replace \
-      --name $file \
+      --name $(basename $file) \
       --file $file \
 
   )
