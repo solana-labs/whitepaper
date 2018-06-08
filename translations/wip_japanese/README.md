@@ -5,5 +5,5 @@ Typesetting system
 How to setup LuaTeX on Mac
 ======
 1. Install [MacTeX](http://www.tug.org/mactex/ "MacTex Official Site").
-2. Just type "luatex main_jp.tex"
+2. Just type "luatex solana-whitepaper-jp.tex"
 
