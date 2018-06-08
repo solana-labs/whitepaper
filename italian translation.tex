@@ -399,125 +399,130 @@ PoRep e PoH insieme dovrebbero fornire una difesa di spazio e tempo contro un re
 
 \section{Proof of Stake Consensus}\label{proof_of_stake}
 \subsection{Descrizione}
-This specific instance of Proof of Stake is designed for quick confirmation of the current sequence produced by the Proof of History generator, for voting and selecting the next Proof of History generator, and for punishing any misbehaving validators. This algorithm depends on messages eventually arriving to all participating nodes within a certain timeout.
-\subsection{Terminology}
+Questo esempio specifico di Proof of Stake è progettato per una conferma rapida della sequenza corrente prodotta dal generatore della Proof of History, per votare e selezionare il generatore della Proof of History successivo e per punire qualsiasi validatore che abbia avuto un comportamento scorretto. Questo algoritmo dipende dall'arrivo dei messaggi a tutti i nodi partecipanti entro un certo periodo di tempo.
+
+\subsection{Terminologia}
 \begin{description}
 
 \item[bonds]
-Bonds are equivalent to a capital expense in Proof of Work. A miner buys hardware and electricity, and commits it to a single branch in a Proof of Work blockchain. A bond is coin that the validator commits as collateral while they are validating transactions.
+I bonds sono equivalenti a una spesa in conto capitale nella Proof of Work. Un minatore acquista hardware ed elettricità e li usa in una Blockchain Proof of Work. Il bond è la moneta che il validatore impegna come garanzia durante la convalida delle transazioni.
 
 \item[slashing]
 
-The proposed solution to the nothing at stake problem in Proof of Stake systems~\cite{slasher}. When a proof of voting for a different branch is published, that branch can destroy the validator’s bond. This is an economic incentive designed to discourage validators from confirming multiple branches.
-\item[super majority]
-A super majority is \(\frac{2}{3}\)rds of the validators weighted by their bonds. A super majority vote indicates that the network has reached consensus, and at least \(\frac{1}{3}\)rd of the network would have had to vote maliciously for this branch to be invalid. This would put the economic cost of an attack at \(\frac{1}{3}\)rd of the market cap of the coin.
+La soluzione proposta al problema della posta in gioco nulla nei sistemi Proof of Stake ~\cite{slasher}. Quando viene pubblicata una prova di voto per un ramo diverso, quel ramo può distruggere il legame del validatore. Si tratta di un incentivo economico volto a scoraggiare i validatori dal confermare più rami.
+\item[super maggioranza]
+Una super maggioranza è data dai \(\frac{2}{3}\) dei validatori pesati secondi i loro legami. Un voto a super maggioranza indica che la rete ha raggiunto il consenso, e almeno \(\frac{1}{3}\) della rete dovrebbe votare in maniera non onesta per invalidare questo ramo. Il costo economico di un attacco sarebbe quindi pari a \(\frac{1}{3}\) del market cap della moneta.
 
 \end{description}
 
 \subsection{Bonding}
-A bonding transaction takes a \hyphenation{user specified} amount of coin and moves it to a bonding account under the user’s identity. Coins in the bonding account cannot be spent and have to remain in the account until the user removes them. The user can only remove stale coins that have timed out. Bonds are valid after super majority of the current stakeholders have confirmed the sequence.
+Una transazione di bonding prende una quantità di coin \hyphenation{user specified} e la trasferisce su un conto di bonding con l'identità dell'utente. Le monete nell'account bonding non possono essere spese e devono rimanere nell'account fino a quando l'utente non le rimuove. L'utente può rimuovere solo le monete stantie che sono scadute. Le obbligazioni sono valide dopo che la super maggioranza degli attuali stakeholder ha confermato la sequenza.
 
-\subsection{Voting}
-It is anticipated that the Proof of History generator will be able to publish a signature of the state at a predefined period. Each bonded identity must confirm that signature by publishing their own signed signature of the state. The vote is a simple yes vote, without a no. If super majority of the bonded identities have voted within a timeout, then this branch would be accepted as valid.
+
+\subsection{Voto}
+Si prevede che il generatore di Proof of History sarà in grado di pubblicare una firma dello stato in un periodo predefinito. Ogni identità vincolata deve confermare tale firma pubblicando la propria firma dello Stato. La votazione è un semplice sì, senza un no. Se la super maggioranza delle identità vincolate vota entro un timeout, allora questo ramo viene accettato come valido.
 
 \subsection{Unbonding}
 
-Missing N number of votes marks the coins as stale and no longer eligible for voting. The user can issue an unbonding transaction to remove them.
+Il numero N di voti mancanti marchia i coin come stazionari e non più idonei al voto. L'utente può emettere una transazione di unbonding per rimuoverli.
 
-N is a dynamic value based on the ratio of stale to active votes. N increases as the number of stale votes increases. In an event of a large network partition, this allows the larger branch to recover faster than the smaller branch.
+N è un valore dinamico basato sul rapporto tra voti stazionari e voti attivi. N aumenta all'aumentare del numero di voti stazionari. In caso di partizione di rete di grandi dimensioni, ciò consente un ripristino più rapido del ramo più grande rispetto a quello più piccolo.
 
-\subsection{Elections}\label{subsec:elections}
-Election for a new PoH generator occur when the PoH generator failure is detected. The validator with the largest voting power, or highest public key address if there is a tie is picked as the new PoH generator.
 
-A super majority of confirmations are required on the new sequence. If the new leader fails before a super majority confirmations are available, the next highest validator is selected, and a new set of confirmations is required.
+\subsection{Elezioni}\label{subsec:elections}
+L'elezione di un nuovo generatore di PoH avviene quando viene rilevato un guasto del generatore di PoH. Il validatore con il maggior potere di voto, o il maggior numero di chiavi pubbliche in caso di parità, viene scelto come nuovo generatore di PoH.
 
-To switch votes, a validator needs to vote at a higher PoH sequence counter, and the new vote needs to contain the votes it wants to switch. Otherwise the second vote will be slashable. Vote switching is expected to be designed so that it can only occur at a height that does not have a super majority.
+Una super maggioranza di conferme è richiesta per la nuova sequenza. Se il nuovo leader fallisce prima che sia disponibile una conferma a maggioranza superiore, viene selezionato il validatore successivo più alto ed è necessaria una nuova serie di conferme.
 
-Once a PoH generator is established, a Secondary can be elected to take over the transactional processing duties. If a Secondary exists, it will be considered as the next leader during a Primary failure.
+Per cambiare voto, un validatore deve votare ad un contatore di sequenza PoH più alto, e il nuovo voto deve contenere i voti che vuole cambiare. In caso contrario, la seconda votazione sarà tagliata fuori (slashable vote). La commutazione dei voti dovrebbe essere progettata in modo tale che possa avvenire solo a un'altezza che non abbia una super maggioranza.
 
-The platform is designed so that the Secondary becomes Primary and lower rank generators are promoted if an exception is detected or on a predefined schedule.
+Una volta che un generatore di PoH è stabilito è possibile sceglierne uno Secondario per assumere i compiti di elaborazione transazionale. Il Secondario, qualora esistesse, verrebbe scelto come leader se ci fosse un guasto con il Primario.
+
+Se viene rilevata un'eccezione o in base a un programma predefinito la piattaforma fa in modo che il Secondario diventi Primario e i generatori di rango inferiore siano promossi.
 \subsection{Election Triggers}
-\subsubsection{Forked Proof of History generator}
+\subsubsection{Fork di un Generatore Proof of History}
 
-PoH generators are designed with an identity that signs the generated sequence. A fork can only occur in case the PoH generator’s identity has been compromised. A fork is detected because two different historical records have been published on the same PoH identity.
+I generatori di PoH sono progettati con un'identità che contraddistingue la sequenza generata. Il fork può essere utilizzato solo se l'identità del generatore di PoH è stata compromessa. Viene rilevato un fork perché sono stati pubblicati due diversi record storici sulla stessa identità PoH.
 
-\subsubsection{Runtime Exceptions}
-A hardware failure or a bug, or a intentional error in the PoH generator could cause it to generate an invalid state and publish a signature of the state that does not match the local validator’s result. Validators will publish the correct signature via gossip and this event would trigger a new round of elections. Any validators who accept an invalid state will have their bonds slashed.
+\subsubsection{Eccezioni di Runtime}
+Un guasto hardware, un bug o un errore intenzionale nel generatore di PoH potrebbe causare la generazione di uno stato non valido e la pubblicazione di una firma dello stato che non corrisponde al risultato del validatore locale. I validatori pubblicheranno la firma corretta tramite gossip e questo evento innescherebbe un nuovo turno di elezioni.I bond di tutti i validatori che accettano uno stato invalido verranno tagliati (slashed).
 
 \subsubsection{Network Timeouts}
 
-A network timeout would trigger an election.
+Un network timeout innescherebbe una votazione.
 
 \subsection{Slashing}
-Slashing occurs when a validator votes two separate sequences. A proof of malicious vote will remove the bonded coins from circulation and add them to the mining pool.
+Lo slashing si verifica quando un validatore vota due sequenze separate. Una prova di voto malevolo eliminerà i coin dalla circolazione e li aggiungerà alla mining pool.
 
-A vote that includes a previous vote on a contending sequence is not eligible as proof of malicious voting. Instead of slashing the bonds, this vote removes the currently cast vote on the contending sequence.
+Una votazione che includa una voto precedente su una sequenza consecutiva non prova una votazione maligna. Anziché tagliare i bond, questa votazione elimina il voto attualmente espresso sulla sequenza delle votazioni in corso.
 
-Slashing also occurs if a vote is cast for an invalid hash generated by the PoH generator. The generator is expected to randomly generate an invalid state, which would trigger a fallback to Secondary.
-\subsection{Secondary Elections}
-Secondary and lower ranked Proof of History generators can be proposed and approved. A proposal is cast on the primary generator’s sequence. The proposal contains a timeout, if the motion is approved by a super majority of the vote before the timeout, the Secondary is considered elected, and will take over duties as scheduled. Primary can do a soft handover to Secondary by inserting a message into the generated sequence indicating that a handover will occur, or inserting an invalid state and forcing the network to fallback to Secondary.
+Si verifica uno slashing anche se si vota per un hash non valido generato dal generatore di PoH. Il generatore dovrebbe generare casualmente uno stato non valido, che innescherebbe un ripiego sul Secondario.
+\subsection{Elezioni secondarie}
+È possibile proporre e approvare generatori Secondari e di rango inferiore. Una proposta viene lanciata sulla sequenza del generatore primario. La proposta contiene un timeout, se la mozione viene approvata a maggioranza dei voti prima del timeout, il Secondario si considera eletto, e assumerà le funzioni come previsto. Il primario può passare al secondario in maniera delicata inserendo un messaggio nella sequenza generata che indica che si verificherà un passaggio, o inserendo uno stato non valido e costringendo la rete a tornare al secondario.
 
-If a Secondary is elected, and the primary fails, the Secondary will be considered as the first fallback during an election.
+Se viene eletto un Secondario, e il primario fallisce, il Secondario sarà considerato come il primo ripiego durante le elezioni.
 
-\subsection{Availability}\label{availability}
-CAP systems that deal with partitions have to pick Consistency or Availability. Our approach eventually picks Availability, but because we have an objective measure of time, Consistency is picked with reasonable human timeouts.
 
-Proof of Stake verifiers lock up some amount of coin in a “stake”, which allows them to vote for a particular set of transactions. Locking up coin is a transaction that is entered into a PoH stream, just like any other transaction. To vote, a PoS verifier has to sign the hash of the state, as it was computed after processing all the transactions to a specific position in the PoH ledger. This vote is also entered as a transaction into the PoH stream. Looking at the PoH ledger, we can then infer how much time passed between each vote, and if a partition occurs, for how long each verifier has been unavailable.
+\subsection{Disponibilità}\label{availability}
+I sistemi CAP che si occupano di partizioni devono scegliere Coerenza o Disponibilità. Il nostro approccio alla fine sceglie la Disponibilità, ma poiché abbiamo una misura oggettiva del tempo, la Coerenza viene scelta con ragionevoli timeout umani.
 
-To deal with partitions with reasonable human timeframes, we propose a dynamic approach to “unstake” unavailable verifiers. When the number of verifiers is high and above \(\frac{2}{3}\), the “unstaking” process can be fast. The number of hashes that must be generated into the ledger is low before the unavailable verifiers stake is fully unstaked and they are no longer counted for consensus. When the number of verifiers is below \(\frac{2}{3}\)rds but above \(\frac{1}{2}\), the unstaking timer is slower, requiring a larger number of hashes to be generated before the missing verifiers are unstaked. In a large partition, like a partition that is missing \(\frac{1}{2}\) or more of the verifiers, the unstaking process is very very slow. Transactions can still be entered into the stream, and verifiers can still vote, but full \(\frac{2}{3}\)rds consensus will not be achieved until a very large amount of hashes have been generated and the unavailable verifiers have been unstaked. The difference in time for a network to regain liveness allows us as customers of the network human timeframes to pick a partition that we want to continue using.
+I verificatori della Proof of Stake bloccano una certa quantità di coin in una "posta" (stake), il che permette loro di votare per una particolare serie di transazioni. La moneta bloccata è una transazione che viene inserita in un flusso PoH, proprio come qualsiasi altra transazione. Per votare, un verificatore del PoS deve firmare l'hash dello stato che è stato calcolato dopo aver elaborato tutte le transazioni in una posizione specifica nel registro del PoH. Anche questo voto è inserito come transazione nel flusso di PoH. Osservando il registro PoH, possiamo dedurre quanto tempo è trascorso tra una votazione e l'altra e, se si verifica una partizione, per quanto tempo ogni verificatore non è stato disponibile.
 
-\subsection{Recovery}\label{availability}
-In the system we propose, the ledger can be fully recovered from any failure. That means, anyone in the world can pick any random spot in the ledger and create a valid fork by appending newly generated hashes and transactions. If all the verifiers are missing from this fork, it would take a very very long time for any additional bonds to become valid and for this branch to achieve \(\frac{2}{3}\)rds super majority consensus. So full recovery with zero available validators would require a very large amount of hashes to be appended to the ledger, and only after all the unavailable validators have been unstaked will any new bonds be able to validate the ledger.
+Per gestire le partizioni con tempi umani ragionevoli, proponiamo un approccio dinamico ai verificatori non disponibili (unstaking). Quando il numero di verificatori è elevato e superiore a \(\frac{2}{3}\), il processo di "unstaking" può essere veloce. Il numero di hash che devono essere generati nel libro mastro è basso prima che la posta non disponibile dei verificatori venga completamente ignorata e che essi non vengano più presi in considerazione per il consenso. Quando il numero di verificatori è inferiore a \(\frac{2}{3}\)ma superiore a \(\frac{1}{2}\), il timer di rimozione delle stake è più lento e richiede la generazione di un numero maggiore di hash prima che i verificatori mancanti vengano rimossi. In una partizione di grandi dimensioni, come una partizione in cui mancano \(\frac{1}{2}\) o più dei verificatori, il processo di unstaking è molto lento. Le transazioni possono ancora essere inserite nel flusso e i verificatori possono ancora votare, ma il consenso completo di \(\frac{2}{3}\)non sarà raggiunto fino a quando non sarà stata generata una grande quantità di hash e i verificatori non disponibili non saranno stati identificati. La differenza di tempo per riacquistare vitalità da ai client la possibilità di avere tempo per scegliere una partizione che vogliamo continuare a utilizzare.
 
-\subsection{Finality}\label{availability}
-PoH allows verifiers of the network to observe what happened in the past with some degree of certainty of the time of those events. As the PoH generator is producing a stream of messages, all the verifiers are required to submit their signatures of the state within 500ms. This number can be reduced further depending on network conditions. Since each verification is entered into the stream, everyone in the network can validate that every verifier submitted their votes within the required timeout without actually observing the voting directly.
+\subsection{Recupero}\label{availability}
+Nel sistema che proponiamo, il libro mastro può essere completamente recuperato da qualsiasi guasto. Ciò significa che chiunque nel mondo può scegliere qualsiasi punto casuale nel libro mastro e creare un fork valido aggiungendo hash e transazioni. Se tutti i verificatori fossero assenti in questo fork, ci vorrebbe molto tempo per far si che qualsiasi bond aggiuntivo diventi valido e  per far raggiungere a questo ramo il consenso della super maggioranza a \(\frac{2}{3}\). Quindi il ripristino completo con zero validatori disponibili richiederebbe un'enorme quantità di hash da aggiungere al libro mastro e i nuovi bond sarebbero in grado di convalidare il libro mastro solo dopo la rimozione di tutti i validatori non disponibili.
 
-\subsection{Attacks}
-\subsubsection{Tragedy of Commons}
-The PoS verifiers simply confirm the state hash generated by the PoH generator. There is an economic incentive for them to do no work and simply approve every generated state hash. To avoid this condition, the PoH generator should inject an invalid hash at a random interval. Any voters for this hash should be slashed. When the hash is generated, the network should immediately promote the Secondary elected PoH generator.
+\subsection{Finalità}\label{availability}
+Il PoH consente ai verificatori della rete di osservare ciò che è accaduto in passato con un certo grado di certezza del momento in cui si sono verificati tali eventi. Poiché il generatore di PoH sta producendo un flusso di messaggi, tutti i verificatori sono tenuti a inviare le loro firme dello stato entro 500ms. Questo numero può essere ulteriormente ridotto in base alle condizioni di rete. Poiché ogni verifica viene inserita nel flusso, tutti in rete possono validare che ogni verificatore ha inviato il proprio voto entro il tempo richiesto senza osservare direttamente il voto.
 
-Each verifier is required to respond within a small timeout - 500ms for example. The timeout should be set low enough that a malicious verifier has a low probability of observing another verifiers vote and getting their votes into the stream fast enough.
+\subsection{Attacchi}
+\subsubsection{Tragedia dei beni comuni}
+I verificatori PoS confermano semplicemente l'hash di stato generato dal generatore PoH. C'è un incentivo economico per loro a non fare alcun lavoro e approvare semplicemente  ogni stato generato dall'hash . Per evitare questa condizione, il generatore di PoH dovrebbe immettere un hash non valido a intervalli casuali. Tutti i votanti questo hash dovrebbero essere tagliati fuori (slashed). Quando l'hash viene generato, la rete dovrebbe promuovere immediatamente il generatore di PoH Secondario eletto.
 
-\subsubsection{Collusion with the PoH generator}\label{subsubsec:collusion}
-A verifier that is colluding with the PoH generator would know in advance when the invalid hash is going to be produced and not vote for it. This scenario is really no different than the PoH identity having a larger verifier stake. The PoH generator still has to do all the work to produce the state hash.
+Ogni verificatore è tenuto a rispondere entro un breve periodo di tempo, ad esempio 500 ms. Il timeout dovrebbe essere impostato a un livello sufficientemente basso da far sì che un verificatore malintenzionato abbia una bassa probabilità di osservare un altro voto dei verificatori e di introdurre i propri voti nel flusso con velocità sufficiente.
 
-\subsubsection{Censorship}\label{censorship}
-Censorship or denial of service could occur when a \(\frac{1}{3}\)rd of the bond holders refuse to validate any sequences with new bonds. The protocol can defend against this form of attack by dynamically adjusting how fast bonds become stale. In the event of a denial of service, the larger partition will be designed to fork and censor the Byzantine bond holders. The larger network will recover as the Byzantine bonds become stale with time. The smaller Byzantine partition would not be able to move forward for a longer period of time.
 
-The algorithm would work as follows. A majority of the network would elect a new Leader. The Leader would then censor the Byzantine bond holders from participating. Proof of History generator would have to continue generating a sequence, to prove the passage of time, until enough Byzantine bonds have become stale so the bigger network has a super majority. The rate at which bonds become stale would be dynamically based on what percentage of bonds are active. So the Byzantine minority fork of the network would have to wait much longer than the majority fork to recover a super majority. Once a super majority has been established, slashing could be used to permanently punish the Byzantine bond holders.
+\subsubsection{Collusione con il lgeneratore PoH}\label{subsubsec:collusion}
+Un verificatore in collusione con il generatore di PoH saprebbe in grado di prevedere quando verrà prodotto l'hash non valido e non voterebbe a favore. In realtà, questo scenario non è diverso dall'identità del PoH con una quota di partecipazione (stake) più ampia da parte del verificatore. Il generatore di PoH deve ancora fare tutto il lavoro necessario per produrre l'hash di stato.
 
-\subsubsection{Long Range Attacks}\label{censorship}
-PoH provides a natural defense against long range attacks. Recovering the ledger from any point in the past would require the attacker to overtake the valid ledger in time by outpacing the speed of the PoH generator.
+\subsubsection{Censura}\label{censorship}
+La censura o il rifiuto del servizio potrebbero verificarsi quando un \(\frac{1}{3}\) dei possessori di bond rifiuta di convalidare qualsiasi sequenza con nuove obbligazioni. Il protocollo può difendersi da questa forma di attacco regolando dinamicamente la velocità con cui i legami diventano statici. In caso di rifiuto del servizio, la partizione più grande sarà progettata per forzare e censurare i titolari di bond bizantini (Byzantine bond holders). La rete più grande si ripristinerà grazie ai Byzantine bond che diventano statici . La partizione bizantina più piccola non è in grado di andare avanti per un periodo di tempo più lungo.
 
-The consensus protocol provides a second layer of defense, as any attack would have to take longer than the time it takes to unstake all the valid validators. It also creates an availability “gap” in the history of the ledger. When comparing two ledgers of the same height, the one with the smallest maximum partition can be objectively considered as valid.
+L'algoritmo funziona come segue. La maggioranza della rete eleggerebbe un nuovo leader. Il Leader censurerebbe i detentori di bond bizantini e non li farebbe partecipare. Il generatore di Proof of History dovrebbe continuare a generare una sequenza, per dimostrare il passare del tempo, fino a quando abbastanza Byzantine bond non diventino staticiin modo da ottenere una super maggioranza nella rete più grande. Il tasso con cui i bond diventano statici verrebbe basato dinamicamente su quae percentuale di bond è attiva. Così il fork bizantino di minoranza della rete dovrebbe aspettare molto più a lungo della di quello di maggioranza per recuperare una super maggioranza. Una volta che è stata stabilita una super maggioranza, lo slashing potrebbe essere usato per punire in modo permanente i detentori di bond bizantini.
 
-\subsubsection{ASIC Attacks}\label{censorship}
+\subsubsection{Attacchi a lungo raggio}\label{censorship}
+PoH fornisce una difesa naturale contro gli attacchi a lungo raggio. Recuperare il registro da qualsiasi punto del passato richiederebbe all'attaccante di superare il registro valido superando la velocità del generatore di PoH.
 
-Two opportunities for ASIC attacks exist in this protocol - during partition, and cheating timeouts in Finality.
+Il protocollo di consenso fornisce un secondo livello di difesa, in quanto qualsiasi attacco richiederebbe più tempo di quello necessario per rimuovere tutti i validatori validi. Crea anche un "gap" di disponibilità nella storia del libro mastro. Confrontando due libri contabili della stessa altezza, si può oggettivamente considerare valido quello con la più piccola massima partizione.
 
-For ASIC attacks during Partitions, the Rate at which bonds are unstaked is non-linear, and for networks with large partitions the rate is orders of magnitude slower than expected gains from an ASIC attack.
+\subsubsection{Attacchi ASIC}\label{censorship}
 
-For ASIC attacks during Finality, the vulnerability allows for byzantine validators who have a bonded stake to wait for confirmations from other nodes and inject their votes with a collaborating PoH generator. The PoH generator can then use its faster ASIC to generate 500ms worth of hashes in less time, and allow for network communication between PoH generator and the collaborating nodes. But, if the PoH generator is also byzantine, there is no reason why the byzantine generator wouldn’t have communicated the exact counter when they expect to insert the failure. This scenario is no different than a PoH generator and all the collaborators sharing the same identity vs. having a single combined stake and only using 1 set of hardware.
+In questo protocollo esistono due opportunità per gli attacchi ASIC: durante la partizione e con timeout fasulli durante la Finalità.
 
-\section{Streaming Proof of Replication}\label{porep}
-\subsection{Description}
-Filecoin proposed a version of Proof of Replication \cite{filecoinporep}. The goal of this version is to have fast and streaming verifications of Proof of Replication, which are enabled by keeping track of time in a Proof of History generated sequence. Replication is not used as a consensus algorithm, but is a useful tool to account for the cost of storing the blockchain history or state at a high availability.
-\subsection{Algorithm}
-As shown in Figure~\ref{fig:encrypt} CBC encryption encrypts each block of data in sequence, using the previously encrypted block to XOR the input data.
+Per gli attacchi ASIC durante le partizioni, la velocità con la quale i bond sono tolti dallo stake non è lineare, e per le reti con partizioni di grandi dimensioni la velocità è inferiore agli ordini di grandezza dei guadagni attesi da un attacco ASIC.
+
+Per gli attacchi ASIC durante la Finalità, la vulnerabilità permette ai validatori bizantini che hanno un bond in gioco (bonded stake) di aspettare conferme da altri nodi e di immettere i loro voti con un generatore di PoH collaborante. Il generatore PoH può quindi utilizzare il suo ASIC più veloce per generare 500 ms di hash in meno tempo e consentire la comunicazione di rete tra il generatore PoH e i nodi collaboranti. Ma, se il generatore di PoH è anche bizantino, non c'è ragione per cui debba comunicare il contatore esatto quando si prevede di inserire il guasto. Questo scenario non è diverso da quello in cui un generatore di PoH e tutti i collaboratori condividono la stessa identità e quando hanno un unico stake combinato e usano solo 1 set di hardware.
+
+\section{Prova di Replicazione in Streaming}\label{porep}
+\subsection{Descrizione}
+Filecoin ha proposto una versione della Proof of Replication \cite{filecoinporep}. L'obiettivo di questa versione è quello di avere verifiche rapide e in streaming della Proof of Replication, che sono abilitate tenendo traccia del tempo in una sequenza generata dalla Proof of History. La replica non è usata come un algoritmo di consenso, ma è uno strumento utile per tenere conto del costo di memorizzazione della cronologia della Blockchain o dello stato ad alta disponibilità.
+\subsection{Algoritmo}
+Come mostrato in Figura~\ref{fig:encrypt} la crittografia CBC crittografa ogni blocco di dati in sequenza, utilizzando il blocco precedentemente crittografato per XOR i dati di input.
 
 \begin{figure}[h]
   \begin{center}
     \centering
     \includegraphics[width=0.9\textwidth]{figures/cbc_encryption_001.png}
-    \caption[Fig 7]{Sequential CBC encryption\label{fig:encrypt}}
+    \caption[Fig 7]{Crittografia sequenziale CBC\label{fig:encrypt}}
   \end{center}
   \end{figure}
 
-Each replication identity generates a key by signing a hash that has been generated via a Proof of History sequence. This ties the key to a replicator’s identity, and to a specific Proof of History sequence. Only specific hashes can be selected. (See Section~\ref{hashselection} on Hash Selection)
+Ogni copia dell'identità genera una chiave firmando un hash creato tramite una sequenza ddella Proof of History. Ciò lega la chiave all'identità del replicatore e a una specifica sequenza di Proof of Work. È possibile selezionare solo hash specifici. (Vedere Sezione ~\ref{hashselection} sulla selezione del hash)
 
-The data set is fully encrypted block by block. Then to generate a proof, the key is used to seed a pseudorandom number generator that selects a random 32 bytes from each block.
+Il set di dati è completamente crittografato blocco per blocco. Quindi, per generare una prova, la chiave viene utilizzata per avviare un generatore di numeri pseudo casuali che seleziona un numero casuale di 32 byte da ogni blocco.
 
-A merkle hash is computed with the selected PoH hash prepended to the each slice.
+Viene calcolato un hash di merkle con l'hash della PoH aggiunto a ciascuna sezione.
 
 \begin{figure}[h]
   \begin{center}
@@ -527,206 +532,206 @@ A merkle hash is computed with the selected PoH hash prepended to the each slice
   \end{center}
   \end{figure}
 
-The root is published, along with the key, and the selected hash that was generated. The replication node is required to publish another proof in N hashes as they are generated by Proof of History generator, where N is approximately \(\frac{1}{2}\) the time it takes to encrypt the data. The Proof of History generator will publish specific hashes for Proof of Replication at predefined periods. The replicator node must select the next published hash for generating the proof. Again, the hash is signed, and random slices are selected from the blocks to create the merkle root.
+La root viene pubblicata insieme alla chiave e all'hash selezionato che è stato generato. Il nodo di replica è necessario per pubblicare un'altra prova in N hash mentre vengono generati dal generatore della Proof of History, dove N è circa \(\frac{1}{2}\) il tempo necessario per crittografare i dati. Il generatore della Proof of History pubblicherà hash specifici per la Proof of replication a periodi predefiniti. Il nodo replicatore deve selezionare l'hash successivo pubblicato per generare la prova. Anche in questo caso, l'hash viene firmato e vengono selezionate delle porzioni casuali dai blocchi per creare la radice di merkle.
 
-After a period of N proofs, the data is re-encrypted with a new CBC key.
-\subsection{Verification}
+Dopo un periodoN prove, i dati vengono nuovamente crittografati con una nuova chiave CBC.
+\subsection{Verifica}
 
-With N cores, each core can stream encryption for each identity. Total space required is \(2 blocks * N cores\), since the previous encrypted block is necessary to generate the next one. Each core can then be used to generate all the proofs that were derived from the current encrypted block.
+Con N core, ogni core è in grado di eseguire lo streaming crittografico per ogni identità. Lo spazio totale richiesto è \(2 blocchi * N cores\), dal momento che il precedente blocco cifrato è necessario per generare il successivo. Ciascun nucleo può quindi essere utilizzato per generare tutte le prove che sono state derivate dal blocco crittografato corrente.
 
-Total time to verify proofs is expected to be equal to the time it takes to encrypt. The proofs themselves consume few random bytes from the block, so the amount of data to hash is significantly lower than the encrypted block size. The number of replication identities that can be verified at the same time is equal to the number of available cores. Modern GPUs have 3500+ cores available to them, albeit at \(\frac{1}{2}\)-\(\frac{1}{3}\) the clock speed of a CPU.
+Il tempo totale necessario per verificare le prove di stampa dovrebbe essere pari al tempo necessario per la crittografia. Le prove stesse consumano pochi byte casuali dal blocco, quindi la quantità di dati in hash è significativamente inferiore alla dimensione del blocco crittografato. Il numero di identità di replica verificabili contemporaneamente è uguale al numero di core disponibili. Le GPU moderne hanno a disposizione oltre 3500 core, anche se a \(\frac{1}{2}\)-\(\frac{1}{3}\) della velocità di clock di una CPU.
 
-\subsection{Key Rotation}
+\subsection{Rotazione delle chiavi}
 
-Without key rotation the same encrypted replication can generate cheap proofs for multiple Proof of History sequences. Keys are rotated periodically and each replication is re-encrypted with a new key that is tied to a unique Proof of History sequence.
+Senza rotazione delle chiavi, la stessa replica crittografata può generare prove per più sequenze di Proof of History. Le chiavi vengono ruotate periodicamente e ogni replica viene ricrittografata con una nuova chiave legata a una sequenza unica di Proof of History.
 
-Rotation needs to be slow enough that it’s practical to verify replication proofs on GPU hardware, which is slower per core than CPUs.
+La rotazione deve essere abbastanza lenta da rendere pratica la verifica delle prove di replica sull'hardware della GPU, che è più lenta per core rispetto alle CPU.
 
-\subsection{Hash Selection}\label{hashselection}
+\subsection{Selezione degli Hash}\label{hashselection}
 
-The Proof of History generator publishes a hash to be used by the entire network for encrypting Proofs of Replication, and for using as the pseudorandom number generator for byte selection in fast proofs.
+Il generatore Proof of History pubblica un hash che deve essere utilizzato dall'intera rete per crittografare le Proofs of Replication e per utilizzarlo come generatore di numeri psudo casuali per la selezione dei byte nelle prove rapide.
 
-The hash is published at a periodic counter that is roughly equal to \(\frac{1}{2}\) the time it takes to encrypt the data set. Each replication identity must use the same hash, and use the signed result of the hash as the seed for byte selection, or the encryption key.
+L'hash è pubblicato su un contatore periodico che è approssimativamente uguale a \(\frac{1}{2}\) il tempo necessario per crittografare il set di dati. Ogni identità di replica deve usare lo stesso hash e usare il risultato firmato dell'hash come seed per la selezione dei byte, o la chiave di crittografia.
 
-The period that each replicator must provide a proof must be smaller than the encryption time. Otherwise the replicator can stream the encryption and delete it for each proof.
+Il periodo che ogni replicatore deve fornire per la prova deve essere inferiore al tempo di crittografia. In caso contrario, il replicatore può eseguire lo streaming della crittografia ed eliminarla per ogni prova.
 
-A malicious generator could inject data into the sequence prior to this hash to generate a specific hash. This attack is discussed more in \ref{subsubsec:collusion}.
+Un generatore dannoso potrebbe immettere dati nella sequenza prima di questo hash per generare un hash specifico. Questo attacco è discusso più approfonditamente su \ref{subsubsec:collusion}.
 
-\subsection{Proof Validation}
-The Proof of History node is not expected to validate the submitted Proof of Replication proofs. It is expected to keep track of the number of pending and verified proofs submitted by the replicator’s identity. A proof is expected to be verified when the replicator is able to sign the proof by a super majority of the validators in the network.
+\subsection{Convalida della prova}
+Il nodo della Proof of History non è tenuto a convalidare le Proofs of replication presentate. Essa dovrebbe tenere traccia del numero di prove in sospeso e verificate che vengono fornite dall'identità del replicatore. Una prova deve essere verificata quando il replicatore è in grado di firmarla da una super maggioranza dei validatori della rete.
 
-The verifications are collected by the replicator via p2p gossip network, and submitted as one packet that contains a super majority of the validators in the network. This packet verifies all the proofs prior to a specific hash generated by the Proof of History sequence, and can contain multiple replicator identities at once.
-\subsection{Attacks}
+Le verifiche sono raccolte dal replicatore tramite p2p gossip network, e presentate come un pacchetto che contiene una super maggioranza dei validatori in rete. Questo pacchetto verifica tutte le prove prima di uno specifico hash generato dalla sequenza Proof of History e può contenere più identità di replicatori contemporaneamente.
+\subsection{Attacchi}
 \subsubsection{Spam}
-A malicious user could create many replicator identities and spam the network with bad proofs. To facilitate faster verification, nodes are required to provide the encrypted data and the entire merkle tree to the rest of the network when they request verification.
+Un utente malintenzionato potrebbe creare molte identità di replicatore e spamare la rete con prova false. Per facilitare una verifica più rapida, i nodi sono tenuti a fornire i dati crittografati e l'intero albero di merkle al resto della rete quando richiedono la verifica.
 
-The Proof of Replication that is designed in this paper allows for cheap verification of any additional proofs, as they take no additional space. But each identity would consume 1 core of encryption time. The replication target should be set to a maximum size of readily available cores. Modern GPUs ship with 3500+ cores.
+La Proof of Replication che è progettata in questo documento consente una verifica economica di qualsiasi prova aggiuntiva, in quanto non richiede spazio aggiuntivo. Ma ogni identità richiederebbe 1 nucleo di tempo di crittografia. L'obiettivo di replica dovrebbe essere fissato ad una dimensione massima dei core facilmente disponibili. Le GPU moderne sono dotate di oltre 3500 core.
 
-\subsubsection{Partial Erasure}
+\subsubsection{Cancellazione Parziale}
 
-A replicator node could attempt to partially erase some of the data to avoid storing the entire state. The number of proofs and the randomness of the seed should make this attack difficult.
+Un nodo del replicatore potrebbe tentare di cancellare parzialmente alcuni dati per evitare di memorizzare l'intero stato. Il numero di prove e la casualità del seme dovrebbe rendere difficile questo attacco.
 
-For example, a user storing 1 terabyte of data erases a single byte from each 1 megabyte block. A single proof that samples 1 byte out of every megabyte would have a likelihood of collision with any erased byte \(1 - (1- 1/1,000,0000)^{1,000,000} = 0.63\). After 5 proofs the likelihood is \(0.99\).
+Ad esempio, un utente che memorizza 1 terabyte di dati cancella un singolo byte da ogni blocco di 1 megabyte. Un'unica prova che campiona 1 byte su ogni megabyte avrebbero una probabilità di collisione con qualsiasi byte cancellato pari a \(1 - (1- 1/1.000.0000)^{1.000.000} = 0,63\). Dopo 5 prove la probabilità è \(0.99\).
 
-\subsubsection{Collusion with PoH generator}
+\subsubsection{Collusione con il generatore di Proof of History}
 
-The signed hash is expected to be used to seed the sample. If a replicator could select a specific hash in advance then the replicator could erase all bytes that are not going to be sampled.
+Si prevede di utilizzare l'hash firmato per preparare il campione. Se un replicatore è in grado di selezionare in anticipo un hash specifico, può cancellare tutti i byte che non vengono campionati.
 
-A replicator identity that is colluding with the Proof of History generator could inject a specific transaction at the end of the sequence before the predefined hash for random byte selection is generated. With enough cores, an attacker could generate a hash that is preferable to the replicator’s identity.
+Un'identità di replicatore collusiva con il generatore della Proof of History potrebbe immettere una transazione specifica alla fine della sequenza prima che venga generato l'hash predefinito per la selezione casuale dei byte. Con un numero sufficiente di core, un attaccante potrebbe generare un hash preferibile all'identità del replicatore.
 
-This attack could only benefit a single replicator identity. Since all the identities have to use the same exact hash that is cryptographically signed with ECDSA (or equivalent), the resulting signature is unique for each replicator identity, and collision resistant. A single replicator identity would only have marginal gains.
-\subsubsection{Denial of Service}
-The cost of adding an additional replicator identity is expected to be equal to the cost of storage. The cost of adding extra computational capacity to verify all the replicator identities is expected to be equal to the cost of a CPU or GPU core per replication identity.
+Questo attacco potrebbe andare a vantaggio di un'unica identità di replicatore. Poiché tutte le identità devono utilizzare lo stesso hash esatto che è crittograficamente firmato con ECDSA (o equivalente), la firma risultante è unica per ogni identità del replicatore ed è resistente alle collisioni. Un'unica identità di replicatore avrebbe solo vantaggi marginali.
+\subsubsection{Rifiuto del Servizio}
+Il costo dell'aggiunta di un'identità di replicatore aggiuntiva dovrebbe essere pari al costo dello storage. Il costo dell'aggiunta di capacità di calcolo aggiuntive per verificare tutte le identità del replicatore dovrebbe essere pari al costo di una CPU o di un nucleo di GPU per identità di replica.
 
-This creates an opportunity for a denial of service attack on the network by creating a large number of valid replicator identities.
+Ciò crea l'opportunità di un attacco di rifiuto del servizio alla rete creando un gran numero di identità di replicatori valide.
 
-To limit this attack, the consensus protocol chosen for the network can select a replication target, and award the replication proofs that meet the desired characteristics, like availability on the network, bandwidth, geolocation etc...
-\subsubsection{Tragedy of Commons}
+Per limitare questo attacco, il protocollo di consenso scelto per la rete può selezionare un target di replica e assegnare le prove di replica che soddisfano le caratteristiche desiderate, come la disponibilità sulla rete, la larghezza di banda, la geolocalizzazione, ecc ...
+\subsubsection{Tragedia dei Beni Comuni}
 
-The PoS verifiers could simply confirm PoRep without doing any work. The economic incentives should be lined up with the PoS verifiers to do work, i.e. splitting the mining payout between the PoS verifiers and the PoRep replication nodes.
-
-To further avoid this scenario, the PoRep verifiers can submit false proofs a small percentage of the time. They can prove the proof is false by providing the function that generated the false data. Any PoS verifier that confirmed a false proof would be slashed.
-
-\section{System Architecture}\label{system_architecture}
+	I verificatori PoS possono semplicemente confermare la PoRep senza fare alcun lavoro. Gli incentivi economici dovrebbero essere messi in relazione con i verificatori del PoS per svolgere il loro lavoro, vale a dire suddividere il pagamento del mining tra i verificatori del PdS e i nodi di replicazione del PoRep.
+	
+	Per evitare ulteriormente questo scenario, i verificatori PoRep possono presentare prove false per piccoli periodi. Possono dimostrare che la prova è falsa fornendo la funzione che ha generato i dati falsi. Qualsiasi verificatore del PoS che avesse confermato una falsa prova sarebbe stato tagliato fuori (slashed).
+	
+\section{Architettura di Sistema}\label{system_architecture}
 
 \begin{figure}
   \begin{center}
     \centering
     \includegraphics[width=0.9\textwidth]{figures/system_arch_001.png}
-    \caption[Fig 9]{System Architecture \label{fig_9}}
+    \caption[Fig 9]{Architettura di Sistema \label{fig_9}}
   \end{center}
   \end{figure}
 
-\subsection{Components}
+\subsection{Componenti}
 
-\subsubsection{Leader, Proof of History generator}
-The Leader is an elected Proof of History generator. It consumes arbitrary user transactions and outputs a Proof of History sequence of all the transactions that guarantee a unique global order in the system. After each batch of transactions the Leader outputs a signature of the state that is the result of running the transactions in that order. This signature is signed with the identity of the Leader.
+\subsubsection{Leader, Generatore Proof of History}
+Il Leader è un generatore eletto della Proof of History. Utilizza transazioni arbitrarie degli utenti e produce una sequenza della Proof of History di tutte le transazioni che garantiscono un ordine globale unico nel sistema. Dopo ogni batch di transazioni il Leader emette una firma dello stato che è il risultato dell'esecuzione delle transazioni in quell'ordine. Tale firma è fatta con l'identità del Leader.
 
-\subsubsection{State}
-The state is a naive hash table indexed by the user’s address. Each cell contains the full user’s address and the memory required for this computation. For example,\\
-\noindent the Transaction table contains:\\\\\noindent
+\subsubsection{Stato}
+Lo stato è una tabella hash non univoca indicizzata in base all'indirizzo dell'utente. Ogni cella contiene l'indirizzo completo dell'utente e la memoria necessaria per questo calcolo. 	Ad esempio,\\
+\noindent la tabella delle transazioni contiene:\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
-\bitbox{160}{Ripemd of Users Public Key}
+\bitbox{160}{Ripemd delle Public Key  Utenti}
 & \bitbox{64}{Account}
 & \bitbox{32}{unused}
 \end{bytefield}\\
-for a total of 32 bytes.\\
-\noindent The Proof of Stake bond’s table contains:\\\\\noindent
+per un totale di 32 bytes.\\
+\noindent La tabella dei bond della Proof of Stake contiene:\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
-\bitbox{160}{Ripemd of Users Public Key}
+\bitbox{160}{Ripemd delle Public Key  Utenti}
 & \bitbox{64}{Bond} \\
-& \bitbox{64}{Last Vote} \\
+& \bitbox{64}{Ultimo voto} \\
 & \bitbox{224}{unused}
 \end{bytefield}\\
-for a total of 64 bytes.
-\subsubsection{Verifier, State Replication}
+per un totale di 64 bytes.
+\subsubsection{Verificatore, Replicazione di stato}
 
 
 
-The Verifier nodes replicate and provide high availability of the blockchain state. The replication target is selected by the consensus algorithm, and the validators in the consensus algorithm select and vote the Proof of Replication nodes they approve of based on off-chain defined criteria.
+I nodi di verifica si replicano e garantiscono un'elevata disponibilità dello stato della Blockchain. L'obiettivo di replica è selezionato dall'algoritmo di consenso e i validatori nell'algoritmo di consenso selezionano e votano i nodi della Proof of Replication che approvano sulla base di criteri definiti fuori catena.
 
 
-The network could be configured with a minimum Proof of Stake bond size, and a requirement for a single replicator identity per bond.
-\subsubsection{Validators}
-These nodes are consuming bandwidth from Verifiers. They are virtual nodes, and can run on the same machines as the Verifiers or the Leader, or on separate machines that are specific to the consensus algorithm configured for this network.
+La rete può essere configurata con una dimensione minima del bond della Proof of Stake e il requisito di un'unica identità di replicatore per bond.
+\subsubsection{Validatori}
+Questi nodi occupano la larghezza di banda dei Verificatori. Sono nodi virtuali e possono essere eseguiti sulle stesse macchine dei verificatori o del leader, oppure su macchine separate  specifiche per l'algoritmo di consenso configurato per questa rete.
 
-\subsection{Network Limits}
+
+\subsection{Limiti di Rete}
 
 \begin{figure}
   \begin{center}
     \centering
     \includegraphics[width=0.8\textwidth]{figures/generator_network_limits_001.png}
-    \caption[Fig 10]{Generator network limits\label{fig_10}}
+    \caption[Fig 10]{Limiti di rete del Generatore \label{fig_10}}
   \end{center}
   \end{figure}
 
-The leader is expected to be able to take incoming user packets, order them in the most efficient way possible, and sequence them into a Proof of History sequence that is published to downstream Verifiers. Efficiency is based on memory access patterns of the transactions, so the transactions are ordered to minimize faults and to maximize prefetching.\\\\
+Il leader deve essere in grado di prendere i pacchetti di utenti in arrivo, ordinarli nel modo più efficiente possibile e sequenziarli in una lista della Proof of History pubblicata sui verificatori a valle. L'efficienza è basata su modelli di accesso alla memoria delle transazioni, in modo che le transazioni siano ordinate per ridurre al minimo i guasti e massimizzare il prefetching.\\\\
 
-\noindent \textbf{Incoming packet format:}\\\\\noindent
+\noindent \textbf{Formato dei pacchetti in entrata:}\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
-\begin{rightwordgroup}{Signed}
-\bitbox{160}{Last Valid Hash}
-& \bitbox{64}{Counter}
+\begin{rightwordgroup}{Firmato}
+\bitbox{160}{Ultimo Hash Valido}
+& \bitbox{64}{Contatore}
 & \bitbox{6}{u}
 & \bitbox{10}{s} \\
-& \bitbox{64}{Fee} \\
-& \bitbox{256}{From} \\
+& \bitbox{64}{Commisioni} \\
+& \bitbox{256}{Da} \\
 \end{rightwordgroup} \\
-& \bitbox{256}{Signature 1 of 2} \\
-& \bitbox{256}{Signature 2 of 2} \\
+& \bitbox{256}{Firma 1 di 2} \\
+& \bitbox{256}{Firma 2 di 2} \\
 \end{bytefield}
 
-\noindent Size \(20 + 8 + 16 + 8 + 32 + 32 + 32 = 148\) bytes.\\\\
+\noindent Dimensione \(20 + 8 + 16 + 8 + 32 + 32 + 32 = 148\) bytes.\\\\
 
-The minimal payload that can be supported would be 1 destination account with a minimum size of 176 bytes.\\\\
+Il payload minimo che può essere supportato è 1 account di destinazione con una dimensione minima di 176 byte.\\\\
 
-\noindent \textbf{With payload:}\\\\\noindent
+\noindent \textbf{Con payload:}\\\\\noindent
 
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
-\begin{rightwordgroup}{Signed}
-\bitbox{160}{Last Valid Hash}
-& \bitbox{64}{Counter}
+\begin{rightwordgroup}{Firmato}
+\bitbox{160}{Ultimo Hash Valido}
+& \bitbox{64}{Contatore}
 & \bitbox{6}{u}
 & \bitbox{10}{s} \\
-& \bitbox{160}{To}
-& \bitbox{64}{Amount} \\
-& \bitbox{64}{Counter}
-& \bitbox{64}{Fee} \\
-& \bitbox{256}{From} \\
+& \bitbox{160}{A}
+& \bitbox{64}{Ammontare} \\
+& \bitbox{64}{Contatore}
+& \bitbox{64}{Commissioni} \\
+& \bitbox{256}{Da} \\
 \end{rightwordgroup} \\
-& \bitbox{256}{Signature 1 of 2} \\
-& \bitbox{256}{Signature 2 of 2} \\
+& \bitbox{256}{Firma 1 di 2} \\
+& \bitbox{256}{Firma 2 di 2} \\
 \end{bytefield}
 
-\noindent With payload the minimum size: 176 bytes\\\\
+\noindent Con dimensione minima del payload pari a: 176 bytes\\\\
 
-The Proof of History sequence packet contains the current hash, counter, and the hash of all the new messages added to the PoH sequence and the state signature after processing all the messages. This packet is sent once every N messages are broadcast.\\
-\noindent Proof of History packet:\\\\\noindent
+Il pacchetto della sequenza Proof of History contiene l'hash corrente, il contatore e l'hash di tutti i nuovi messaggi aggiunti alla sequenza PoH e la firma di stato dopo l'elaborazione di tutti i messaggi. Questo pacchetto viene inviato ogni volta che vengono trasmessi N messaggi .\\
+\noindent Pacchetti Proof of History:\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
-\begin{rightwordgroup}{Signed}
-\bitbox{160}{Current Hash}
-& \bitbox{64}{Counter} \\
-\bitbox{160}{Messages Hash} \\
-\bitbox{160}{State Hash} \\
+\begin{rightwordgroup}{Firmato}
+\bitbox{160}{Hash Corrente}
+& \bitbox{64}{Contatore} \\
+\bitbox{160}{Hash Messaggi} \\
+\bitbox{160}{Hash Stato} \\
 \end{rightwordgroup} \\
-& \bitbox{256}{Signature 1 of 2} \\
-& \bitbox{256}{Signature 2 of 2} \\
+& \bitbox{256}{Firma 1 di 2} \\
+& \bitbox{256}{Firma 2 di 2} \\
 \end{bytefield}
 
-\noindent Minimum size of the output packet is: 132 bytes \\\\
+\noindent La dimensione minima del pacchetto in uscita è : 132 bytes \\\\
 
-On a 1gbps network connection the maximum number of transactions possible is $1$~gigabit per second / $176$~bytes = $710$k tps max. Some loss ($1-4\%$) is expected due to Ethernet framing. The spare capacity over the target amount for the network can be used to increase availability by coding the output with Reed-Solomon codes, and striping it to the available downstream Verifiers.
-\subsection{Computational Limits}
-Each transaction requires a digest verification. This operation does not use any memory outside of the transaction message itself and can be parallelized independently. Thus throughput is expected to be limited by the number of cores available on the system.
+Su una connessione di rete a 1 gbps il numero massimo di transazioni possibili è $1$~gigabit al secondo / $176$~bytes = $710$k tps max. Si prevede una certa perdita ($1-4\%$) a causa del framing Ethernet. La capacità inutilizzata che supera la quantità prevista per la rete può essere utilizzata per aumentare la disponibilità codificando l'output con i codici Reed-Solomon e rimuovendolo dai Verificatori a valle disponibili.
+\subsection{Limiti Computazionali}
+Ogni transazione richiede una verifica del contenuto di un compendio. Questa operazione non utilizza alcuna memoria al di fuori del messaggio di transazione stesso e può essere effettuata in parallelo in modo indipendente. La produttività dovrebbe quindi essere limitata dal numero di core disponibili sul sistema.
 
-GPU based ECDSA verification servers have had experimental results of 900k operations per second~\cite{gpuecc}.
-\subsection{Memory Limits}
-A naive implementation of the state as a \(50\%\) full hashtable with 32 byte entries for each account, would theoretically fit 10 billion accounts into 640GB. Steady state random access to this table is measured at \(1.1 * 10^7\) writes or reads per second. Based on 2 reads and two writes per transaction, memory throughput can handle 2.75m transactions per second. This was measured on an Amazon Web Services 1TB x1.16xlarge instance.
+I server di verifica ECDSA basati su GPU hanno avuto risultati sperimentali di operazioni 900k al secondo~\cite{gpuecc}.
+\subsection{Limiti di Memoria}
+Un'implementazione grezza dello stato come un \(50\%\) hashtable completo con 32 byte di voci per ogni account, sarebbe teoricamente in grado di mettere 10 miliardi di conti in 640GB. L'accesso casuale allo stato stabile a questa tabella è misurato su \(1.1 * 10^7\) scritture o letture al secondo. Sulla base di 2 letture e 2 scritture per transazione, il throughput di memoria è in grado di gestire 2,75 milioni di transazioni al secondo. Questo è stato misurato su un'istanza di Amazon Web Services da 1 TB x 1,16x.
 
-\subsection{High Performance Smart Contracts}\label{sec:smartcontracts}
+\subsection{Smart Contracts ad alte Performance}\label{sec:smartcontracts}
 
-Smart contracts are a generalized form of transactions. These are programs that run on each node and modify the state. This design leverages extended Berkeley Packet Filter bytecode, which is fast and easy to analyze, and JIT bytecode as the smart contracts language.
+Gli Smart Contract sono una forma generalizzata di transazioni, programmi che girano su ogni nodo e modificano lo stato. Questo design sfrutta il bytecode esteso Berkeley Packet Filter, veloce e facile da analizzare e il bytecode JIT come linguaggio per i contratti intelligenti.
 
-One of its main advantages is a zero cost Foreign Function Interface. Intrinsics, or \hyphenation{high level} functions that are implemented on the platform directly, are callable by \hyphenation{user supplied} programs. Calling the intrinsics suspends that program and schedules the intrinsic on a high performance server. Intrinsics are batched together to execute in parallel on the GPU.
-
+Uno dei suoi principali vantaggi è un'interfaccia a costo zero per funzioni esterne. Le funzioni intrinseche o di alto livello implementate direttamente sulla piattaforma sono richiamabili dai programmi forniti dall'utente. Chiamare l'intrinseco sospende il programma e pianifica l'intrinseco su un server ad alte prestazioni. Gli intrinseci sono raggruppati per eseguire l'esecuzione in parallelo sulla GPU.
 \begin{figure}
   \begin{center}
     \centering
     \includegraphics[width=0.9\textwidth]{figures/bpf_programs_001.png}
-    \caption[Fig 11]{Executing \hyphenation{user supplied} BPF programs.\label{fig_11}}
+    \caption[Fig 11]{Esecuzione dei programmi BPF definiti dall'utente.\label{fig_11}}
   \end{center}
   \end{figure}
 
-In the above example, two different user programs call the same intrinsic. Each program is suspended until the batch execution of the intrinsics is complete. An example intrinsic is ECDSA verification. Batching these calls to execute on the GPU can increase throughput by thousands of times.
+Nell'esempio precedente, due diversi programmi utente chiamano lo stesso intrinseco. Ogni programma viene sospeso fino al completamento dell'esecuzione batch degli elementi intrinseci. Un esempio intrinseco è la verifica dell'ECDSA. Il confronto di queste chiamate per l'esecuzione sulla GPU può aumentare il throughput di migliaia di volte.
 
-This trampoline requires no native operating system thread context switches, since the BPF bytecode has a well defined context for all the memory that it is using.
+Questo trampolino non richiede interruttori di contesto del thread nativi del sistema operativo, poiché il bytecode BPF ha un contesto ben definito per tutta la memoria che sta utilizzando.
 
-eBPF backend has been included in LLVM since 2015, so any LLVM frontend language can be used to write smart contracts. It’s been in the Linux kernel since 2015, and the first iterations of the bytecode have been around since 1992. A single pass can check eBPF for correctness, ascertain its runtime and memory requirements and convert it to x86 instructions.
+Il back end eBPF è stato incluso nell'LLVM dal 2015, quindi qualsiasi linguaggio di frontend dell'LLVM può essere usato per scrivere Smart Contract. È nel kernel Linux dal 2015 e le prime iterazioni del bytecode sono in circolazione dal 1992. Un singolo passaggio può controllare la correttezza dell'eBPF, accertarne il tempo di esecuzione e i requisiti di memoria e convertirlo in istruzioni x86.
 
 \bibliographystyle{abbrv}
 \bibliography{simple}
