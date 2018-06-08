@@ -22,7 +22,6 @@ if [[ "$BUILDKITE" = "true" ]]; then
 fi
 
 echo --- Uploading assets for $BUILDKITE_TAG
-ci/upload-release-asset.sh solana-labs whitepaper "$BUILDKITE_TAG" \
-  solana-whitepaper.pdf
+ci/upload-release-asset.sh solana-labs whitepaper "$BUILDKITE_TAG" *.pdf
 
 exit 0
