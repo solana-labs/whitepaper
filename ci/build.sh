@@ -35,13 +35,12 @@ echo --- solana-whitepaper.tex
 upload_ci_artifact solana-whitepaper.pdf
 upload_ci_artifact solana-whitepaper.log
 
-# TODO: Enable jp translation once it builds correctly in CI
-# echo --- solana-whitepaper-jp.tex
-# (
-#   set -x
-#   luatex -interaction=nonstopmode translations/wip_japanese/solana-whitepaper-jp.tex
-# ) || OK=false
-# upload_ci_artifact solana-whitepaper-jp.pdf
-# upload_ci_artifact solana-whitepaper-jp.log
+echo --- solana-whitepaper-jp.tex
+(
+  set -x
+  luatex -interaction=nonstopmode translations/wip_japanese/solana-whitepaper-jp.tex
+) || OK=false
+upload_ci_artifact solana-whitepaper-jp.pdf
+upload_ci_artifact solana-whitepaper-jp.log
 
 $OK
