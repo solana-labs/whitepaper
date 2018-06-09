@@ -5,12 +5,19 @@ cd $(dirname $0)/..
 upload_ci_artifact() {
   if ${BUILDKITE:-false}; then
     echo --- artifact: $1
-    (
-      set -x
-      buildkite-agent artifact upload $1
-    )
+    if [[ -r $1 ]]; then
+      (
+        set -x
+        buildkite-agent artifact upload $1
+      )
+    else
+      echo ^^^ +++
+      echo $1 not found
+    fi
   fi
 }
+
+OK=true
 
 echo --- tool versions
 (
@@ -19,11 +26,12 @@ echo --- tool versions
   luatex --version
 )
 
+
 echo --- solana-whitepaper.tex
 (
   set -x
   pdflatex -interaction=nonstopmode -halt-on-error solana-whitepaper.tex
-)
+) || OK=false
 upload_ci_artifact solana-whitepaper.pdf
 upload_ci_artifact solana-whitepaper.log
 
@@ -32,8 +40,8 @@ upload_ci_artifact solana-whitepaper.log
 # (
 #   set -x
 #   luatex -interaction=nonstopmode translations/wip_japanese/solana-whitepaper-jp.tex
-# )
+# ) || OK=false
 # upload_ci_artifact solana-whitepaper-jp.pdf
 # upload_ci_artifact solana-whitepaper-jp.log
 
-exit 0
+$OK
