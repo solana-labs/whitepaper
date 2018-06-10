@@ -1,2 +1,5 @@
+// build products
 *.pdf
 *.log
+*.aux
+*.out
