@@ -3,44 +3,41 @@
 cd $(dirname $0)/..
 
 upload_ci_artifact() {
-  if ${BUILDKITE:-false}; then
-    echo --- artifact: $1
-    if [[ -r $1 ]]; then
+  echo --- artifact: $1
+  if [[ -r $1 ]]; then
+    ls -l $1
+    if ${BUILDKITE:-false}; then
       (
         set -x
         buildkite-agent artifact upload $1
       )
-    else
-      echo ^^^ +++
-      echo $1 not found
     fi
+  else
+    echo ^^^ +++
+    echo $1 not found
   fi
 }
 
 OK=true
 
-echo --- tool versions
-(
-  set -x
-  pdflatex --version
-  luatex --version
-)
+for tex in *.tex; do
+  echo --- $tex
+  (
+    set -x
+    ci/docker-run.sh evilmachines/texlive lualatex -interaction=nonstopmode -halt-on-error $tex
+  ) || OK=false
+  upload_ci_artifact ${tex%.*}.pdf
+  upload_ci_artifact ${tex%.*}.log
+  $OK || { echo Failure.; exit 1; }
+done
+
+echo Done.
+
+if [[ -z "$BUILDKITE_TAG" ]]; then
+  exit 0
+fi
+
+echo --- Uploading assets for $BUILDKITE_TAG
+ci/docker-run.sh evilmachines/texlive ci/upload-release-asset.sh solana-labs whitepaper "$BUILDKITE_TAG" *.pdf
 
 
-echo --- solana-whitepaper.tex
-(
-  set -x
-  pdflatex -interaction=nonstopmode -halt-on-error solana-whitepaper.tex
-) || OK=false
-upload_ci_artifact solana-whitepaper.pdf
-upload_ci_artifact solana-whitepaper.log
-
-echo --- solana-whitepaper-jp.tex
-(
-  set -x
-  luatex -interaction=nonstopmode translations/wip_japanese/solana-whitepaper-jp.tex
-) || OK=false
-upload_ci_artifact solana-whitepaper-jp.pdf
-upload_ci_artifact solana-whitepaper-jp.log
-
-$OK
