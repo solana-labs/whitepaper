@@ -15,7 +15,7 @@ The `.tex` files in this directory are rendered to PDF by [LuaTeX](http://www.lu
 1. Install [MacTeX](http://www.tug.org/mactex/ "MacTex Official Site").
 2. Compile .tex file: 
 ```
-  $lualatex solana-whitepaper-jp.tex
+  $ lualatex solana-whitepaper-jp.tex
 ```
 
 #### How to setup LuaTeX on Ubuntu Desktop
