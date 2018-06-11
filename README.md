@@ -1,4 +1,4 @@
-[![Build Status](https://badge.buildkite.com/caf7ae5f41c9eadbce6c3e4d9f5197ffb7f3e4977873eb4971.svg?branch=master)](https://buildkite.com/solana-labs/whitepaper)
+[![Build Status](https://badge.buildkite.com/caf7ae5f41c9eadbce6c3e4d9f5197ffb7f3e4977873eb4971.svg?branch=master)](https://solana-ci-gate.herokuapp.com/buildkite_public_log?https://buildkite.com/solana-labs/whitepaper/builds/latest/master)
 
 ## Building
 Ensure that Docker is installed on your system,
