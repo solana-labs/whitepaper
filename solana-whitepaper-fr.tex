@@ -458,7 +458,7 @@ Des générateurs de PoH Secondaire et inférieurs peuvent être proposés et ac
 
 Si le Secondaire est élu, il sera alors pris en considération alors que le Primaire se retirera pendant une élection.
 
-\subsection{Disponibilite}\label{disponibility}
+\subsection{Disponibilité}\label{disponibility}
 Les systèmes CAP qui traitent avec les partitions doivent choisir soit la cohérence, soit la disponibilité. Notre approche choisi la disponibilité, mais à cause du fait que nous avons une mesure du temps objective, la cohérence est choisie avec un \textit{timeout} humain raisonnble.
 
 Les validateurs de \textit{Proof of Sake} gardent en réserve une certaine somme de token, que l'on appelle \textit{stake}. Cette somme leur permet de voter pour un set de transactions particulier. Garder en réserve un certaine somme de token est un transaction qui fait partie d'un stream de PoH, comme n'importe quelle autre transaction. Afin de vote, un validateur PoS doit signer le hash d'un état comme si celui-ci était calculé après avoir traité toutes les transactions d'une position spécifiques dans le grand livre PoH. Ce vote est aussi entré comme une transaction dans le stream PoH. En regardant au grand livre PoH, nous pouvons donc deviner combien de temps s'est écoulé entre chaque vote. Et si une partition apparaît, de deviner combien de temps chaque validateurs fût indisponible.
@@ -549,7 +549,7 @@ Le hash est publié à un compteur périodique qui est approximativement égal �
 
 La période à laquelle chaque réplicateur doit fournir une preuve doit être plus petite que le temps de cryptage. Sinon, le réplicateur peut diffuser le cryptage et le supprimer pour chaque preuve.
 
-Un générateur malveillant pourrait injecter des données dans la séquence antérieure à ce hash pour générer un hash spécifique. Cette attaque est plus longuement discutée dans \ref{subsubsec:collision}.
+Un générateur malveillant pourrait injecter des données dans la séquence antérieure à ce hash pour générer un hash spécifique. Cette attaque est plus longuement discutée dans \ref{subsubsec:Collision}.
 
 \subsection{Proof Validation}
 On n’attend pas du node " proof of history " de valider la preuve soumise des preuves de réplication. Il est prévu de garder une trace du nombre de preuves soumises vérifié par l'identité des réplicateurs. On attend d’une preuve qu’elle soit vérifiée quand le réplicateur est capable de signer la preuve par une grande majorité des validateurs dans le réseau..
