@@ -496,13 +496,13 @@ Deux opportunités d’attaques ASIC existent dans le protocole – pendant le p
 
 Pour les attaques ASIC pendant les partitionnements, la vitesse à laquelle les obligations sont \textit{unstake} est non-linéaire, et pour des réseaux avec de grandes partitions cette vitesse devient trop faible pour permettre la réalisation d'une attaque ASIC rentable.
 
-Pour les attaques ASIC pendant la Finalité, la vulnérabilité permet aux validateurs Byzantins qui ont une part liée d’attendre les confirmations d’autres nœuds et injecter leurs votes avec un générateur de PoH collaborateur. Le générateur de PoH peut alors utiliser son ASIC plus rapide pour générer des hashes de 500ms en moins de temps, et autoriser le réseau de communiquer entre le générateur de PoH et les nœuds collaborateurs. Mais, si le générateur de Poh est aussi Byzantin, il n’y a pas de raison pour que le générateur Byzantin n’ait pas communiqué le compteur exact quand ils s’attendent à insérer une défaillance. Ce scénario n’est pas différent qu’un générateur de PoH et tous les collaborateurs partageant la même identité et ayant une seule part liée et n’utilisant qu’un ensemble de matériel.
+Pour les attaques ASIC pendant l'état de "Finalité", la vulnérabilité permet aux validateurs Byzantins qui ont une \textit{stake} attitrée d’attendre les confirmations d’autres nœuds pour injecter leurs votes en collaboration avec un générateur de PoH. Le générateur de PoH peut alors utiliser son ASIC le plus rapide pour générer des hashes qui nécessiteraient 500ms en moins de temps, et autoriser la communication entre le générateur de PoH et les nœuds collaborateurs. Cependant, si le générateur de PoH est aussi Byzantin, il n’y a pas de raison qu'il n’ait pas communiqué le compteur réel au moment ou une défaillance aurait pu être insérée. Ce scénario n’est pas différent de celui ou un générateur de PoH et tous les collaborateurs partagent la même identité comparé au fait de n'avoir qu'une seule entité de \textit{stake} combinée en n’utilisant qu’un seul ensemble de matériel.
 
 \section{Preuve de Réplication diffusées}\label{porep}
 \subsection{Description}
-Filecoin proposait une version de Preuve de Réplication \cite{filecoinporep}. Le but de cette version est d’avoir des vérifications de Preuve de Réplication rapides et diffusées, ce qui est permis en gardant une trace du temps qui s’écoule dans une séquence générée de PoH. La réplication n’est pas utilisée comme un algorithme de consensus, mais est un outil utile pour justifier le cout de stockage de l’historique ou l’état de la blockchain à une grande disponibilité.
+Filecoin a proposé une version de Preuve de Réplication \cite{filecoinporep}. Le but de cette version est d’avoir des vérifications de Preuve de Réplication rapides et en continues, ce qui est rendu possible grace au système de PoH qui permet de dater les des séquences générées. La réplication n’est pas utilisée comme un algorithme de consensus, cependant c'est un outil utile permettant de garantir, contre le coût de stockage de l’historique ou de l’état de la blockchain, une grande disponibilité.
 \subsection{Algorithme}
-Comme le montre la figure~\ref{fig:encrypt} le cryptage CBC crypte chaque bloc de donnée en séquence, en utilisant le bloc précédemment crypté pour XOR la donnée d’entrée.
+Comme le montre la figure~\ref{fig:encrypt} le chiffrement CBC chiffre chaque bloc de donnée en séquence. Le bloc précédemment chiffré est utilisé afin d'appliquer un XOR à la nouvelle données d'entrée.
 
 \begin{figure}[h]
   \begin{center}
@@ -512,9 +512,9 @@ Comme le montre la figure~\ref{fig:encrypt} le cryptage CBC crypte chaque bloc d
   \end{center}
   \end{figure}
 
-Chaque réplication d’identité génère une clé en signant un hachage qui a été générée par une séquence PoH. Cela lie la clé à l’identité d’un réplicateur, et à une séquence PoH spécifique. Seuls des hashes spécifiques peuvent être sélectionnés. (See Section~\ref{selectiondehash} dans Sélection de hash)
+Chaque réplication d’identité génère une clé en signant un \textit{hash} qui a été générée par une séquence de PoH. Cela lie la clé à l’identité d’un réplicateur et à une séquence de PoH spécifique. Seuls des \textit{hashs} spécifiques peuvent être sélectionnés. (Voir la section~\ref{selectiondehash} dans "Sélection de hash")
 
-L’ensemble de données est totalement crypté bloc par bloc. Pour générer ensuite une preuve, la clé est utilisée pour implanter un générateur de nombres pseudo-aléatoires qui sélectionne 32 bytes aléatoires de chaque bloc.
+Bloc par bloc, l’ensemble de données est totalement chiffré. Puis afin de générer une preuve, un générateur de nombre pseudo-aléatoire permettant de sélectionner 32 octets de chaque bloc est généré à partir de la clé.
 
 Un arbre de Merkle est calculé avec les hashes PoH sélectionnés ajoutés à chaque tranche.
 
