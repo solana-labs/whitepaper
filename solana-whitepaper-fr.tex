@@ -557,23 +557,23 @@ Il n'est pas attendu du nœud de " proof of history " de valider les preuves de 
 Les vérifications sont collectées par le réplicateur via un réseau p2p \textit{gossip} et sont toutes soumises dans un paquet qui contient une super majorité des validateurs du réseau. Ce paquet vérifie l'ensemble des preuves soumises avant un \textit{hash} spécifique généré par la séquence de "Proof of History" et peut contenir plusieurs identités de réplicateurs à la fois.
 \subsection{Attaques}
 \subsubsection{Spam}
-Un utilisateur mal intentionné pourrait créer de nombreuses identités de réplicateurs et spammer le network avec de mauvaises preuves. Pour faciliter la vérification plus rapide, les nodes sont requis pour fournir les données cryptées et tout l'arbre de merkle au reste du réseau lorsqu'ils demandent une vérification.
+Un utilisateur mal intentionné pourrait créer de nombreuses identités de réplicateurs et spammer le réseaux avec des preuves falsifiées. Afin de faciliter une vérification plus rapide, des nœuds sont requis pour fournir les données chiffrées et l'intégralité de l'arbre de Merkle au reste du réseau lorsqu'il demande une vérification.
 
-La preuve de réplication qui est conçue dans ce document permet des vérifications à bas cout des preuves supplémentaires, car elles ne prennent pas d'espace supplémentaire. Mais chaque identité consommerait 1 cœur du noyau d’encryptions. La cible de réplication devrait être réglé à une taille maximale de coeurs facilement disponible. Les GPU modernes sont expédiés avec plus de 3500 coeurs.
+La preuve de réplication conçue dans ce document permet des vérifications de preuves supplémentaire à bas coût car elles ne nécessitent pas d'espace supplémentaire. Cependant chaque identité consommerait 1 cœur du noyau de chiffrage. La cible de réplication devrait être réglée à une taille maximale de coeurs facilement disponible. Les puces GPU modernes possèdent plus de 3500 coœurs.
 
 \subsubsection{Effacement partiel}
 
-Un node de réplication pourrait tenter d'effacer partiellement certaines données pour éviter de stocker l'état entier. Le nombre de preuves et le caractère aléatoire des seed devraient rendre cette attaque difficile.
+Un node de réplication pourrait tenter d'effacer partiellement certaines données pour éviter de stocker l'intégralité de l'état. Le nombre de preuves et le caractère aléatoire des \textit{seed} devraient rendre cette attaque difficile.
 
-Par exemple, un utilisateur stockant 1 téraoctet de données efface un seul octet de chaque bloc de 1 mégaoctet. Une seule preuve qui échantillonne 1 octet sur chaque mégaoctet aurait une probabilité de collision avec tout octet effacé \(1 - (1- 1/1,000,0000)^{1,000,000} = 0.63\). Après 5 preuves, la probabilité est de \(0.99\).
+Par exemple, un utilisateur stockant 1 téraoctet de données efface un seul octet de chaque bloc de 1 mégaoctet. Une seule vérification qui échantillonne 1 octet sur chaque mégaoctet aurait une probabilité de collision un octet effacé de \(1 - (1- 1/1,000,0000)^{1,000,000} = 0.63\). Après 5 vérifications, la probabilité est de \(0.99\).
 
-\subsubsection{Collusion with PoH generator}
+\subsubsection{Collusion avec le générateur de PoH}
 
-Le hash signé devrait être utilisé pour envoyer l'échantillon. Si un réplicateur pouvait sélectionne un hash spécifique à l'avance alors le réplicateur pourrait effacer tous octets qui ne vont pas être échantillonnés.
+Le \textit{hash} signé devrait servir de base à la constitution de l'échantillon. Si un réplicateur avait la possibilité de sélectionner un hash spécifique à l'avance alors il pourrait effacer tous octets qui ne seront pas échantillonnés.
 
-Une identité de réplicateur en qui conspire avec le générateur Proof of History pourrait injecter une transaction spécifique à la fin de la séquence avant le hash prédéfinit pour la sélection d'octets aléatoires est généré. Avec suffisamment de coeurs, un attaquant pourrait générer un hash qui sera choisi à la place de l’identité des réplicateurs.
+Une identité de réplicateur qui conspire avec le générateur de PoH pourrait injecter une transaction spécifique en fin de séquence avant que le \textit{hash} prédéfinit pour la sélection d'octets aléatoires ne soit généré. Avec suffisamment de cœurs, un attaquant pourrait générer un hash qui sera choisi à la place de l’identité des réplicateurs.
 
-Cette attaque ne peut bénéficier que d'une seule identité de réplicateur. Puisque toutes les identités doivent utiliser le même exactement le même hash qui est signé cryptographiquement avec ECDSA (ou équivalent), la signature résultante est unique pour chaque identité du réplicateur et résistante à la conspiration. Une identité de réplicateur unique aurait de faible gain.
+Cette attaque ne peut bénéficier qu'à une seule identité de réplicateur. Du fait que toutes les identités doivent utiliser exactement le même hash signé par chiffrement ECDSA (ou équivalent), la signature résultante est unique pour chaque identité du réplicateur et résistante à la conspiration. Une identité de réplicateur unique n'aurait que de faible gain.
 \subsubsection{Déni de service}
 Le coût d'ajout d'une identité de réplicateur supplémentaire devrait être égal au coût du stockage. Le coût de l'ajout d'une capacité de calcul supplémentaire pour vérifier toutes les identités du réplicateur est censées être égal au coût d'un coeur de CPU de GPU par identité de réplication.
 
