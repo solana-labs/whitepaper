@@ -516,7 +516,7 @@ Chaque réplication d’identité génère une clé en signant un \textit{hash} 
 
 Bloc par bloc, l’ensemble de données est totalement chiffré. Puis afin de générer une preuve, un générateur de nombre pseudo-aléatoire permettant de sélectionner 32 octets de chaque bloc est généré à partir de la clé.
 
-Un arbre de Merkle est calculé avec les hashes PoH sélectionnés ajoutés à chaque tranche.
+Un arbre de Merkle est calculé avec le hash de la PoH sélectionné préfixé à chaque tranche.
 
 \begin{figure}[h]
   \begin{center}
@@ -526,12 +526,12 @@ Un arbre de Merkle est calculé avec les hashes PoH sélectionnés ajoutés à c
   \end{center}
   \end{figure}
 
-La racine est publiée, avec la clé, et le hash sélectionné qui fut généré. Le nœud de réplication est requis pour publier une autre preuve dans un nombre N de hashes au fur et à mesure qu’ils sont générés par le générateur de PoH, où N est approximativement \(\frac{1}{2}\) du temps qu’il faut crypter les données. Le générateur PoH publiera des hashes spécifiques pour Preuve de Réplication à des périodes prédéfinies. Le nœud de réplication doit sélectionner le prochain hachage publié pour générer la preuve. A nouveau, le hachage est signé, et des tranches aléatoires sont sélectionnées des blocs pour créer la racine Merkle.
+La racine, la clé ainsi que le hash généré sont publiés. Le nœud de réplication est exploité pour la publication de nouvelles preuves dans N hashes au fur et à mesures qu'ils sont produits par le générateur de PoH, ou N vaut approximativement \(\frac{1}{2}\) du temps nécessaire au chiffrement des données. Le générateur de la PoH publiera des \textit{hashes} spécifiques pour Preuve de Réplication à des périodes prédéfinies. Le nœud de réplication doit sélectionner le prochain \textit{hash} publié pour générer la preuve. A nouveau, le \textit{hash} est signé, et des tranches aléatoires sont sélectionnées des blocs pour créer la racine de l'arbre de Merkle.
 
-Après une période de N preuves, les données sont recryptées avec une nouvelle clé CBC.
+Après une période de N preuves, les données sont à nouveau chiffrées avec une nouvelle clé CBC.
+
 \subsection{Vérification}
-
-Avec un nombre N de cœurs, chaque cœur peut diffuser du cryptage pour chaque identité. L’espace total requis est \(2 blocks * N coeurs\), car le bloc crypté précédent est nécessaire pour générer le suivant. Chaque cœur peut ensuite être utilisé pour générer toutes les preuves qui ont dérivé du bloc crypté actuel.
+Avec un nombre N de cœurs, chaque cœur peut effecture un chiffrement en continu pour chaque identité. L’espace total requis est \(2 blocs \times N coeurs\), car le bloc précédemment chiffré est nécessaire pour générer le suivant. Chaque cœur peut ensuite être utilisé pour générer toutes les preuves qui ont dérivé du bloc chiffré actuel.
 
 Le temps total pour vérifier les preuves est attendu à être égal au temps nécessaire pour crypter. Les preuves elles-mêmes consomment peu de bytes aléatoires du bloc, la quantité de données pour le hachage est alors significativement plus faible que la taille du bloc crypté. Le nombre d’identités de réplication pouvant être vérifiées en même temps est égal au nombre de cœurs disponibles. Les GPUs modernes ont 3500+ cœurs disponibles, quoiqu’à \(\frac{1}{2}\)-\(\frac{1}{3}\) de la fréquence d’horloge des CPUs.
 
