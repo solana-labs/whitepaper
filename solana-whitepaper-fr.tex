@@ -533,13 +533,13 @@ Après une période de N preuves, les données sont à nouveau chiffrées avec u
 \subsection{Vérification}
 Avec un nombre N de cœurs, chaque cœur peut effecture un chiffrement en continu pour chaque identité. L’espace total requis est \(2 blocs \times N coeurs\), car le bloc précédemment chiffré est nécessaire pour générer le suivant. Chaque cœur peut ensuite être utilisé pour générer toutes les preuves qui ont dérivé du bloc chiffré actuel.
 
-Le temps total pour vérifier les preuves est attendu à être égal au temps nécessaire pour crypter. Les preuves elles-mêmes consomment peu de bytes aléatoires du bloc, la quantité de données pour le hachage est alors significativement plus faible que la taille du bloc crypté. Le nombre d’identités de réplication pouvant être vérifiées en même temps est égal au nombre de cœurs disponibles. Les GPUs modernes ont 3500+ cœurs disponibles, quoiqu’à \(\frac{1}{2}\)-\(\frac{1}{3}\) de la fréquence d’horloge des CPUs.
+Il est attendu que le temps total nécessaire à la vérification des preuves soit égal au temps qu'il a fallu pour les chiffrer. Les preuves elles-mêmes ne consomment que quelques octets aléatoires sur un bloc, la quantité de données nécessaire pour le \textit{hash} est alors significativement plus faible que la taille du bloc chiffré. Le nombre d’identités de réplication pouvant être vérifiées en même temps est égal au nombre de cœurs disponibles. Les GPUs modernes ont 3500+ cœurs disponibles, même s'ils ne fonctionnent qu'à \(\frac{1}{2}\) ou \(\frac{1}{3}\) de la fréquence d’horloge des CPUs.
 
 \subsection{Rotation de Clé}
 
-Sans la rotation de clé, la même réplication cryptée peut générer de simples preuves pour des multiples séquences de PoH. Les clés sont tournées périodiquement et chaque réplication et recryptée avec une nouvelle clé liée à une séquence PoH unique.
+Sans la rotation de clé, la même réplication chifrée peut générer des  preuves peu robustes pour de multiples séquences de PoH. Les clés changent de manière périodique et chaque réplication et à nouveau chiffrée avec une nouvelle clé liée à une séquence de PoH spécifique.
 
-La rotation doit être suffisamment lente pour que la vérification des réplications de preuves soit possible sur des GPUs, ce qui est plus lent que sur les CPUs.
+Les périodes de rotation des clés doivent être suffisamment longues pour permettre la vérification des réplications de preuves sur des GPUs, ce qui est plus lent que sur les CPUs.
 
 \subsection{Sélection de hash}\label{selectiondehash}
 
