@@ -543,18 +543,18 @@ Les périodes de rotation des clés doivent être suffisamment longues pour perm
 
 \subsection{Sélection de hash}\label{selectiondehash}
 
-Le générateur PoH publie un hash visant à être utilisé par l’entièreté du réseau pour crypter les Preuves de Réplication, et comme le générateur de nombres pseudo-aléatoires une sélection de bytes dans les preuves rapides.
+Le générateur de PoH publie un \textit{hash} visant à être utilisé par l’ensemble du réseau afin de chiffrer les Preuves de Réplication. Ce \textit{hash} et aussi utilisé comme le nombre généré pseudo-aléatoirement pour la sélection d'octets pour les preuves rapides.
 
-Le hash est publié à un compteur périodique qui est approximativement égal à \(\frac{1}{2}\) du temps nécessaire au cryptage de l’ensemble de données. Chaque identité de réplication doit utiliser le même hash, et utiliser le même résultat signé du hash comme point de départ pour une sélection de byte, ou comme clé de cryptage.
+Le \textit{hash} est publié à un intervalle de temps régulier qui sont approximativement égaux à \(\frac{1}{2}\) du temps nécessaire au chiffrage de l’ensemble des données. Chaque identité de réplication doit utiliser le même \textit{hash} et son résultat signé afin de définir une sélection d'octets ou l'utiliser directement comme clé de chiffrement.
 
-La période à laquelle chaque réplicateur doit fournir une preuve doit être plus petite que le temps de cryptage. Sinon, le réplicateur peut diffuser le cryptage et le supprimer pour chaque preuve.
+La période à laquelle chaque réplicateur doit fournir une preuve doit être plus petite que le temps de chiffrement. Sinon, le réplicateur est en capacité de diffuser le chiffrement et le supprimer pour chaque preuve.
 
-Un générateur malveillant pourrait injecter des données dans la séquence antérieure à ce hash pour générer un hash spécifique. Cette attaque est plus longuement discutée dans \ref{subsubsec:Collision}.
+Un générateur malveillant pourrait injecter des données dans la séquence antérieure à ce hash dans le but de générer un hash spécifique. Cette attaque est plus longuement discutée au sous chapitre \ref{subsubsec:Collision}.
 
-\subsection{Proof Validation}
-On n’attend pas du node " proof of history " de valider la preuve soumise des preuves de réplication. Il est prévu de garder une trace du nombre de preuves soumises vérifié par l'identité des réplicateurs. On attend d’une preuve qu’elle soit vérifiée quand le réplicateur est capable de signer la preuve par une grande majorité des validateurs dans le réseau..
+\subsection{Validation de preuve}
+Il n'est pas attendu du nœud de " proof of history " de valider les preuves de réplication soumises. Il est prévu de garder une trace du nombre de preuves soumises, en attentes et vérifiés, par les réplicateurs. Il est attendu d’une preuve qu’elle soit vérifiée quand le réplicateur est capable de la faire signer par une grande majorité des validateurs du réseau.
 
-Les vérifications sont collectées par le réplicateur via le réseau gossip p2p, et soumis comme un paquet qui contient une vaste majorité des validateurs dans le réseau. Ce paquet vérifie toutes les preuves avant un hash spécifique généré par la séquence Proof of History, et peut contenir plusieurs identités de réplicateurs à la fois.
+Les vérifications sont collectées par le réplicateur via un réseau p2p \textit{gossip} et sont toutes soumises dans un paquet qui contient une super majorité des validateurs du réseau. Ce paquet vérifie l'ensemble des preuves soumises avant un \textit{hash} spécifique généré par la séquence de "Proof of History" et peut contenir plusieurs identités de réplicateurs à la fois.
 \subsection{Attaques}
 \subsubsection{Spam}
 Un utilisateur mal intentionné pourrait créer de nombreuses identités de réplicateurs et spammer le network avec de mauvaises preuves. Pour faciliter la vérification plus rapide, les nodes sont requis pour fournir les données cryptées et tout l'arbre de merkle au reste du réseau lorsqu'ils demandent une vérification.
