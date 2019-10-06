@@ -599,37 +599,38 @@ Pour éviter ce scénario, les vérificateurs PoRep peuvent parfois soumettre de
 \subsection{Composants}
 
 \subsubsection{Leader, générateur de PoH}
-Le Leader est un générateur de " proof of history " élu. Il consomme de manière arbitraire des transactions d’utilisateur et affiche une séquence de " proof of history " de toutes les transactions garantissant un ordre global unique dans le système. Après chaque lot de transactions, le leader émet une signature de l'état qui résulte de l'exécution des transactions dans cet ordre. Cette signature est signée avec l'identité du Leader.
+Le Leader est un générateur de " proof of history " élu. Il consomme de manière arbitraire des transactions d’utilisateur et affiche une séquence de " proof of history " de toutes les transactions garantissant un ordre global unique dans le système. Après chaque lot de transactions, le Leader émet une signature de l'état qui résulte de l'exécution des transactions dans cet ordre. Cette signature est signée avec l'identité du Leader.
 
 \subsubsection{L'état}
-L'état est une table de hash naïve indexée par l'adresse des utilisateurs. Chaque cellule contient l’adresse complète des utilisateurs et la mémoire requise pour ce calcul. Par exemple,\\
-\noindent the Transaction table contains:\\\\\noindent
+L'état est une simple table de hash indexée par l'adresse des utilisateurs. Chaque cellule contient l’adresse complète de l'utilisateur et la mémoire requise pour ce calcul. Par exemple,\\
+
+\noindent La table de transaction contient :\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
 \bitbox{160}{Ripemd of Users Public Key}
 & \bitbox{64}{Account}
-& \bitbox{32}{unused}
+& \bitbox{32}{Unused}
 \end{bytefield}\\
 Pour un total de 32 octets.\\
-\noindent La table des obligations de " proof of stake " contient:\\\\\noindent
+
+\noindent La table des obligations de " Proof of Stake " contient:\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
 \bitbox{160}{Ripemd of Users Public Key}
 & \bitbox{64}{Bond} \\
 & \bitbox{64}{Last Vote} \\
-& \bitbox{224}{unused}
+& \bitbox{224}{Unused}
 \end{bytefield}\\
-for a total of 64 bytes.
+Pour un total de 64 octets.
+
 \subsubsection{Vérificateurs, State Replication}
 
+Les nodes vérificateurs répliquent l'état de la blockchain et fournissent une haute disponibilité son état. La cible de réplication est sélectionnée par l'algorithme de consensus et les validateurs de l'algorithme de consensus sélectionnent et votent pour les nœuds de " proof of replication " qu'ils approuvent en fonction de critères définis hors chaîne.
 
+Le réseau peut être configuré avec une taille de liaison " Proof of Stake " minimale et des exigences spécifiques par liaison d'identité de réplicateur.
 
-Les nodes vérificateurs répliquent l'état de la blockchain et fournissent une haute disponibilité de l'état blockchain. La cible de réplication est sélectionnée par l'algorithme de consensus et les validateurs de l'algorithme de consensus sélectionnent et votent les nodes de " proof of replication " qu'ils approuvent en fonction de critères définis hors chaîne.
-
-
-Le réseau peut être configuré avec une taille de liaison Proof of Stake minimale et une exigence pour une identité de réplicateur unique par liaison.
 \subsubsection{Validateurs}
-Ces nodes consomment de la bande passante à partir des vérificateurs. Ce sont des nodes virtuels, qui peuvent fonctionner sur les mêmes machines que les vérificateurs ou le Leader, ou sur des machines distinctes spécifiques à l'algorithme de consensus configuré pour ce réseau.
+Ces nœuds consomment de la bande passante des vérificateurs. Ce sont des nœuds virtuels, qui peuvent fonctionner sur les mêmes machines que celles des vérificateurs, du Leader, ou sur des machines distinctes spécifiques pour l'algorithme de consensus configuré pour ce réseau.
 
 \subsection{Limites du réseau}
 
@@ -641,9 +642,9 @@ Ces nodes consomment de la bande passante à partir des vérificateurs. Ce sont 
   \end{center}
   \end{figure}
 
-Le Leader devrait être en mesure de prendre les paquets entrants d'utilisateurs, de les ordonner de la manière la plus efficace possible, et de les séquencer dans une séquence de Proof of History publiée aux vérificateurs en aval. L'efficacité est basée sur les modèles d'accès à la mémoire des transactions, afin que les transactions sont ordonnées pour minimiser les erreurs et maximiser la pré-extraction.\\\\
+Le Leader devrait être en mesure de récupérer les paquets provenants d'utilisateurs, de les ordonner de la manière la plus efficace possible, et de les séquencer dans une séquence de " Proof of History " publiée aux vérificateurs en aval. L'efficacité est basée sur les modèles d'accès à la mémoire des transactions, de ce fait les transactions sont ordonnées pour minimiser les erreurs et maximiser la pré-extraction.\\\\
 
-\noindent \textbf{Incoming packet format:}\\\\\noindent
+\noindent \textbf{Format des paquets entrants :}\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
 \begin{rightwordgroup}{Signé}
