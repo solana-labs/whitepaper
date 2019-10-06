@@ -575,17 +575,16 @@ Une identité de réplicateur qui conspire avec le générateur de PoH pourrait 
 
 Cette attaque ne peut bénéficier qu'à une seule identité de réplicateur. Du fait que toutes les identités doivent utiliser exactement le même hash signé par chiffrement ECDSA (ou équivalent), la signature résultante est unique pour chaque identité du réplicateur et résistante à la conspiration. Une identité de réplicateur unique n'aurait que de faible gain.
 \subsubsection{Déni de service}
-Le coût d'ajout d'une identité de réplicateur supplémentaire devrait être égal au coût du stockage. Le coût de l'ajout d'une capacité de calcul supplémentaire pour vérifier toutes les identités du réplicateur est censées être égal au coût d'un coeur de CPU de GPU par identité de réplication.
+Le coût d'ajout d'une identité de réplicateur supplémentaire devrait être égal au coût du stockage. Le coût de l'ajout d'une capacité de calcul supplémentaire pour vérifier toutes les identités des réplicateurs est censées être égal au coût d'un cœur de CPU ou GPU par identité de réplication.
 
-Cela crée une opportunité pour une attaque par déni de service sur le réseau en créant un grand nombre d'identités de réplicateurs valides.
+Cela crée une vulnérabilité par déni de service sur le réseau exploitable en créant un grand nombre d'identités de réplicateurs valides.
 
-Pour limiter cette attaque, le protocole de consensus choisi pour le réseau peut sélectionner une cible de réplication et attribuer les preuves de réplication répondant aux caractéristiques souhaitées, telles que la disponibilité sur le réseau, la bande passante, la géolocalisation,
-etc...
+Pour limiter cette attaque, le protocole de consensus choisi pour le réseau peut sélectionner une cible de réplication et lui attribuer les preuves de réplication répondant à des caractéristiques souhaitées, telles que la disponibilité sur le réseau, la bande passante, la géolocalisation, etc...
 \subsubsection{Tragédie des communs}
 
-Les vérificateurs PoS pourraient simplement confirmer PoRep sans faire de travail. Les récompenses économiques devraient être alignées avec les vérificateurs du PoS pour faire le travail, comme en divisant le paiement miner entre les vérificateurs du PoS et le node de réplication des PoRep.
+Les vérificateurs PoS pourraient simplement confirmer la PoRep sans réellement effectuer de vérification. L'intérêt économique devrait être au même niveau qu'avec les vérificateurs du PoS pour la réalisation des vérifications en divisant la récompense de minage entre les vérificateurs du PoS et le nœud de réplication des PoRep.
 
-Pour éviter ce scénario, les vérificateurs PoRep peuvent parfois soumettre des fausses preuves. Ils peuvent prouver que la preuve est fausse en fournissant la fonction qui a généré les fausses données. Tout vérificateur de PoS qui a confirmé une fausse preuve serait détruit.
+Pour éviter ce scénario, les vérificateurs PoRep peuvent parfois soumettre de fausses preuves. Ils peuvent prouver que la preuve est fausse en fournissant la fonction qui a généré les fausses données. Tout vérificateur de PoS qui a confirmé une fausse preuve serait détruit.
 
 \section{Architecture système}\label{system_architecture}
 
@@ -599,7 +598,7 @@ Pour éviter ce scénario, les vérificateurs PoRep peuvent parfois soumettre de
 
 \subsection{Composants}
 
-\subsubsection{Leader, Proof of History generator}
+\subsubsection{Leader, générateur de PoH}
 Le Leader est un générateur de " proof of history " élu. Il consomme de manière arbitraire des transactions d’utilisateur et affiche une séquence de " proof of history " de toutes les transactions garantissant un ordre global unique dans le système. Après chaque lot de transactions, le leader émet une signature de l'état qui résulte de l'exécution des transactions dans cet ordre. Cette signature est signée avec l'identité du Leader.
 
 \subsubsection{L'état}
