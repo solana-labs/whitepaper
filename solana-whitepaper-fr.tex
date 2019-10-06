@@ -38,7 +38,7 @@
 \maketitle
 
 \textbf{\footnotesize Avertissement légal}\scriptsize
-~~Rien de ce qui figue dans ce White Paper n'est une offre de vente, ou la sollicitation d'une offre d'achat ou de token. Solana publie ce White Paper uniquement pour collecter des informations et des commentaires du public. Si et quand Solana met en vente des tokens (ou un Simple Accord pour de futurs tokens, elle le fera par le biais de documents d'offre définitifs, y compris un document d'information comprenant également les facteurs de risque. Ces documents définitifs devraient également inclure une version mise à jour de ce White Paper, qui pourrait différer sensiblement de la version actuelle. Si et quand Solana fait une telle offre aux États-Unis, l'offre sera probablement disponible uniquement pour les investisseurs accrédités.
+~~Rien de ce qui figure dans ce White Paper n'est une offre de vente, ou la sollicitation d'une offre d'achat ou de token. Solana publie ce White Paper uniquement pour collecter des informations et des commentaires du public. Si et lorsque Solana mettra en vente des tokens (ou un Simple Accord pour de futurs tokens, elle le fera par le biais de documents d'offre définitifs, y compris un document d'information comprenant également les facteurs de risque. Ces documents définitifs devraient également inclure une version mise à jour de ce White Paper, qui pourrait différer sensiblement de la version actuelle. Si et quand Solana fait une telle offre aux États-Unis, l'offre sera probablement disponible uniquement pour les investisseurs accrédités.
 
 Rien dans ce White Paper ne doit être considéré ou interprété comme une garantie ou une promesse de développement de l'activité ou des tokens de Solana ou de l'utilité ou de la valeur des tokens. Ce White Paper expose les plans actuels, qui pourraient changer à sa discrétion, et dont le succès dépendra de nombreux facteurs indépendants de la volonté de Solana, entre autres les facteurs dépendants du marché et des facteurs des industries de données et de crypto-monnaie. Toute déclaration concernant des événements futurs est basée uniquement sur l'analyse de Solana des problèmes décrits dans ce White Paper. Cette analyse pourrait s’avérer incorrecte.
 
@@ -91,11 +91,11 @@ Le système est conçu pour fonctionner comme suit.  Avec une fonction de hash c
     \end{tabular}
 \end{center}
 
-\noindent Where \texttt{hashN} represents the actual hash output.\\
+\noindent Où \texttt{hashN} représente le resultat de hash actuel.\\
 
 Il est seulement nécessaire de publier un sous-ensemble des hashes et des index à un intervalle.\\
 
-\noindent For example:\\\\\noindent
+\noindent Par exemple:\\\\\noindent
 \begin{center}
   \begin{tabular}{ l  l  r }
     \multicolumn{3}{c}{PoH Sequence} \\
@@ -107,7 +107,7 @@ Il est seulement nécessaire de publier un sous-ensemble des hashes et des index
     \end{tabular}
 \end{center}
 
-Tant que la fonction de hash choisi est résistante aux collisions, cet ensemble de hashes ne pourra être calculé en séquence que par un seul thread. Cela vient du fait qu’il n’est pas possible de prédire quel sera la valeur du hash à l'index $300$ sans lancer l’algorithme depuis le début $300$ fois. On peut donc déduire de la structure de données que du temps réel s’est écoulé entre l’index $0$ et l'index $300$.
+Tant que la fonction de hash choisi est résistante aux collisions, cet ensemble de hashes ne pourra être calculé en séquence que par un seul thread. Cela vient du fait qu’il n’est pas possible de prédire quelle sera la valeur du hash à l'index $300$ sans lancer l’algorithme depuis le début $300$ fois. On peut donc déduire de la structure de données que du temps réel s’est écoulé entre l’index $0$ et l'index $300$.
 
 Dans l’exemple de la Figure~\ref{fig:poh_seq}, hash \texttt{62f51643c1} a été produit au comptage $510144806912$ et le hash \texttt{c43d862d88} a été produit au
 comptage $510146904064$. Suivant les propriétés précédemment énoncées de l’algorithme PoH, nous pouvons en déduire que le temps réel s’est écoulé entre le compte $510144806912$
@@ -180,7 +180,7 @@ Etant donné que le procédé initial est toujours séquentiel, nous pouvons en 
 \end{center}
 
 Dans la séquence reprise dans la Table~\ref{table:multievent}, \texttt{photograph2} a été créée avant le \texttt{hash600}, et la
-\texttt{photograph1} wa été créée avant le \texttt{hash336}. Insérer la donnée dans la séquence de hashes produit un changement pour toutes les valeurs dans la séquence. Tant que la fonction de hash utilisée est résistante aux collisions, et que la donnée est ajoutée, il devrait être mathématiquement impossible de pré-calculer une séquence future sur base de connaissance passée relative à quelle donnée sera intégrée dans la séquence.\\
+\texttt{photograph1} a été créée avant le \texttt{hash336}. Insérer la donnée dans la séquence de hashes produit un changement pour toutes les valeurs dans la séquence. Tant que la fonction de hash utilisée est résistante aux collisions, et que la donnée est ajoutée, il devrait être mathématiquement impossible de pré-calculer une séquence future sur base de connaissance passée relative à quelle donnée sera intégrée dans la séquence.\\
 
 La donnée qui est mixée à la séquence peut être la donnée brute ou seulement un hash de la donnée accompagnée de métadonnées.\\
 
@@ -188,7 +188,7 @@ La donnée qui est mixée à la séquence peut être la donnée brute ou seuleme
   \begin{center}
     \centering
     \includegraphics[width=0.9\textwidth]{figures/fig_3.png}
-    \caption[Fig 3]{Inserting data into Proof of History\label{fig:poh_insert}}
+    \caption[Fig 3]{Insertion de données à la Proof of History\label{fig:poh_insert}}
   \end{center}
   \end{figure}
 
@@ -221,7 +221,7 @@ La séquence peut être vérifiée par un ordinateur multi-coeur en moins de tem
 \end{center}
 
 
-Pour un certain nombre de coeurs donnés, comme un GPU moderne avec $4000$ coeurs, le vérificateur peut séparer la séquence de hashes et leur indexes en $4000$ tranches, et en parallèle, assurer que chaque tranche est correcte du premier au dernier hash de la tranche. Si le temps prévu pour produire la séquence sera:\\
+Pour un certain nombre de coeurs donnés, comme un GPU moderne avec $4000$ coeurs, le vérificateur peut séparer la séquence de hashes et leurs indexes en $4000$ tranches, et en parallèle, assurer que chaque tranche est correcte du premier au dernier hash de la tranche. Si le temps prévu pour produire la séquence est:\\
 
 
 \[
@@ -242,7 +242,7 @@ Pour un certain nombre de coeurs donnés, comme un GPU moderne avec $4000$ coeur
   \end{center}
   \end{figure}
 
-En exemple, la figure ~\ref{fig:poh_verify}, chaque cœur est capable de vérifier individuellement chaque partie de la séquence en parallèle. Puisque toutes les données en entrée sont enregistrées au niveau de la sortie, avec également le compteur et l'état auquel ils sont attachés, les vérificateurs peuvent répliquer chaque partie en parallèle. Les hashes (en rouge ici plus haut) indiquent que la séquence était modifiée par une insertion de données.
+En exemple, la figure ~\ref{fig:poh_verification}, chaque cœur est capable de vérifier individuellement chaque partie de la séquence en parallèle. Puisque toutes les données en entrée sont enregistrées au niveau de la sortie, avec également le compteur et l'état auquel ils sont attachés, les vérificateurs peuvent répliquer chaque partie en parallèle. Les hashes (en rouge ici plus haut) indiquent que la séquence était modifiée par une insertion de données.
 
 \subsection{Mise à l'échelle Horizontale}\label{poh:mise_echelle}
 Il est possible de synchroniser plusieurs " Proof of History " en mélangeant
@@ -277,7 +277,7 @@ l'ordre complet des événements dans le système.
     \end{tabular}
 \end{center}
 
-Imaginons les générateurs A et B, A reçoit un paquet de données de B (hash1b), qui contient le dernier état du générateur B, et le dernier état du générateur B observé sur le générateur A. L'état suivant du générateur A dépend alors de l'état de Générateur B, donc nous pouvons déduire que hash1b est arrivé avant hash3a. Cette propriété peut être transitive, donc si trois générateurs sont synchronisés via un seul générateur commun \(A \leftrightarrow B \leftrightarrow C \), nous pouvons tracer la dépendance entre A et C même s'ils n'étaient pas synchronisés directement.
+Imaginons les générateurs A et B, A reçoit un paquet de données de B (hash1b), qui contient le dernier état du générateur B, et le dernier état du générateur B observé sur le générateur A. L'état suivant du générateur A dépend alors de l'état de Générateur B, donc nous pouvons déduire que hash1b est arrivé avant hash3a. Cette propriété peut être transitive, donc si trois générateurs sont synchronisés via un seul générateur commun \(A \leftrightarrow B \leftrightarrow C \), nous pouvons tracer la dépendance entre A et C même s'ils ne sont pas synchronisés directement.
 
 En synchronisant périodiquement les générateurs, chaque générateur peut alors gérer une partie du trafic externe, ainsi le système global peut gérer un plus grand nombre d'événements à traquer et cela au prix d'une précision en temps réel (dépendent de la latence du réseau entre les générateurs). Un ordre global peut encore être obtenu en choisissant une fonction déterministe qui pourra invoquer tous les événements qui se trouvent dans la fenêtre de synchronisation, comme par exemple la valeur du hash lui-même.
 
@@ -290,12 +290,12 @@ En synchronisant périodiquement les générateurs, chaque générateur peut alo
   \end{center}
   \end{figure}
 
-Sur la figure~\ref{fig:poh_mise_echelle}, les deux générateurs utilisent la sortie de l'autre et enregistrent l'opération. Le changement de couleur indique que les données de l’autre parti ont modifié la séquence. Les hashes générés qui sont mélangés dans chaque flux sont surlignés en gras.
+Sur la figure~\ref{fig:poh_mise_echelle}, les deux générateurs utilisent la sortie de l'autre et enregistrent l'opération. Le changement de couleur indique que les données de l’autre partie ont modifié la séquence. Les hashes générés qui sont mélangés dans chaque flux sont surlignés en gras.
 
 La synchronisation est transitive. \(A \leftrightarrow B \leftrightarrow C\)  Il existe un ordre d'événements prouvable entre A et C à travers B.
 
 %% Il est à noter que les $710$k tx/s théoriques sur un réseau $1$ ~ gb basé sur la conception de PoH ne tiennent pas compte de la capacité supplémentaire offerte par la mise à l'échelle horizontale.
-De cette manière, la mise à l'échelle se fait au détriment de la disponibilité. Des connections $10 x 1$~gbps avec une disponibilité de 0.999 auraient une disponibilité de \(0.999^{10} = 0.99 \).
+De cette manière, la mise à l'échelle se fait au détriment de la disponibilité. Des connections $10 \times 1$~gbps avec une disponibilité de 0.999 auraient une disponibilité de \(0.999^{10} = 0.99 \).
 
 \subsection{Consistance}
 Les utilisateurs doivent pouvoir renforcer la consistance de la séquence générée et la rendre résistante aux attaques en insérant la dernière sortie observée de la séquence qu'ils considèrent comme valide, dans leur entrée.\\
@@ -325,7 +325,7 @@ Les utilisateurs doivent pouvoir renforcer la consistance de la séquence géné
 
 Un générateur PoH malveillant peut produire une deuxième séquence cachée avec les événements dans l'ordre inverse et ce, s’il a accès à tous les événements à la fois ou s’il est capable de générer une séquence cachée plus rapide.\\
 
-Pour éviter cette attaque, chaque événement généré par le client doit contenir le dernier hash observé de ce qu'il considère être une séquence valide. Ainsi, lorsqu'un client crée la donnée "Event1" , ", il doit ajouter le dernier hash observé.\\
+Pour éviter cette attaque, chaque événement généré par le client doit contenir le dernier hash observé de ce qu'il considère être une séquence valide. Ainsi, lorsqu'un client crée la donnée "Event1", il doit ajouter le dernier hash observé.\\
 
 \begin{center}
   \begin{tabular}{  l  c l}
@@ -367,14 +367,14 @@ La vérification de ces données nécessite une vérification de signature ainsi
   \begin{center}
     \centering
     \includegraphics[width=0.9\textwidth]{figures/fig_6.png}
-    \caption[Fig 6]{Input with a back reference.\label{fig:poh_consistance}}
+    \caption[Fig 6]{Hash précédent en tant que donnée d'entrée.\label{fig:poh_consistance}}
   \end{center}
   \end{figure}
 
 Dans la figure~\ref{fig:poh_consistance}, l’entrée fournie par l’utilisateur dépend du hash \texttt{0xdeadbeef\ldots} existant dans la séquence générée avant son insertion. La flèche bleue en haut à gauche indique que le client fait référence à un hash précédemment produit. Le message du client n'est valide que dans une séquence contenant le hash \texttt{0xdeadbeef\ldots}. La couleur rouge de la séquence indique que la séquence a été modifiée par les données du client.
 
 \subsection{Overhead}
-4000 hashes par seconde généreraient 160 kilo-octets de données supplémentaires, et nécessiteraient l'accès à un GPU avec 4000 noeuds et environ 0,25-0,75 millisecondes de temps pour vérifier..
+4000 hashes par seconde généreraient 160 kilo-octets de données supplémentaires, et nécessiteraient l'accès à un GPU avec 4000 noeuds et un temps de vérification d'environ 0,25-0,75 millisecondes..
 
 \subsection{Attaques}
 \subsubsection{Annulation}
@@ -387,41 +387,41 @@ La séquence à haute vitesse créerait une séquence secondaire de données qu'
 
 \subsubsection{Attaques à longue portée}
 
-Les attaques à longue portée impliquent l'acquisition d’anciennes clés privées de clients abandonnées et la génération d'un registre falsifié ~\cite{casper}. La preuve historique assure une certaine protection contre les attaques à longue portée. Un utilisateur malveillant qui accède aux anciennes clés privées doit recréer un historique qui prend autant de temps que l'original qu'il essaie de mettre sur pied.  Cela nécessiterait l'accès à un processeur plus rapide que celui actuellement utilisé par le réseau, sinon l'attaquant ne rattraperait jamais la longueur de l'historique.
+Les attaques à longue portée impliquent l'acquisition d’anciennes clés privées de clients abandonnées et la génération d'un registre falsifié ~\cite{casper}. La preuve historique assure une certaine protection contre les attaques à longue portée. Un utilisateur malveillant qui accède aux anciennes clés privées doit recréer un historique qui demandera autant d'effort de création qu'en a nécessité l'original. Cela nécessiterait l'accès à un processeur plus rapide que celui actuellement utilisé par le réseau, sinon l'attaquant ne rattraperait jamais la longueur de l'historique.
 
 De plus, une seule source de temps permet la construction d'une preuve de réplication plus simple (plus de détails dans la section ~\ref{porep}), puisque le réseau est conçu de sorte que tous les participants du réseau s'appuient sur un seul enregistrement historique des événements.
 
-PoRep et PoH ensemble devraient fournir une défense de l'espace et du temps contre un faux-livre.
+PoRep et PoH ensemble devraient fournir une défense spatiale et temporelle contre la constitution d'un faux registre.
 
 
 \section{Proof of Stake Consensus}\label{proof_of_stake}
 \subsection{Description}
-Cette instance spécifique de " Proof of Stake " est conçue pour la confirmation rapide de la séquence actuelle produite par le générateur " Proof of History ", pour le vote et la sélection du générateur de preuve historique suivant, et pour punir les validateurs qui se comportent mal. Cet algorithme dépend des messages qui arrivent finalement à tous les nœuds participants dans un certain délai.
+Cette instance spécifique de " Proof of Stake " est conçue pour la confirmation rapide de la séquence actuelle produite par le générateur " Proof of History ", pour le vote et la sélection du générateur de preuve historique suivant, et pour punir les validateurs malveillants. Cet algorithme dépend des messages qui arrivent finalement à tous les nœuds participants dans un certain délai.
 \subsection{Terminologie}
 \begin{description}
 
 \item[obligations]
-Les obligations sont équivalentes à une dépense en capital dans " Preuve de travail ". Un mineur achète du matériel et de l'électricité et le confie à une seule succursale dans une blockchain " Proof of Work ". Une obligation est une pièce servant de garantie pendant la validation des transactions.
+Les obligations sont équivalentes à une dépense en capital dans un système de " Preuve de travail ". Un mineur achète du matériel et de l'électricité et le confie à une seule succursale dans une blockchain " Proof of Work ". Une obligation est une pièce servant de garantie pendant la validation des transactions.
 
 \item[slashing]
 
 La solution proposée au problème du " rien en jeu " dans les systèmes de preuve de participation ~\cite{slasher}. Lorsqu'une preuve de vote pour une autre succursale est publiée, cette succursale peut annuler la caution du validateur. Ceci est une incitation économique conçue pour décourager les validateurs de confirmer plusieurs branches.
 \item[super majorité]
-Une super majorité est \(\frac{2}{3}\)rds des validateurs pondérés par leurs liens. Un vote majoritaire indique que le réseau a atteint un consensus, et qu'au moins \(\frac{1}{3}\)rd du réseau aurait dû voter de façon malveillante pour que cette branche soit invalide. Cela mettrait le coût économique d'une attaque à \(\frac{1}{3}\)rd de la capitalisation boursière de la pièce.
+Une super majorité est \(\frac{2}{3}\) des validateurs pondérés par leurs liens. Un vote majoritaire indique que le réseau a atteint un consensus, et qu'au moins \(\frac{1}{3}\) du réseau aurait dû voter de façon malveillante pour que cette branche soit invalide. Cela mettrait le coût économique d'une attaque à \(\frac{1}{3}\) de la capitalisation boursière de la pièce.
 
 \end{description}
 
 \subsection{Obligations}
-Une transaction de liaison implique une quantité de pièces de monnaie spécifié par l'utilisateur et la déplace vers un compte de liaison sous l'identité de l'utilisateur. Les pièces dans le compte de cautionnement ne peuvent pas être dépensées et doivent rester dans le compte jusqu'à ce que l'utilisateur les supprime. L'utilisateur ne peut supprimer que les pièces périmées qui ont expiré. Les obligations ne sont valables qu’après que la ‘super majorité’ (grande majorité) des parties prenantes ait confirmé la séquence.
+Une transaction de liaison implique une quantité de pièces de monnaie spécifiée par un utilisateur qui la transfert vers un compte lié à son identité. Les pièces dans le compte de cautionnement ne peuvent pas être dépensées et doivent rester dans le compte jusqu'à ce que l'utilisateur les supprime. L'utilisateur ne peut supprimer que les pièces périmées qui ont expiré. Les obligations ne sont valables qu’après que la ‘super majorité’ (grande majorité) des parties prenantes ait confirmé la séquence.
 
 \subsection{Vote}
 Il est prévu que le générateur " Proof of History " puisse publier une signature de l'état à une période prédéfinie. Chaque identité liée doit confirmer cette signature en publiant sa propre signature signée de l'état. Le vote est un simple vote oui, (sans un non).  Si la majorité des identités liées a voté dans un délai d’attente déterminé, cette branche sera acceptée comme valable.
 
 \subsection{Suppression de vote}
 
-Un nombre N de voix manquant indique que les pièces sont périmées et ne sont plus éligibles pour le vote. L'utilisateur peut émettre une transaction non liée pour les supprimer.
+Un nombre N de voix manquantes indique que les pièces sont périmées et ne sont plus éligibles pour le vote. L'utilisateur peut émettre une transaction non liée pour les supprimer.
 
-N est une valeur dynamique basée sur le rapport entre les votes périmés et actifs. N augmente à mesure que le nombre de votes périmés augmente. Dans le cas d'une partition réseau importante, cela permet à la branche la plus importante de récupérer plus rapidement que la branche plus petite
+N est une valeur dynamique basée sur le rapport entre les votes périmés et actifs. N augmente à mesure que le nombre de votes périmés augmente. Dans le cas d'une partition réseau importante, cela permet à la branche la plus importante de récupérer plus rapidement que la branche plus petite.
 
 \subsection{Elections}\label{subsec:elections}
 L'élection d'un nouveau générateur de PoH se produit lorsque la défaillance du générateur PoH est détectée. Le validateur ayant la plus grande puissance de vote, ou l'adresse de clé publique la plus élevée en cas d'égalité, est choisi comme nouveau générateur de PoH.
@@ -458,51 +458,51 @@ Des générateurs de PoH Secondaire et inférieurs peuvent être proposés et ac
 
 Si le Secondaire est élu, il sera alors pris en considération alors que le Primaire se retirera pendant une élection.
 
-\subsection{Disponibilite}\label{disponibility}
-Les systèmes CAP qui traitent avec les partitions doivent choisir soit la cohérence, soit la disponibilité. Notre approche choisi la disponibilité, mais à cause du fait que nous avons une mesure du temps objective, la cohérence est choisie avec un \textit{timeout} humain raisonnble.
+\subsection{Disponibilité}\label{disponibility}
+Les systèmes CAP qui fonctionnent avec des partitions doivent choisir entre cohérence et disponibilité. Notre approche choisi la disponibilité, mais parce que nous avons une mesure du temps subjective, la cohérence est choisie avec un \textit{timeout} humain raisonnable.
 
-Les validateurs de \textit{Proof of Sake} gardent en réserve une certaine somme de token, que l'on appelle \textit{stake}. Cette somme leur permet de voter pour un set de transactions particulier. Garder en réserve un certaine somme de token est un transaction qui fait partie d'un stream de PoH, comme n'importe quelle autre transaction. Afin de vote, un validateur PoS doit signer le hash d'un état comme si celui-ci était calculé après avoir traité toutes les transactions d'une position spécifiques dans le grand livre PoH. Ce vote est aussi entré comme une transaction dans le stream PoH. En regardant au grand livre PoH, nous pouvons donc deviner combien de temps s'est écoulé entre chaque vote. Et si une partition apparaît, de deviner combien de temps chaque validateurs fût indisponible.
+Les validateurs de \textit{Proof of Sake} gardent en réserve une certaine somme de token, que l'on appelle \textit{stake}. Cette somme leur permet de voter pour un ensemble de transactions particulier. Le fait de garder en réserve une certaine somme de token est en soit une transaction qui fait partie du fonctionnement du système de PoH. Afin de voter, un validateur PoS doit signer le hash d'un état comme si celui-ci était calculé après avoir traité toutes les transactions d'une position spécifiques dans le registre du PoH. Ce vote est aussi entré comme une transaction dans le flux du système de PoH. En se référant au registre du PoH, nous pouvons donc déduire combien de temps s'est écoulé entre chaque vote, et si une partition se produit, de déduire pendant combien de temps chaque validateur a été indisponible.
 
-Afin de gérer les partitions avec un délai humain, nous proposons une approche dynamique afin de \textit{unstake} les validateurs non disponibles. Quand le nombre de validateurs est haut, et au dessus de \(\frac{2}{3}\), le processus de \textit{unstaking} peut être rapide. Le nombre de hash devant être génerés dans le grand livre est bas avant que le stake des validateurs soit complètememnt unstaked et qu'ils ne soient plus comptés pour le consensus. Quand le nombre de validateurs est inférieur à \(\frac{2}{3}\) mais au dessus de  \(\frac{1}{2}\), le compte à rebours de \textit{unstaking} est plus lent, demandant un nombre de hash génerés plus important avant que les validateurs manquant soient \textit{unstaked}. Dans une partition large, comme une partition dont il manque \(\frac{1}{2}\) ou plus de validateurs, le processus de \textit{unstaking} est très lent. Les transactions peuvent quand même entrer dans le stream et les validateurs peuvent encore voter, mais \(\frac{2}{3}\)rds du consensus ne sera pas atteint avant qu'un très grand nombre de hash soient génerés et que le nombre de validateurs aient été \textit{unstaked}. Le délai pour un réseau avant d'être de nouveau opérationnel nous permet en tant que client du réseau de choisir une partition que nous voulons continuer à utiliser.
+Dans le but de gérer les partitions avec un délai humainemant raisonnable, nous proposons une approche dynamique afin d'\textit{unstake} les validateurs non disponibles. Quand le nombre de validateurs est élevé et au dessus de \(\frac{2}{3}\), le processus d'\textit{unstaking} peut être rapide. Le nombre de hash devant être génerés dans le registre est bas tant que le \textit{stake} des valideurs indisponibles n'est pas complètement \textit{unstaked} et qu'ils sont toujours considérés par le consensus. Quand le nombre de validateurs est inférieur à \(\frac{2}{3}\) mais au dessus de  \(\frac{1}{2}\), le processus d' \textit{unstaking} est plus lent, demandant un nombre de hash génerés plus important avant que les validateurs indisponibles soient \textit{unstaked}. Dans une partition large, comme une partition dont il manque \(\frac{1}{2}\) ou plus de validateurs, le processus de \textit{unstaking} est très lent. Les transactions peuvent quand même entrer dans le flux, et les validateurs peuvent encore voter, mais les \(\frac{2}{3}\) du consensus ne seront pas atteints tant qu'un très grand nombre de hash ne soient génerés et que les validateurs manquants n'aient été \textit{unstaked}. Le délai pour un réseau avant d'être de nouveau opérationnel nous permet en tant que client du réseau de choisir la partition que nous voulons continuer à utiliser.
 
 \subsection{Récupération}\label{disponibility}
-Dans le système que nous proposons, le grand livre peut être récupéré après n'mporte quelle défaillance. Cela signifie que n'importe qui dans le monde peut chosir une place aléatoire dans le grand livre et créer un fork valide en ajoutant à la suite des nouveaux hash et transations génerés. Si tous les validateurs ne sont pas présents dans ce fork, alors cela prendrait un très long moment pour que n'importe quel lien additionel deviennent valide, et de parvenir au consensus de \(\frac{2}{3}\)rds d'une super majorité. De ce fait, une récupération copmplète sans validateurs disponibles exige un très grand nombre de hash ajoutés à la suite du grand livre, et seulement après que tous les validateurs indisponibles aient été \textit{unstaked}, alors de nouveaux liens pourront être ajoutés au grand livre.
+Dans le système que nous proposons, le registre peut être récupéré après n'importe quelle défaillance. Cela signifie que n'importe qui dans le monde peut chosir un endroit quelconque dans le registre et créer un \textit{fork} valide en ajoutant à la suite de nouveaux hash et transations génerés. Si tous les validateurs sont absents dans ce \textit{fork}, alors cela prendrait un très long moment pour que n'importe quel lien additionel devienne valide, et il serait compliqué pour cette branche de parvenir au consensus d'une super majorité de \(\frac{2}{3}\). De ce fait, un rétablissement complet sans validateur disponible exigera un très grand nombre de hash ajoutés au registre, et c'est seulement après l'\textit{unstake} de l'ensemble des valideurs indisponibles que de nouveaux liens pourront être ajoutés au registre.
 
 \subsection{Finalité}\label{disponibility}
-PoH permet au validateurs du réseau d'observer ce qu'il s'est passé dans le passé avec une certaine certitude quant au moment ou ces évènemments se sont passés. Au fur et à mesure que le générateur de PoH produit un stream de message, tous les validateurs sont tenus de soumettre leurs signatures d'état en max. 500ms. Ce nombre peut être encore plus réduit, dépendant de la condition du réseau. Comme chaque vérification est entrée dans le stream, chaque personne dans le réseau peut valider que tous les validateurs ont soumis leur vote en max. 500ms sans observer le vote de manière directe.
+La PoH permet aux validateurs du réseau d'observer l'historique de ce qu'il s'est passé avec une certaine certitude du moment ou ces évènemments se sont passés. Au fur et à mesure que le générateur de PoH produit un flux de messages, tous les validateurs sont tenus de soumettre leurs signatures d'état en un délai maximum de 500ms. En fonction de l'état du réseau ce délai peut être plus court. Du fait que chaque vérification est saisie dans le flux d'échange, n'importe qui dans le réseau peut valider que tous les validateurs ont soumis leur vote dans un délai de 500ms sans observer leurs votes de manière directe.
 
 \subsection{Attaques}
-\subsubsection{Tragedie des communs}
-Les validateur de PoS confirment simplement l'état généré par le générateur PoH. Il y'a un incentive économique pour eux de ne pas travailler et de simplement approuver chaque état de hash générés. Pour éviter cette situation, le générateur PoH devrait injecter un hash invalide à interval de temps aléatoire. Chaque vote de ce hash devrait étre enlevé. Quand le hash est généré, le réseau devrait immédiatement promouvoir le Second générateur PoH élu.
+\subsubsection{Tragédie des communs}
+Les validateurs de PoS confirment simplement l'état généré par le générateur de la PoH. Il y'a un intérêt économique pour les valideurs d'approuver chaque état de hash généré sans réellement effectuer de vérification. Pour éviter cette situation, le générateur de la PoH injectera un hash invalide à interval de temps aléatoire. Chaque validateurs ayant voté pour ce hash sera \textit{slashed}. Quand le hash invalide est généré, le réseau devra immédiatement promouvoir le second générateur PoH élu.
 
-Chaque validateur est requis de répondre dans un petit délai - 500ms par exemple. Le timeout devrait être fixé assez bas afin qu'un validateur malicieux ait une basse probabilité d'observer un autre vote de validateur et faire en sorte que leurs votes soient assez rapide.
+Il est nécessaire que chaque validateur réponde dans un délai court - 500ms par exemple. Le \textit{timeout} doit être suffisement bas afin de réduire les chances qu'un validateur malicieux ait le temps d'observer et copier le vote d'un autre validateur.
 
-\subsubsection{Collision avec le générateur PoH}\label{subsubsec:Collision}
-Un validateur qui rentre en contact avec le générateur PoH saurait en avance quand le has invalide va être produit et donc ne votera pas pour lui. Ce scenario n'est pas différent de celui ou l'identité d'un générateur PoH possède un grand \textit{verifier stake}. Le générateur PoH doit quand même faire tout le travail afin de prduire le hash d'état.
+\subsubsection{Collusion avec le générateur de la PoH}\label{subsubsec:Collision}
+Un validateur en collusion avec le générateur de la PoH saurait en avance quand le hash invalide sera produit et ne votera donc pas pour lui. Ce scénario n'est pas différent de celui ou le générateur de la PoH possède un \textit{stake} important. Le générateur PoH doit tout de même effectuer tout le travail afin de produire le hash d'état.
 
 \subsubsection{Censure}\label{Censure}
-De la censure ou du déni de service pourraient avoir lieu quand un tiers \(\frac{1}{3}\)des obligataires refuse de valider toute séquence avec des nouvelles obligations. Le protocole peut défendre contre ce genre d’attaque en ajustant dynamiquement la vitesse à laquelle les obligations deviennent obsolètes. Dans le cas d’un déni de service, la plus grande des partitions sera conçue pour bifurquer et censurer les obligataires Byzantins. Le plus grand réseau se rétablira à mesure que les obligations Byzantines deviennent obsolètes avec le temps. La partition Byzantine plus petite ne sera pas en mesure d’avancer pendant une période plus longue.
+De la censure ou du déni de service pourraient avoir lieu si \(\frac{1}{3}\) des validateurs refusent de valider toute séquence possédant de nouvelles obligations. Le protocole peut empêcher ce genre d’attaque en ajustant dynamiquement la fréquence à laquelle les obligations deviennent obsolètes. Dans le cas d’un déni de service, la plus grande des partitions sera conçue pour bifurquer et censurer les obligataires Byzantins. Le plus grand réseau se rétablira à mesure que les obligations Byzantines deviennent obsolètes avec le temps. La partition Byzantine la plus petite ne sera pas en mesure d’évoluer pendant une plus longue période.
 
-L’algorithme fonctionnerait comme suit. Une majorité du réseau élirait un nouveau Leader. Le Leader empêcherait ensuite les obligataires Byzantins de participer. Le générateur PoH devrait continuer à générer une séquence, pour prouver l’écoulement du temps, jusqu’à ce que suffisamment d’obligations Byzantines soient devenues obsolètes de sorte que le plus grand réseau ait une majorité qualifiée. La vitesse à laquelle les obligations deviennent obsolètes serait basée dynamiquement sur le pourcentage des obligations actives. La branche Byzantine minoritaire du réseau aurait alors besoin d’attendre beaucoup plus longtemps que la branche majoritaire pour récupérer une majorité qualifiée. Une fois qu’une majorité qualifiée a été établie, une compression pourrait être utilisée pour définitivement punir les obligataires Byzantins.
+L’algorithme fonctionnerait comme suit. Une majorité du réseau élirait un nouveau Leader. Le Leader empêcherait ensuite les obligataires Byzantins de participer. Le générateur de la PoH devra continuer la génération de séquence afin de prouver l’écoulement du temps, et cela, jusqu’à ce que suffisamment d’obligations Byzantines soient devenues obsolètes et ainsi permettre au plus grand réseau d'avoir une majorité qualifiée. La fréquence à laquelle les obligations deviennent obsolètes serait basée dynamiquement sur le pourcentage des obligations actives. La branche Byzantine minoritaire du réseau aurait alors besoin d’attendre beaucoup plus longtemps que la branche majoritaire pour récupérer une majorité qualifiée. Une fois qu’une majorité qualifiée a été établie, une compression pourrait être utilisée pour définitivement punir les obligataires Byzantins.
 
 \subsubsection{Attaques de longue portée}\label{Censure}
-La PoH fournit une défense naturelle contre les attaques de longue portée. Récupérer le registre de n’importe quel moment dans le passé demanderait à l’attaquant de dépasser le registre dans le temps en surpassant la vitesse du générateur de PoH.
+La PoH fournit une défense naturelle contre les attaques de longue portée. Rétablir le registre à partir de n’importe quel moment dans le passé demanderait à l’attaquant rattraper le registre valide en étant plus rapide que le générateur de la PoH.
 
-Le protocole de consensus fournit une deuxième ligne de défense, car toute attaque prendrait plus de temps qu’il ne faut pour enlever tous les validateurs valides. Il crée également un " écart " dans l’historique du registre. En comparant deux registres de même hauteur, celui avec la plus petite des partitions maximales peut objectivement être considéré comme valide.
+Le protocole de consensus fournit une deuxième ligne de défense car toute attaque prendrait plus de temps qu’il n'en faut pour \textit{unstake} l'ensemble des validateurs légitimes. Cela crée un éventuel "écart" dans l’historique du registre. En comparant deux registres de même hauteur, celui avec la plus petite des partitions maximales peut objectivement être considéré comme valide.
 
 \subsubsection{Attaques ASIC}\label{Censure}
 
-Deux opportunités d’attaques ASIC existent dans le protocole – pendant le partitionnement et en trompant le délai d’expiration dans la Finalité.
+Deux opportunités d’attaques ASIC existent dans le protocole – pendant le partitionnement et en trompant le délai d’expiration de l'état de "Finalité".
 
-Pour les attaques ASIC pendant les partitionnements, la vitesse à laquelle les obligations sont enlevées est non-linéaire, et pour des réseaux avec de grandes partitions la vitesse est plus lente de plusieurs ordres de grandeur que les gains attendus d’une attaque ASIC.
+Pour les attaques ASIC pendant les partitionnements, la vitesse à laquelle les obligations sont \textit{unstake} est non-linéaire, et pour des réseaux avec de grandes partitions cette vitesse devient trop faible pour permettre la réalisation d'une attaque ASIC rentable.
 
-Pour les attaques ASIC pendant la Finalité, la vulnérabilité permet aux validateurs Byzantins qui ont une part liée d’attendre les confirmations d’autres nœuds et injecter leurs votes avec un générateur de PoH collaborateur. Le générateur de PoH peut alors utiliser son ASIC plus rapide pour générer des hashes de 500ms en moins de temps, et autoriser le réseau de communiquer entre le générateur de PoH et les nœuds collaborateurs. Mais, si le générateur de Poh est aussi Byzantin, il n’y a pas de raison pour que le générateur Byzantin n’ait pas communiqué le compteur exact quand ils s’attendent à insérer une défaillance. Ce scénario n’est pas différent qu’un générateur de PoH et tous les collaborateurs partageant la même identité et ayant une seule part liée et n’utilisant qu’un ensemble de matériel.
+Pour les attaques ASIC pendant l'état de "Finalité", la vulnérabilité permet aux validateurs Byzantins qui ont une \textit{stake} attitrée d’attendre les confirmations d’autres nœuds pour injecter leurs votes en collaboration avec un générateur de PoH. Le générateur de PoH peut alors utiliser son ASIC le plus rapide pour générer des hashes qui nécessiteraient 500ms en moins de temps, et autoriser la communication entre le générateur de PoH et les nœuds collaborateurs. Cependant, si le générateur de PoH est aussi Byzantin, il n’y a pas de raison qu'il n’ait pas communiqué le compteur réel au moment ou une défaillance aurait pu être insérée. Ce scénario n’est pas différent de celui ou un générateur de PoH et tous les collaborateurs partagent la même identité comparé au fait de n'avoir qu'une seule entité de \textit{stake} combinée en n’utilisant qu’un seul ensemble de matériel.
 
 \section{Preuve de Réplication diffusées}\label{porep}
 \subsection{Description}
-Filecoin proposait une version de Preuve de Réplication \cite{filecoinporep}. Le but de cette version est d’avoir des vérifications de Preuve de Réplication rapides et diffusées, ce qui est permis en gardant une trace du temps qui s’écoule dans une séquence générée de PoH. La réplication n’est pas utilisée comme un algorithme de consensus, mais est un outil utile pour justifier le cout de stockage de l’historique ou l’état de la blockchain à une grande disponibilité.
+Filecoin a proposé une version de Preuve de Réplication \cite{filecoinporep}. Le but de cette version est d’avoir des vérifications de Preuve de Réplication rapides et en continues, ce qui est rendu possible grace au système de PoH qui permet de dater les des séquences générées. La réplication n’est pas utilisée comme un algorithme de consensus, cependant c'est un outil utile permettant de garantir, contre le coût de stockage de l’historique ou de l’état de la blockchain, une grande disponibilité.
 \subsection{Algorithme}
-Comme le montre la figure~\ref{fig:encrypt} le cryptage CBC crypte chaque bloc de donnée en séquence, en utilisant le bloc précédemment crypté pour XOR la donnée d’entrée.
+Comme le montre la figure~\ref{fig:encrypt} le chiffrement CBC chiffre chaque bloc de donnée en séquence. Le bloc précédemment chiffré est utilisé afin d'appliquer un XOR à la nouvelle données d'entrée.
 
 \begin{figure}[h]
   \begin{center}
@@ -512,11 +512,11 @@ Comme le montre la figure~\ref{fig:encrypt} le cryptage CBC crypte chaque bloc d
   \end{center}
   \end{figure}
 
-Chaque réplication d’identité génère une clé en signant un hachage qui a été générée par une séquence PoH. Cela lie la clé à l’identité d’un réplicateur, et à une séquence PoH spécifique. Seuls des hashes spécifiques peuvent être sélectionnés. (See Section~\ref{selectiondehash} dans Sélection de hash)
+Chaque réplication d’identité génère une clé en signant un \textit{hash} qui a été générée par une séquence de PoH. Cela lie la clé à l’identité d’un réplicateur et à une séquence de PoH spécifique. Seuls des \textit{hashs} spécifiques peuvent être sélectionnés. (Voir la section~\ref{selectiondehash} dans "Sélection de hash")
 
-L’ensemble de données est totalement crypté bloc par bloc. Pour générer ensuite une preuve, la clé est utilisée pour implanter un générateur de nombres pseudo-aléatoires qui sélectionne 32 bytes aléatoires de chaque bloc.
+Bloc par bloc, l’ensemble de données est totalement chiffré. Puis afin de générer une preuve, un générateur de nombre pseudo-aléatoire permettant de sélectionner 32 octets de chaque bloc est généré à partir de la clé.
 
-Un arbre de Merkle est calculé avec les hashes PoH sélectionnés ajoutés à chaque tranche.
+Un arbre de Merkle est calculé avec le hash de la PoH sélectionné préfixé à chaque tranche.
 
 \begin{figure}[h]
   \begin{center}
@@ -526,66 +526,65 @@ Un arbre de Merkle est calculé avec les hashes PoH sélectionnés ajoutés à c
   \end{center}
   \end{figure}
 
-La racine est publiée, avec la clé, et le hash sélectionné qui fut généré. Le nœud de réplication est requis pour publier une autre preuve dans un nombre N de hashes au fur et à mesure qu’ils sont générés par le générateur de PoH, où N est approximativement \(\frac{1}{2}\) du temps qu’il faut crypter les données. Le générateur PoH publiera des hashes spécifiques pour Preuve de Réplication à des périodes prédéfinies. Le nœud de réplication doit sélectionner le prochain hachage publié pour générer la preuve. A nouveau, le hachage est signé, et des tranches aléatoires sont sélectionnées des blocs pour créer la racine Merkle.
+La racine, la clé ainsi que le hash généré sont publiés. Le nœud de réplication est exploité pour la publication de nouvelles preuves dans N hashes au fur et à mesures qu'ils sont produits par le générateur de PoH, ou N vaut approximativement \(\frac{1}{2}\) du temps nécessaire au chiffrement des données. Le générateur de la PoH publiera des \textit{hashes} spécifiques pour Preuve de Réplication à des périodes prédéfinies. Le nœud de réplication doit sélectionner le prochain \textit{hash} publié pour générer la preuve. A nouveau, le \textit{hash} est signé, et des tranches aléatoires sont sélectionnées des blocs pour créer la racine de l'arbre de Merkle.
 
-Après une période de N preuves, les données sont recryptées avec une nouvelle clé CBC.
+Après une période de N preuves, les données sont à nouveau chiffrées avec une nouvelle clé CBC.
+
 \subsection{Vérification}
+Avec un nombre N de cœurs, chaque cœur peut effecture un chiffrement en continu pour chaque identité. L’espace total requis est \(2 blocs \times N coeurs\), car le bloc précédemment chiffré est nécessaire pour générer le suivant. Chaque cœur peut ensuite être utilisé pour générer toutes les preuves qui ont dérivé du bloc chiffré actuel.
 
-Avec un nombre N de cœurs, chaque cœur peut diffuser du cryptage pour chaque identité. L’espace total requis est \(2 blocks * N coeurs\), car le bloc crypté précédent est nécessaire pour générer le suivant. Chaque cœur peut ensuite être utilisé pour générer toutes les preuves qui ont dérivé du bloc crypté actuel.
-
-Le temps total pour vérifier les preuves est attendu à être égal au temps nécessaire pour crypter. Les preuves elles-mêmes consomment peu de bytes aléatoires du bloc, la quantité de données pour le hachage est alors significativement plus faible que la taille du bloc crypté. Le nombre d’identités de réplication pouvant être vérifiées en même temps est égal au nombre de cœurs disponibles. Les GPUs modernes ont 3500+ cœurs disponibles, quoiqu’à \(\frac{1}{2}\)-\(\frac{1}{3}\) de la fréquence d’horloge des CPUs.
+Il est attendu que le temps total nécessaire à la vérification des preuves soit égal au temps qu'il a fallu pour les chiffrer. Les preuves elles-mêmes ne consomment que quelques octets aléatoires sur un bloc, la quantité de données nécessaire pour le \textit{hash} est alors significativement plus faible que la taille du bloc chiffré. Le nombre d’identités de réplication pouvant être vérifiées en même temps est égal au nombre de cœurs disponibles. Les GPUs modernes ont 3500+ cœurs disponibles, même s'ils ne fonctionnent qu'à \(\frac{1}{2}\) ou \(\frac{1}{3}\) de la fréquence d’horloge des CPUs.
 
 \subsection{Rotation de Clé}
 
-Sans la rotation de clé, la même réplication cryptée peut générer de simples preuves pour des multiples séquences de PoH. Les clés sont tournées périodiquement et chaque réplication et recryptée avec une nouvelle clé liée à une séquence PoH unique.
+Sans la rotation de clé, la même réplication chifrée peut générer des  preuves peu robustes pour de multiples séquences de PoH. Les clés changent de manière périodique et chaque réplication et à nouveau chiffrée avec une nouvelle clé liée à une séquence de PoH spécifique.
 
-La rotation doit être suffisamment lente pour que la vérification des réplications de preuves soit possible sur des GPUs, ce qui est plus lent que sur les CPUs.
+Les périodes de rotation des clés doivent être suffisamment longues pour permettre la vérification des réplications de preuves sur des GPUs, ce qui est plus lent que sur les CPUs.
 
 \subsection{Sélection de hash}\label{selectiondehash}
 
-Le générateur PoH publie un hash visant à être utilisé par l’entièreté du réseau pour crypter les Preuves de Réplication, et comme le générateur de nombres pseudo-aléatoires une sélection de bytes dans les preuves rapides.
+Le générateur de PoH publie un \textit{hash} visant à être utilisé par l’ensemble du réseau afin de chiffrer les Preuves de Réplication. Ce \textit{hash} et aussi utilisé comme le nombre généré pseudo-aléatoirement pour la sélection d'octets pour les preuves rapides.
 
-Le hash est publié à un compteur périodique qui est approximativement égal à \(\frac{1}{2}\) du temps nécessaire au cryptage de l’ensemble de données. Chaque identité de réplication doit utiliser le même hash, et utiliser le même résultat signé du hash comme point de départ pour une sélection de byte, ou comme clé de cryptage.
+Le \textit{hash} est publié à un intervalle de temps régulier qui sont approximativement égaux à \(\frac{1}{2}\) du temps nécessaire au chiffrage de l’ensemble des données. Chaque identité de réplication doit utiliser le même \textit{hash} et son résultat signé afin de définir une sélection d'octets ou l'utiliser directement comme clé de chiffrement.
 
-La période à laquelle chaque réplicateur doit fournir une preuve doit être plus petite que le temps de cryptage. Sinon, le réplicateur peut diffuser le cryptage et le supprimer pour chaque preuve.
+La période à laquelle chaque réplicateur doit fournir une preuve doit être plus petite que le temps de chiffrement. Sinon, le réplicateur est en capacité de diffuser le chiffrement et le supprimer pour chaque preuve.
 
-Un générateur malveillant pourrait injecter des données dans la séquence antérieure à ce hash pour générer un hash spécifique. Cette attaque est plus longuement discutée dans \ref{subsubsec:collision}.
+Un générateur malveillant pourrait injecter des données dans la séquence antérieure à ce hash dans le but de générer un hash spécifique. Cette attaque est plus longuement discutée au sous chapitre \ref{subsubsec:Collision}.
 
-\subsection{Proof Validation}
-On n’attend pas du node " proof of history " de valider la preuve soumise des preuves de réplication. Il est prévu de garder une trace du nombre de preuves soumises vérifié par l'identité des réplicateurs. On attend d’une preuve qu’elle soit vérifiée quand le réplicateur est capable de signer la preuve par une grande majorité des validateurs dans le réseau..
+\subsection{Validation de preuve}
+Il n'est pas attendu du nœud de " proof of history " de valider les preuves de réplication soumises. Il est prévu de garder une trace du nombre de preuves soumises, en attentes et vérifiés, par les réplicateurs. Il est attendu d’une preuve qu’elle soit vérifiée quand le réplicateur est capable de la faire signer par une grande majorité des validateurs du réseau.
 
-Les vérifications sont collectées par le réplicateur via le réseau gossip p2p, et soumis comme un paquet qui contient une vaste majorité des validateurs dans le réseau. Ce paquet vérifie toutes les preuves avant un hash spécifique généré par la séquence Proof of History, et peut contenir plusieurs identités de réplicateurs à la fois.
+Les vérifications sont collectées par le réplicateur via un réseau p2p \textit{gossip} et sont toutes soumises dans un paquet qui contient une super majorité des validateurs du réseau. Ce paquet vérifie l'ensemble des preuves soumises avant un \textit{hash} spécifique généré par la séquence de "Proof of History" et peut contenir plusieurs identités de réplicateurs à la fois.
 \subsection{Attaques}
 \subsubsection{Spam}
-Un utilisateur mal intentionné pourrait créer de nombreuses identités de réplicateurs et spammer le network avec de mauvaises preuves. Pour faciliter la vérification plus rapide, les nodes sont requis pour fournir les données cryptées et tout l'arbre de merkle au reste du réseau lorsqu'ils demandent une vérification.
+Un utilisateur mal intentionné pourrait créer de nombreuses identités de réplicateurs et spammer le réseaux avec des preuves falsifiées. Afin de faciliter une vérification plus rapide, des nœuds sont requis pour fournir les données chiffrées et l'intégralité de l'arbre de Merkle au reste du réseau lorsqu'il demande une vérification.
 
-La preuve de réplication qui est conçue dans ce document permet des vérifications à bas cout des preuves supplémentaires, car elles ne prennent pas d'espace supplémentaire. Mais chaque identité consommerait 1 cœur du noyau d’encryptions. La cible de réplication devrait être réglé à une taille maximale de coeurs facilement disponible. Les GPU modernes sont expédiés avec plus de 3500 coeurs.
+La preuve de réplication conçue dans ce document permet des vérifications de preuves supplémentaire à bas coût car elles ne nécessitent pas d'espace supplémentaire. Cependant chaque identité consommerait 1 cœur du noyau de chiffrage. La cible de réplication devrait être réglée à une taille maximale de coeurs facilement disponible. Les puces GPU modernes possèdent plus de 3500 coœurs.
 
 \subsubsection{Effacement partiel}
 
-Un node de réplication pourrait tenter d'effacer partiellement certaines données pour éviter de stocker l'état entier. Le nombre de preuves et le caractère aléatoire des seed devraient rendre cette attaque difficile.
+Un node de réplication pourrait tenter d'effacer partiellement certaines données pour éviter de stocker l'intégralité de l'état. Le nombre de preuves et le caractère aléatoire des \textit{seed} devraient rendre cette attaque difficile.
 
-Par exemple, un utilisateur stockant 1 téraoctet de données efface un seul octet de chaque bloc de 1 mégaoctet. Une seule preuve qui échantillonne 1 octet sur chaque mégaoctet aurait une probabilité de collision avec tout octet effacé \(1 - (1- 1/1,000,0000)^{1,000,000} = 0.63\). Après 5 preuves, la probabilité est de \(0.99\).
+Par exemple, un utilisateur stockant 1 téraoctet de données efface un seul octet de chaque bloc de 1 mégaoctet. Une seule vérification qui échantillonne 1 octet sur chaque mégaoctet aurait une probabilité de collision un octet effacé de \(1 - (1- 1/1,000,0000)^{1,000,000} = 0.63\). Après 5 vérifications, la probabilité est de \(0.99\).
 
-\subsubsection{Collusion with PoH generator}
+\subsubsection{Collusion avec le générateur de PoH}
 
-Le hash signé devrait être utilisé pour envoyer l'échantillon. Si un réplicateur pouvait sélectionne un hash spécifique à l'avance alors le réplicateur pourrait effacer tous octets qui ne vont pas être échantillonnés.
+Le \textit{hash} signé devrait servir de base à la constitution de l'échantillon. Si un réplicateur avait la possibilité de sélectionner un hash spécifique à l'avance alors il pourrait effacer tous octets qui ne seront pas échantillonnés.
 
-Une identité de réplicateur en qui conspire avec le générateur Proof of History pourrait injecter une transaction spécifique à la fin de la séquence avant le hash prédéfinit pour la sélection d'octets aléatoires est généré. Avec suffisamment de coeurs, un attaquant pourrait générer un hash qui sera choisi à la place de l’identité des réplicateurs.
+Une identité de réplicateur qui conspire avec le générateur de PoH pourrait injecter une transaction spécifique en fin de séquence avant que le \textit{hash} prédéfinit pour la sélection d'octets aléatoires ne soit généré. Avec suffisamment de cœurs, un attaquant pourrait générer un hash qui sera choisi à la place de l’identité des réplicateurs.
 
-Cette attaque ne peut bénéficier que d'une seule identité de réplicateur. Puisque toutes les identités doivent utiliser le même exactement le même hash qui est signé cryptographiquement avec ECDSA (ou équivalent), la signature résultante est unique pour chaque identité du réplicateur et résistante à la conspiration. Une identité de réplicateur unique aurait de faible gain.
+Cette attaque ne peut bénéficier qu'à une seule identité de réplicateur. Du fait que toutes les identités doivent utiliser exactement le même hash signé par chiffrement ECDSA (ou équivalent), la signature résultante est unique pour chaque identité du réplicateur et résistante à la conspiration. Une identité de réplicateur unique n'aurait que de faible gain.
 \subsubsection{Déni de service}
-Le coût d'ajout d'une identité de réplicateur supplémentaire devrait être égal au coût du stockage. Le coût de l'ajout d'une capacité de calcul supplémentaire pour vérifier toutes les identités du réplicateur est censées être égal au coût d'un coeur de CPU de GPU par identité de réplication.
+Le coût d'ajout d'une identité de réplicateur supplémentaire devrait être égal au coût du stockage. Le coût de l'ajout d'une capacité de calcul supplémentaire pour vérifier toutes les identités des réplicateurs est censées être égal au coût d'un cœur de CPU ou GPU par identité de réplication.
 
-Cela crée une opportunité pour une attaque par déni de service sur le réseau en créant un grand nombre d'identités de réplicateurs valides.
+Cela crée une vulnérabilité par déni de service sur le réseau exploitable en créant un grand nombre d'identités de réplicateurs valides.
 
-Pour limiter cette attaque, le protocole de consensus choisi pour le réseau peut sélectionner une cible de réplication et attribuer les preuves de réplication répondant aux caractéristiques souhaitées, telles que la disponibilité sur le réseau, la bande passante, la géolocalisation,
-etc...
+Pour limiter cette attaque, le protocole de consensus choisi pour le réseau peut sélectionner une cible de réplication et lui attribuer les preuves de réplication répondant à des caractéristiques souhaitées, telles que la disponibilité sur le réseau, la bande passante, la géolocalisation, etc...
 \subsubsection{Tragédie des communs}
 
-Les vérificateurs PoS pourraient simplement confirmer PoRep sans faire de travail. Les récompenses économiques devraient être alignées avec les vérificateurs du PoS pour faire le travail, comme en divisant le paiement miner entre les vérificateurs du PoS et le node de réplication des PoRep.
+Les vérificateurs PoS pourraient simplement confirmer la PoRep sans réellement effectuer de vérification. L'intérêt économique devrait être au même niveau qu'avec les vérificateurs du PoS pour la réalisation des vérifications en divisant la récompense de minage entre les vérificateurs du PoS et le nœud de réplication des PoRep.
 
-Pour éviter ce scénario, les vérificateurs PoRep peuvent parfois soumettre des fausses preuves. Ils peuvent prouver que la preuve est fausse en fournissant la fonction qui a généré les fausses données. Tout vérificateur de PoS qui a confirmé une fausse preuve serait détruit.
+Pour éviter ce scénario, les vérificateurs PoRep peuvent parfois soumettre de fausses preuves. Ils peuvent prouver que la preuve est fausse en fournissant la fonction qui a généré les fausses données. Tout vérificateur de PoS qui a confirmé une fausse preuve serait détruit.
 
 \section{Architecture système}\label{system_architecture}
 
@@ -599,38 +598,39 @@ Pour éviter ce scénario, les vérificateurs PoRep peuvent parfois soumettre de
 
 \subsection{Composants}
 
-\subsubsection{Leader, Proof of History generator}
-Le Leader est un générateur de " proof of history " élu. Il consomme de manière arbitraire des transactions d’utilisateur et affiche une séquence de " proof of history " de toutes les transactions garantissant un ordre global unique dans le système. Après chaque lot de transactions, le leader émet une signature de l'état qui résulte de l'exécution des transactions dans cet ordre. Cette signature est signée avec l'identité du Leader.
+\subsubsection{Leader, générateur de PoH}
+Le Leader est un générateur de " proof of history " élu. Il consomme de manière arbitraire des transactions d’utilisateur et affiche une séquence de " proof of history " de toutes les transactions garantissant un ordre global unique dans le système. Après chaque lot de transactions, le Leader émet une signature de l'état qui résulte de l'exécution des transactions dans cet ordre. Cette signature est signée avec l'identité du Leader.
 
 \subsubsection{L'état}
-L'état est une table de hash naïve indexée par l'adresse des utilisateurs. Chaque cellule contient l’adresse complète des utilisateurs et la mémoire requise pour ce calcul. Par exemple,\\
-\noindent the Transaction table contains:\\\\\noindent
+L'état est une simple table de hash indexée par l'adresse des utilisateurs. Chaque cellule contient l’adresse complète de l'utilisateur et la mémoire requise pour ce calcul. Par exemple,\\
+
+\noindent La table de transaction contient :\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
 \bitbox{160}{Ripemd of Users Public Key}
 & \bitbox{64}{Account}
-& \bitbox{32}{unused}
+& \bitbox{32}{Unused}
 \end{bytefield}\\
 Pour un total de 32 octets.\\
-\noindent La table des obligations de " proof of stake " contient:\\\\\noindent
+
+\noindent La table des obligations de " Proof of Stake " contient:\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
 \bitbox{160}{Ripemd of Users Public Key}
 & \bitbox{64}{Bond} \\
 & \bitbox{64}{Last Vote} \\
-& \bitbox{224}{unused}
+& \bitbox{224}{Unused}
 \end{bytefield}\\
-for a total of 64 bytes.
+Pour un total de 64 octets.
+
 \subsubsection{Vérificateurs, State Replication}
 
+Les nodes vérificateurs répliquent l'état de la blockchain et fournissent une haute disponibilité son état. La cible de réplication est sélectionnée par l'algorithme de consensus et les validateurs de l'algorithme de consensus sélectionnent et votent pour les nœuds de " proof of replication " qu'ils approuvent en fonction de critères définis hors chaîne.
 
+Le réseau peut être configuré avec une taille de liaison " Proof of Stake " minimale et des exigences spécifiques par liaison d'identité de réplicateur.
 
-Les nodes vérificateurs répliquent l'état de la blockchain et fournissent une haute disponibilité de l'état blockchain. La cible de réplication est sélectionnée par l'algorithme de consensus et les validateurs de l'algorithme de consensus sélectionnent et votent les nodes de " proof of replication " qu'ils approuvent en fonction de critères définis hors chaîne.
-
-
-Le réseau peut être configuré avec une taille de liaison Proof of Stake minimale et une exigence pour une identité de réplicateur unique par liaison.
 \subsubsection{Validateurs}
-Ces nodes consomment de la bande passante à partir des vérificateurs. Ce sont des nodes virtuels, qui peuvent fonctionner sur les mêmes machines que les vérificateurs ou le Leader, ou sur des machines distinctes spécifiques à l'algorithme de consensus configuré pour ce réseau.
+Ces nœuds consomment de la bande passante des vérificateurs. Ce sont des nœuds virtuels, qui peuvent fonctionner sur les mêmes machines que celles des vérificateurs, du Leader, ou sur des machines distinctes spécifiques pour l'algorithme de consensus configuré pour ce réseau.
 
 \subsection{Limites du réseau}
 
@@ -642,9 +642,9 @@ Ces nodes consomment de la bande passante à partir des vérificateurs. Ce sont 
   \end{center}
   \end{figure}
 
-Le Leader devrait être en mesure de prendre les paquets entrants d'utilisateurs, de les ordonner de la manière la plus efficace possible, et de les séquencer dans une séquence de Proof of History publiée aux vérificateurs en aval. L'efficacité est basée sur les modèles d'accès à la mémoire des transactions, afin que les transactions sont ordonnées pour minimiser les erreurs et maximiser la pré-extraction.\\\\
+Le Leader devrait être en mesure de récupérer les paquets provenants d'utilisateurs, de les ordonner de la manière la plus efficace possible, et de les séquencer dans une séquence de " Proof of History " publiée aux vérificateurs en aval. L'efficacité est basée sur les modèles d'accès à la mémoire des transactions, de ce fait les transactions sont ordonnées pour minimiser les erreurs et maximiser la pré-extraction.\\\\
 
-\noindent \textbf{Incoming packet format:}\\\\\noindent
+\noindent \textbf{Format des paquets entrants :}\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
 \begin{rightwordgroup}{Signé}
@@ -653,7 +653,7 @@ Le Leader devrait être en mesure de prendre les paquets entrants d'utilisateurs
 & \bitbox{6}{u}
 & \bitbox{10}{s} \\
 & \bitbox{64}{Frais} \\
-& \bitbox{256}{Provenant de} \\
+& \bitbox{256}{Expéditeur} \\
 \end{rightwordgroup} \\
 & \bitbox{256}{Signature 1 sur 2} \\
 & \bitbox{256}{Signature 2 sur 2} \\
@@ -667,16 +667,16 @@ La capacité minimale pouvant être prise en charge serait 1 compte de destinati
 
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
-\begin{rightwordgroup}{Signed}
+\begin{rightwordgroup}{Signé}
 \bitbox{160}{Dernier Hash Valide}
 & \bitbox{64}{Compteur}
 & \bitbox{6}{u}
 & \bitbox{10}{s} \\
 & \bitbox{160}{A}
 & \bitbox{64}{Montant} \\
-& \bitbox{64}{Coumteur}
+& \bitbox{64}{Compteur}
 & \bitbox{64}{Frais} \\
-& \bitbox{256}{Provenant de} \\
+& \bitbox{256}{Expéditeur} \\
 \end{rightwordgroup} \\
 & \bitbox{256}{Signature 1 sur 2} \\
 & \bitbox{256}{Signature 2 sur 2} \\
@@ -684,12 +684,12 @@ La capacité minimale pouvant être prise en charge serait 1 compte de destinati
 
 \noindent Avec une capacité minimale: 176 octets\\\\
 
-Le paquet de séquence Proof of History contient le hash actuel, le compteur et le hash de tous les nouveaux messages ajoutés à la séquence PoH et l'état de signature après le traitement de tous les messages. Ce paquet est envoyé une fois tous les N messages diffusés.\\
-\noindent Proof of History packet:\\\\\noindent
+Le paquet de séquence " Proof of History " contient le \textit{hash} actuel, le compteur, le \textit{hash} de tous les nouveaux messages ajoutés à la séquence de PoH et l'état de signature après le traitement de tous les messages. Ce paquet est envoyé une fois tous les N messages diffusés.\\
+\noindent Paquet de " Proof of History ":\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
 \begin{rightwordgroup}{Signé}
-\bitbox{160}{Hash  Actuel}
+\bitbox{160}{Hash Actuel}
 & \bitbox{64}{Compteur} \\
 \bitbox{160}{Messages Hash} \\
 \bitbox{160}{Etat du Hash} \\
@@ -698,35 +698,35 @@ Le paquet de séquence Proof of History contient le hash actuel, le compteur et 
 & \bitbox{256}{Signature 2 sur 2} \\
 \end{bytefield}
 
-\noindent Taille minimale du paquet de sortie est: 132 octets \\\\
+\noindent Taille minimale du paquet de sortie est de : 132 octets \\\\
 
-Sur une connexion réseau de 1gbps, le nombre maximum de transactions possibles est de $1$~gigabit par seconde / $176$~octets = $710$k tps max. Une perte ($1-4\%$) est prévue en raison de l’Ethernet framing. La capacité inutilisée sur le montant cible pour le réseau peut être utilisée pour augmenter la disponibilité en codant la sortie avec les codes Reed-Solomon, et en la groupant aux vérificateurs en aval disponibles.
+Pour une connexion réseau de 1 gigaoctet par seconde, le nombre maximum de transactions possibles est de $1$~gigaoctet par seconde / $176$~octets = $710$k tps max. Une perte de ($1-4\%$) est prévue en raison de l'encapsulation Ethernet. La capacité inutilisée sur le montant cible pour le réseau peut être utilisée pour augmenter la disponibilité en appliquant le code Reed-Solomon à la sortie, et en la répartissant aux vérificateurs disponibles en aval.
 \subsection{Limites de calcul}
-Chaque transaction nécessite une vérification sommaire. Cette opération n'utilise pas de mémoire en dehors du message de transaction lui-même et peut être parallélisée indépendamment. Le débit devrait donc être limité par le nombre de cœurs disponibles dans le système.
+Chaque transaction nécessite une vérification sommaire. Cette opération n'utilise pas de mémoire en dehors du message de transaction lui-même et peut être parallélisée de manière indépendante. La limite du débit devrait donc être nombre de cœurs disponibles dans le système.
 
 Les GPU basés sur les serveurs de vérification ECDSA ont eu des résultats expérimentaux de 900k opérations par seconde~\cite{gpuecc}.
 \subsection{Limites de mémoire}
-Une implémentation naïve de l'état comme une table de hachage complète de 50 pour cent avec des entrées de 32 octets pour chaque compte, pourrait théoriquement contenir 10 milliards de comptes dans 640GB. L'accès régulier aléatoire à cette table est mesuré à \(1.1 * 10^7\) écrit ou lit par seconde. Basé sur 2 lectures et deux écritures par transaction, le débit de la mémoire peut gérer 2.75 m de transactions par seconde. Cela a été mesuré sur un Amazon Web Services 1TB x1.16xgrande instance.
+Une implémentation simple de l'état comme une table de \textit{hash} remplie à 50\% avec des entrées de 32 octets pour chaque compte, pourrait théoriquement contenir 10 milliards de comptes sur 640GB. L'accès régulier aléatoire à cette table est mesuré à \(1.1 \times 10^7\) lecture ou écriture par seconde. En se basant sur 2 lectures et 2 écritures par transaction, le débit de la mémoire peut gérer 2.75m de transactions par seconde. Cela a été mesuré sur un serveur Amazon Web Services 1TB x 1.16 x grande instance.
 
 \subsection{Smart Contracts Haute Performance}\label{sec:smartcontracts}
 
-Les smarts contracts sont une forme généralisée de transactions. Ce sont des programmes qui s'exécutent sur chaque noeud et en modifient l'état. Cette conception s'appuie sur le Berkeley Packet Filter bytecode, qui est rapide et facile à analyser, et le JIT bytecode comme langage de smart contract.
+Les \textit{smarts contracts} sont une forme généralisée de transactions. Ce sont des programmes qui s'exécutent sur chaque nœud et en modifient l'état. Cette conception s'appuie sur le Berkeley Packet Filter bytecode, qui est rapide et facile à analyser et le JIT bytecode comme langage de programmation des \textit{smart contracts}.
 
-L'un de ses principaux avantages est le coût nul du Foreign Function Interface. Intrinsèques, ou \hyphenation{user supplied} fonctions qui sont implémentées directement sur la plateforme, sont appelables par \hyphenation{user supplied} les programmes. L'appel des intrinsèques suspend ce programme et planifie l'intrinsèque sur un serveur de haute performance. Les intrinqèques sont regroupées ensemble pour s'exécuter en parallèle sur le GPU.
+L'un de ses principaux avantages est le coût nul du \textit{Foreign Function Interface}. \textit{Intrinsics}, ou \hyphenation{user supplied} des fonctions qui sont implémentées directement sur la plateforme, peuvent être appelés par \hyphenation{user supplied} les programmes. L'appel à \textit{Intrinsics} suspend le programme en cours et planifie l'appel sur un serveur de haute performance. Les appel \textit{Intrinsics} sont regroupées pour s'exécuter en parallèle sur le GPU.
 
 \begin{figure}
   \begin{center}
     \centering
     \includegraphics[width=0.9\textwidth]{figures/bpf_programs_001.png}
-    \caption[Fig 11]{Executing \hyphenation{user supplied} BPF programs.\label{fig_11}}
+    \caption[Fig 11]{Execution d'un programme BPF \hyphenation{user supplied}.\label{fig_11}}
   \end{center}
-  \end{figure}
+\end{figure}
 
-Dans l'exemple ci-dessus, deux programmes utilisateur différents appellent la même valeur intrinsèque. Chaque programme est suspendu jusqu'à ce que l'exécution par lots de l'intrinsèque soit terminée. Un exemple intrinsèque est la vérification ECDSA. Le traitement de ces appels pour exécuter sur le GPU peut augmenter le débit par des milliers de fois.
+Dans l'exemple ci-dessus, deux programmes utilisateur différents appellent la même valeur \textit{Intrinsic}. Chaque programme est suspendu jusqu'à ce que l'exécution par lots de l'\textit{Intrinsic} soit terminée. Un exemple d'appel \textit{intrinsics} est la vérification ECDSA. Le regroupement de ces appels pour les exécuter sur le GPU peut augmenter le débit des milliers de fois.
 
-Ce trampoline ne nécessite pas d’OS natif supportant le threads context switching, puisque le BPF bytecode a un contexte bien défini pour toute la mémoire qu'il utilise.
+Ce trampoline ne nécessite pas d’OS supportant nativement le \textit{threads context switching}, puisque le BPF bytecode a un contexte bien défini pour toute la mémoire qu'il utilise.
 
-eBPF backend a été inclus dans LLVM depuis 2015, de sorte que tout langage LLVM frontend peut être utilisé pour écrire des smart contracts. Il est dans le noyau Linux depuis 2015, et les premières itérations du bytecode existent depuis 1992. Un seul passage peut vérifier l'eBPF pour l'exactitude, établir ses exigences d'exécution et de mémoire et le convertir en instructions x86.
+Le \textit{backend} eBPF a été inclus dans LLVM depuis 2015, de sorte que tout langage LLVM \textit{frontend} peut être utilisé pour écrire des smart contracts. Il fait partie du noyau Linux depuis 2015, et les premières itérations du bytecode existent depuis 1992. Un seul passage permet de vérifier l'exactitude de l'eBPF, établir ses exigences d'exécution, de mémoire et le convertir en instructions x86.
 
 \bibliographystyle{abbrv}
 \bibliography{simple}
