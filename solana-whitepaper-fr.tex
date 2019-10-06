@@ -653,7 +653,7 @@ Le Leader devrait être en mesure de récupérer les paquets provenants d'utilis
 & \bitbox{6}{u}
 & \bitbox{10}{s} \\
 & \bitbox{64}{Frais} \\
-& \bitbox{256}{Provenant de} \\
+& \bitbox{256}{Expéditeur} \\
 \end{rightwordgroup} \\
 & \bitbox{256}{Signature 1 sur 2} \\
 & \bitbox{256}{Signature 2 sur 2} \\
@@ -667,16 +667,16 @@ La capacité minimale pouvant être prise en charge serait 1 compte de destinati
 
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
-\begin{rightwordgroup}{Signed}
+\begin{rightwordgroup}{Signé}
 \bitbox{160}{Dernier Hash Valide}
 & \bitbox{64}{Compteur}
 & \bitbox{6}{u}
 & \bitbox{10}{s} \\
 & \bitbox{160}{A}
 & \bitbox{64}{Montant} \\
-& \bitbox{64}{Coumteur}
+& \bitbox{64}{Compteur}
 & \bitbox{64}{Frais} \\
-& \bitbox{256}{Provenant de} \\
+& \bitbox{256}{Expéditeur} \\
 \end{rightwordgroup} \\
 & \bitbox{256}{Signature 1 sur 2} \\
 & \bitbox{256}{Signature 2 sur 2} \\
@@ -684,12 +684,12 @@ La capacité minimale pouvant être prise en charge serait 1 compte de destinati
 
 \noindent Avec une capacité minimale: 176 octets\\\\
 
-Le paquet de séquence Proof of History contient le hash actuel, le compteur et le hash de tous les nouveaux messages ajoutés à la séquence PoH et l'état de signature après le traitement de tous les messages. Ce paquet est envoyé une fois tous les N messages diffusés.\\
-\noindent Proof of History packet:\\\\\noindent
+Le paquet de séquence " Proof of History " contient le \textit{hash} actuel, le compteur, le \textit{hash} de tous les nouveaux messages ajoutés à la séquence de PoH et l'état de signature après le traitement de tous les messages. Ce paquet est envoyé une fois tous les N messages diffusés.\\
+\noindent Paquet de " Proof of History ":\\\\\noindent
 \begin{bytefield}[bitwidth=.1em]{256}
 \bitheader{0,31,63,95,127,159,191,223,255} \\
 \begin{rightwordgroup}{Signé}
-\bitbox{160}{Hash  Actuel}
+\bitbox{160}{Hash Actuel}
 & \bitbox{64}{Compteur} \\
 \bitbox{160}{Messages Hash} \\
 \bitbox{160}{Etat du Hash} \\
@@ -698,9 +698,9 @@ Le paquet de séquence Proof of History contient le hash actuel, le compteur et 
 & \bitbox{256}{Signature 2 sur 2} \\
 \end{bytefield}
 
-\noindent Taille minimale du paquet de sortie est: 132 octets \\\\
+\noindent Taille minimale du paquet de sortie est de : 132 octets \\\\
 
-Sur une connexion réseau de 1gbps, le nombre maximum de transactions possibles est de $1$~gigabit par seconde / $176$~octets = $710$k tps max. Une perte ($1-4\%$) est prévue en raison de l’Ethernet framing. La capacité inutilisée sur le montant cible pour le réseau peut être utilisée pour augmenter la disponibilité en codant la sortie avec les codes Reed-Solomon, et en la groupant aux vérificateurs en aval disponibles.
+Pour une connexion réseau de 1 gigaoctet par seconde, le nombre maximum de transactions possibles est de $1$~gigaoctet par seconde / $176$~octets = $710$k tps max. Une perte de ($1-4\%$) est prévue en raison de l'encapsulation Ethernet. La capacité inutilisée sur le montant cible pour le réseau peut être utilisée pour augmenter la disponibilité en appliquant le code Reed-Solomon à la sortie, et en la répartissant aux vérificateurs disponibles en aval.
 \subsection{Limites de calcul}
 Chaque transaction nécessite une vérification sommaire. Cette opération n'utilise pas de mémoire en dehors du message de transaction lui-même et peut être parallélisée indépendamment. Le débit devrait donc être limité par le nombre de cœurs disponibles dans le système.
 
