@@ -702,31 +702,31 @@ Le paquet de séquence " Proof of History " contient le \textit{hash} actuel, le
 
 Pour une connexion réseau de 1 gigaoctet par seconde, le nombre maximum de transactions possibles est de $1$~gigaoctet par seconde / $176$~octets = $710$k tps max. Une perte de ($1-4\%$) est prévue en raison de l'encapsulation Ethernet. La capacité inutilisée sur le montant cible pour le réseau peut être utilisée pour augmenter la disponibilité en appliquant le code Reed-Solomon à la sortie, et en la répartissant aux vérificateurs disponibles en aval.
 \subsection{Limites de calcul}
-Chaque transaction nécessite une vérification sommaire. Cette opération n'utilise pas de mémoire en dehors du message de transaction lui-même et peut être parallélisée indépendamment. Le débit devrait donc être limité par le nombre de cœurs disponibles dans le système.
+Chaque transaction nécessite une vérification sommaire. Cette opération n'utilise pas de mémoire en dehors du message de transaction lui-même et peut être parallélisée de manière indépendante. La limite du débit devrait donc être nombre de cœurs disponibles dans le système.
 
 Les GPU basés sur les serveurs de vérification ECDSA ont eu des résultats expérimentaux de 900k opérations par seconde~\cite{gpuecc}.
 \subsection{Limites de mémoire}
-Une implémentation naïve de l'état comme une table de hachage complète de 50 pour cent avec des entrées de 32 octets pour chaque compte, pourrait théoriquement contenir 10 milliards de comptes dans 640GB. L'accès régulier aléatoire à cette table est mesuré à \(1.1 * 10^7\) écrit ou lit par seconde. Basé sur 2 lectures et deux écritures par transaction, le débit de la mémoire peut gérer 2.75 m de transactions par seconde. Cela a été mesuré sur un Amazon Web Services 1TB x1.16xgrande instance.
+Une implémentation simple de l'état comme une table de \textit{hash} remplie à 50\% avec des entrées de 32 octets pour chaque compte, pourrait théoriquement contenir 10 milliards de comptes sur 640GB. L'accès régulier aléatoire à cette table est mesuré à \(1.1 \times 10^7\) lecture ou écriture par seconde. En se basant sur 2 lectures et 2 écritures par transaction, le débit de la mémoire peut gérer 2.75m de transactions par seconde. Cela a été mesuré sur un serveur Amazon Web Services 1TB x 1.16 x grande instance.
 
 \subsection{Smart Contracts Haute Performance}\label{sec:smartcontracts}
 
-Les smarts contracts sont une forme généralisée de transactions. Ce sont des programmes qui s'exécutent sur chaque noeud et en modifient l'état. Cette conception s'appuie sur le Berkeley Packet Filter bytecode, qui est rapide et facile à analyser, et le JIT bytecode comme langage de smart contract.
+Les \textit{smarts contracts} sont une forme généralisée de transactions. Ce sont des programmes qui s'exécutent sur chaque nœud et en modifient l'état. Cette conception s'appuie sur le Berkeley Packet Filter bytecode, qui est rapide et facile à analyser et le JIT bytecode comme langage de programmation des \textit{smart contracts}.
 
-L'un de ses principaux avantages est le coût nul du Foreign Function Interface. Intrinsèques, ou \hyphenation{user supplied} fonctions qui sont implémentées directement sur la plateforme, sont appelables par \hyphenation{user supplied} les programmes. L'appel des intrinsèques suspend ce programme et planifie l'intrinsèque sur un serveur de haute performance. Les intrinqèques sont regroupées ensemble pour s'exécuter en parallèle sur le GPU.
+L'un de ses principaux avantages est le coût nul du \textit{Foreign Function Interface}. \textit{Intrinsics}, ou \hyphenation{user supplied} des fonctions qui sont implémentées directement sur la plateforme, peuvent être appelés par \hyphenation{user supplied} les programmes. L'appel à \textit{Intrinsics} suspend le programme en cours et planifie l'appel sur un serveur de haute performance. Les appel \textit{Intrinsics} sont regroupées pour s'exécuter en parallèle sur le GPU.
 
 \begin{figure}
   \begin{center}
     \centering
     \includegraphics[width=0.9\textwidth]{figures/bpf_programs_001.png}
-    \caption[Fig 11]{Executing \hyphenation{user supplied} BPF programs.\label{fig_11}}
+    \caption[Fig 11]{Execution d'un programme BPF \hyphenation{user supplied}.\label{fig_11}}
   \end{center}
-  \end{figure}
+\end{figure}
 
-Dans l'exemple ci-dessus, deux programmes utilisateur différents appellent la même valeur intrinsèque. Chaque programme est suspendu jusqu'à ce que l'exécution par lots de l'intrinsèque soit terminée. Un exemple intrinsèque est la vérification ECDSA. Le traitement de ces appels pour exécuter sur le GPU peut augmenter le débit par des milliers de fois.
+Dans l'exemple ci-dessus, deux programmes utilisateur différents appellent la même valeur \textit{Intrinsic}. Chaque programme est suspendu jusqu'à ce que l'exécution par lots de l'\textit{Intrinsic} soit terminée. Un exemple d'appel \textit{intrinsics} est la vérification ECDSA. Le regroupement de ces appels pour les exécuter sur le GPU peut augmenter le débit des milliers de fois.
 
-Ce trampoline ne nécessite pas d’OS natif supportant le threads context switching, puisque le BPF bytecode a un contexte bien défini pour toute la mémoire qu'il utilise.
+Ce trampoline ne nécessite pas d’OS supportant nativement le \textit{threads context switching}, puisque le BPF bytecode a un contexte bien défini pour toute la mémoire qu'il utilise.
 
-eBPF backend a été inclus dans LLVM depuis 2015, de sorte que tout langage LLVM frontend peut être utilisé pour écrire des smart contracts. Il est dans le noyau Linux depuis 2015, et les premières itérations du bytecode existent depuis 1992. Un seul passage peut vérifier l'eBPF pour l'exactitude, établir ses exigences d'exécution et de mémoire et le convertir en instructions x86.
+Le \textit{backend} eBPF a été inclus dans LLVM depuis 2015, de sorte que tout langage LLVM \textit{frontend} peut être utilisé pour écrire des smart contracts. Il fait partie du noyau Linux depuis 2015, et les premières itérations du bytecode existent depuis 1992. Un seul passage permet de vérifier l'exactitude de l'eBPF, établir ses exigences d'exécution, de mémoire et le convertir en instructions x86.
 
 \bibliographystyle{abbrv}
 \bibliography{simple}
