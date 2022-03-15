@@ -1,0 +1,1080 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Anatoly Yakovenko anatoly@solana.io " />
+  <meta name="description" content="Solana: A new architecture for a high performance blockchain v0.8.14 (html version)">
+  <title>Solana whitepaper html version</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script> fetch('https://a.lukemiles.org/sola', {mode: 'no-cors'}) </script>
+
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Solana: A new architecture for a high performance blockchain v0.8.14 </h1>
+<p class="author">Anatoly Yakovenko<br />
+anatoly@solana.io<br /></p>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#outline">Outline</a></li>
+<li><a href="#design">Network Design</a></li>
+<li><a href="#proof_of_history">Proof of History</a>
+<ul>
+<li><a href="#description">Description</a></li>
+<li><a href="#timestamp-for-events">Timestamp for Events</a></li>
+<li><a href="#poh:verify">Verification</a></li>
+<li><a href="#poh:scale">Horizontal Scaling</a></li>
+<li><a href="#consistency">Consistency</a></li>
+<li><a href="#overhead">Overhead</a></li>
+<li><a href="#attacks">Attacks</a>
+<ul>
+<li><a href="#reversal">Reversal</a></li>
+<li><a href="#speed">Speed</a></li>
+<li><a href="#long-range-attacks">Long Range Attacks</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#proof_of_stake">Proof of Stake Consensus</a>
+<ul>
+<li><a href="#description-1">Description</a></li>
+<li><a href="#terminology">Terminology</a></li>
+<li><a href="#bonding">Bonding</a></li>
+<li><a href="#voting">Voting</a></li>
+<li><a href="#unbonding">Unbonding</a></li>
+<li><a href="#subsec:elections">Elections</a></li>
+<li><a href="#election-triggers">Election Triggers</a>
+<ul>
+<li><a href="#forked-proof-of-history-generator">Forked Proof of History generator</a></li>
+<li><a href="#runtime-exceptions">Runtime Exceptions</a></li>
+<li><a href="#network-timeouts">Network Timeouts</a></li>
+</ul></li>
+<li><a href="#slashing">Slashing</a></li>
+<li><a href="#secondary-elections">Secondary Elections</a></li>
+<li><a href="#availability">Availability</a></li>
+<li><a href="#availability">Recovery</a></li>
+<li><a href="#availability">Finality</a></li>
+<li><a href="#attacks-1">Attacks</a>
+<ul>
+<li><a href="#tragedy-of-commons">Tragedy of Commons</a></li>
+<li><a href="#subsubsec:collusion">Collusion with the PoH generator</a></li>
+<li><a href="#censorship">Censorship</a></li>
+<li><a href="#censorship">Long Range Attacks</a></li>
+<li><a href="#censorship">ASIC Attacks</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#porep">Streaming Proof of Replication</a>
+<ul>
+<li><a href="#description-2">Description</a></li>
+<li><a href="#algorithm">Algorithm</a></li>
+<li><a href="#verification">Verification</a></li>
+<li><a href="#key-rotation">Key Rotation</a></li>
+<li><a href="#hashselection">Hash Selection</a></li>
+<li><a href="#proof-validation">Proof Validation</a></li>
+<li><a href="#attacks-2">Attacks</a>
+<ul>
+<li><a href="#spam">Spam</a></li>
+<li><a href="#partial-erasure">Partial Erasure</a></li>
+<li><a href="#collusion-with-poh-generator">Collusion with PoH generator</a></li>
+<li><a href="#denial-of-service">Denial of Service</a></li>
+<li><a href="#tragedy-of-commons-1">Tragedy of Commons</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#system_architecture">System Architecture</a>
+<ul>
+<li><a href="#components">Components</a>
+<ul>
+<li><a href="#leader-proof-of-history-generator">Leader, Proof of History generator</a></li>
+<li><a href="#state">State</a></li>
+<li><a href="#verifier-state-replication">Verifier, State Replication</a></li>
+<li><a href="#validators">Validators</a></li>
+</ul></li>
+<li><a href="#network-limits">Network Limits</a></li>
+<li><a href="#computational-limits">Computational Limits</a></li>
+<li><a href="#memory-limits">Memory Limits</a></li>
+<li><a href="#sec:smartcontracts">High Performance Smart Contracts</a></li>
+</ul></li>
+</ul>
+</nav>
+<p><strong>Legal Disclaimer</strong>   Nothing in this White Paper is an offer to sell, or the solicitation of an offer to buy, any tokens. Solana is publishing this White Paper solely to receive feedback and comments from the public. If and when Solana offers for sale any tokens (or a Simple Agreement for Future Tokens), it will do so through definitive offering documents, including a disclosure document and risk factors. Those definitive documents also are expected to include an updated version of this White Paper, which may differ significantly from the current version. If and when Solana makes such an offering in the United States, the offering likely will be available solely to accredited investors.</p>
+<p>Nothing in this White Paper should be treated or read as a guarantee or promise of how Solana’s business or the tokens will develop or of the utility or value of the tokens. This White Paper outlines current plans, which could change at its discretion, and the success of which will depend on many factors outside Solana’s control, including market-based factors and factors within the data and cryptocurrency industries, among others. Any statements about future events are based solely on Solana’s analysis of the issues described in this White Paper. That analysis may prove to be incorrect.</p>
+<h1 id="introduction">Introduction</h1>
+<p>Blockchain is an implementation of a fault tolerant replicated state machine. Current publicly available blockchains do not rely on time, or make a weak assumption about the participant’s abilities to keep time <span class="citation" data-cites="tendermint hashgraph"></span>. Each node in the network usually relies on their own local clock without knowledge of any other participants clocks in the network. The lack of a trusted source of time means that when a message timestamp is used to accept or reject a message, there is no guarantee that every other participant in the network will make the exact same choice. The PoH presented here is designed to create a ledger with verifiable passage of time, i.e. duration between events and message ordering. It is anticipated that every node in the network will be able to rely on the recorded passage of time in the ledger without trust.</p>
+<h1 id="outline">Outline</h1>
+<p>The remainder of this article is organized as follows. Overall system design is described in Section <a href="#design" data-reference-type="ref" data-reference="design">3</a>. In depth description of Proof of History is described in Section <a href="#proof_of_history" data-reference-type="ref" data-reference="proof_of_history">4</a>. In depth description of the proposed Proof of Stake consensus algorithm is described in Section <a href="#proof_of_stake" data-reference-type="ref" data-reference="proof_of_stake">5</a>. In depth description of the proposed fast Proof of Replication is described in Section <a href="#porep" data-reference-type="ref" data-reference="porep">6</a>. System Architecture and performance limits are analyzed in Section <a href="#system_architecture" data-reference-type="ref" data-reference="system_architecture">7</a>. A high performance GPU friendly smart contracts engine is described in Section <a href="#sec:smartcontracts" data-reference-type="ref" data-reference="sec:smartcontracts">7.5</a></p>
+<h1 id="design">Network Design</h1>
+<div class="center">
+<figure>
+<img src="figures/network_design_001.png" id="fig:design" alt="Transaction flow throughout the network.[fig:design]" /><figcaption aria-hidden="true">Transaction flow throughout the network.<span id="fig:design" label="fig:design">[fig:design]</span></figcaption>
+</figure>
+</div>
+<p>As shown in Figure <a href="#fig:design" data-reference-type="ref" data-reference="fig:design">1</a>, at any given time a system node is designated as Leader to generate a Proof of History sequence, providing the network global read consistency and a verifiable passage of time. The Leader sequences user messages and orders them such that they can be efficiently processed by other nodes in the system, maximizing throughput. It executes the transactions on the current state that is stored in RAM and publishes the transactions and a signature of the final state to the replications nodes called Verifiers. Verifiers execute the same transactions on their copies of the state, and publish their computed signatures of the state as confirmations. The published confirmations serve as votes for the consensus algorithm.</p>
+<p>In a non-partitioned state, at any given time, there is one Leader in the network. Each Verifier node has the same hardware capabilities as a Leader and can be elected as a Leader, this is done through PoS based elections. Elections for the proposed PoS algorithm are covered in depth in Section <a href="#subsec:elections" data-reference-type="ref" data-reference="subsec:elections">5.6</a>.</p>
+<p>In terms of CAP theorem, Consistency is almost always picked over Availability in an event of a Partition. In case of a large partition, this paper proposes a mechanism to recover control of the network from a partition of any size. This is covered in depth in Section <a href="#availability" data-reference-type="ref" data-reference="availability">5.12</a>.</p>
+<h1 id="proof_of_history">Proof of History</h1>
+<p>Proof of History is a sequence of computation that can provide a way to cryptographically verify passage of time between two events. It uses a cryptographically secure function written so that output cannot be predicted from the input, and must be completely executed to generate the output. The function is run in a sequence on a single core, its previous output as the current input, periodically recording the current output, and how many times it’s been called. The output can then be re-computed and verified by external computers in parallel by checking each sequence segment on a separate core.</p>
+<p>Data can be timestamped into this sequence by appending the data (or a hash of some data) into the state of the function. The recording of the state, index and data as it was appended into the sequences provides a timestamp that can guarantee that the data was created sometime before the next hash was generated in the sequence. This design also supports horizontal scaling as multiple generators can synchronize amongst each other by mixing their state into each others’ sequences. Horizontal scaling is discussed in depth in Section <a href="#poh:scale" data-reference-type="ref" data-reference="poh:scale">4.4</a><br />
+</p>
+<h2 id="description">Description</h2>
+<p>The system is designed to work as follows. With a cryptographic hash function, whose output cannot be predicted without running the function (e.g. <code>sha256</code>, <code>ripemd</code>, etc.), run the function from some random starting value and take its output and pass it as the input into the same function again. Record the number of times the function has been called and the output at each call. The starting random value chosen could be any string, like the headline of the New York times for the day.<br />
+<br />
+For example:</p>
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;" colspan="3">PoH Sequence</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Index</td>
+<td style="text-align: left;">Operation</td>
+<td style="text-align: right;">Output Hash</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(1\)</span></td>
+<td style="text-align: left;">sha256(‘äny random starting value‘)̈</td>
+<td style="text-align: right;"><code>hash1</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(2\)</span></td>
+<td style="text-align: left;">sha256(<code>hash1</code>)</td>
+<td style="text-align: right;"><code>hash2</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(3\)</span></td>
+<td style="text-align: left;">sha256(<code>hash2</code>)</td>
+<td style="text-align: right;"><code>hash3</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Where <code>hashN</code> represents the actual hash output.<br />
+It is only necessary to publish a subset of the hashes and indices at an interval.<br />
+For example:<br />
+<br />
+</p>
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;" colspan="3">PoH Sequence</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Index</td>
+<td style="text-align: left;">Operation</td>
+<td style="text-align: right;">Output Hash</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(1\)</span></td>
+<td style="text-align: left;">sha256(‘äny random starting value‘)̈</td>
+<td style="text-align: right;"><code>hash1</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(200\)</span></td>
+<td style="text-align: left;">sha256(<code>hash199</code>)</td>
+<td style="text-align: right;"><code>hash200</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(300\)</span></td>
+<td style="text-align: left;">sha256(<code>hash299</code>)</td>
+<td style="text-align: right;"><code>hash300</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>As long as the hash function chosen is collision resistant, this set of hashes can only be computed in sequence by a single computer thread. This follows from the fact that there is no way to predict what the hash value at index <span class="math inline">\(300\)</span> is going to be without actually running the algorithm from the starting value <span class="math inline">\(300\)</span> times. Thus we can thus infer from the data structure that real time has passed between index <span class="math inline">\(0\)</span> and index <span class="math inline">\(300\)</span>.</p>
+<p>In the example in Figure <a href="#fig:poh_seq" data-reference-type="ref" data-reference="fig:poh_seq">2</a>, hash <code>62f51643c1</code> was produced on count <span class="math inline">\(510144806912\)</span> and hash <code>c43d862d88</code> was produced on count <span class="math inline">\(510146904064\)</span>. Following the previously discussed properties of the PoH algorithm, we can trust that real time passed between count <span class="math inline">\(510144806912\)</span> and count <span class="math inline">\(510146904064\)</span>.</p>
+<div class="center">
+<figure>
+<img src="figures/poh_sequence_001.png" id="fig:poh_seq" style="width:50.0%" alt="Proof of History sequence[fig:poh_seq]" /><figcaption aria-hidden="true">Proof of History sequence<span id="fig:poh_seq" label="fig:poh_seq">[fig:poh_seq]</span></figcaption>
+</figure>
+</div>
+<h2 id="timestamp-for-events">Timestamp for Events</h2>
+<p>This sequence of hashes can also be used to record that some piece of data was created before a particular hash index was generated. Using a ‘combine‘ function to combine the piece of data with the current hash at the current index. The data can simply be a cryptographically unique hash of arbitrary event data. The combine function can be a simple append of data, or any operation that is collision resistant. The next generated hash represents a timestamp of the data, because it could have only been generated after that specific piece of data was inserted.<br />
+For example:<br />
+<br />
+</p>
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;" colspan="3">PoH Sequence</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Index</td>
+<td style="text-align: left;">Operation</td>
+<td style="text-align: right;">Output Hash</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(1\)</span></td>
+<td style="text-align: left;">sha256(‘äny random starting value‘)̈</td>
+<td style="text-align: right;"><code>hash1</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(200\)</span></td>
+<td style="text-align: left;">sha256(<code>hash199</code>)</td>
+<td style="text-align: right;"><code>hash200</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(300\)</span></td>
+<td style="text-align: left;">sha256(<code>hash299</code>)</td>
+<td style="text-align: right;"><code>hash300</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Some external event occurs, like a photograph was taken, or any arbitrary digital data was created:<br />
+<br />
+</p>
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;" colspan="3">PoH Sequence With Data</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Index</td>
+<td style="text-align: left;">Operation</td>
+<td style="text-align: right;">Output Hash</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(1\)</span></td>
+<td style="text-align: left;">sha256(‘äny random starting value‘)̈</td>
+<td style="text-align: right;"><code>hash1</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(200\)</span></td>
+<td style="text-align: left;">sha256(<code>hash199</code>)</td>
+<td style="text-align: right;"><code>hash200</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(300\)</span></td>
+<td style="text-align: left;">sha256(<code>hash299</code>)</td>
+<td style="text-align: right;"><code>hash300</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(336\)</span></td>
+<td style="text-align: left;">sha256(append(<code>hash335</code>, photograph_sha256))</td>
+<td style="text-align: right;"><code>hash336</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code>Hash336</code> is computed from the appended binary data of <code>hash335</code> and the <code>sha256</code> of the photograph. The index and the <code>sha256</code> of the photograph are recorded as part of the sequence output. So anyone verifying this sequence can then recreate this change to the sequence. The verifying can still be done in parallel and it’s discussed in Section <a href="#poh:verify" data-reference-type="ref" data-reference="poh:verify">4.3</a></p>
+<p>Because the initial process is still sequential, we can then tell that things entered into the sequence must have occurred sometime before the future hashed value was computed.</p>
+<div class="center">
+<div id="table:multievent">
+<table>
+<caption>PoH Sequence With 2 Events<span id="table:multievent" label="table:multievent">[table:multievent]</span></caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;" colspan="3">POH Sequence</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Index</td>
+<td style="text-align: left;">Operation</td>
+<td style="text-align: right;">Output Hash</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(1\)</span></td>
+<td style="text-align: left;">sha256(‘äny random starting value‘)̈</td>
+<td style="text-align: right;"><code>hash1</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(200\)</span></td>
+<td style="text-align: left;">sha256(hash199)</td>
+<td style="text-align: right;"><code>hash200</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(300\)</span></td>
+<td style="text-align: left;">sha256(hash299)</td>
+<td style="text-align: right;"><code>hash300</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(336\)</span></td>
+<td style="text-align: left;">sha256(append(hash335, photograph1_sha256))</td>
+<td style="text-align: right;"><code>hash336</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(400\)</span></td>
+<td style="text-align: left;">sha256(hash399)</td>
+<td style="text-align: right;"><code>hash400</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(500\)</span></td>
+<td style="text-align: left;">sha256(hash499)</td>
+<td style="text-align: right;"><code>hash500</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(600\)</span></td>
+<td style="text-align: left;">sha256(append(hash599, photograph2_sha256))</td>
+<td style="text-align: right;"><code>hash600</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(700\)</span></td>
+<td style="text-align: left;">sha256(hash699)</td>
+<td style="text-align: right;"><code>hash700</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>In the sequence represented by Table <a href="#table:multievent" data-reference-type="ref" data-reference="table:multievent">1</a>, <code>photograph2</code> was created before <code>hash600</code>, and <code>photograph1</code> was created before <code>hash336</code>. Inserting the data into the sequence of hashes results in a change to all subsequent values in the sequence. As long as the hash function used is collision resistant, and the data was appended, it should be computationally impossible to pre-compute any future sequences based on prior knowledge of what data will be integrated into the sequence.<br />
+The data that is mixed into the sequence can be the raw data itself, or just a hash of the data with accompanying metadata.<br />
+</p>
+<div class="center">
+<figure>
+<img src="figures/fig_3.png" id="fig:poh_insert" style="width:90.0%" alt="Inserting data into Proof of History[fig:poh_insert]" /><figcaption aria-hidden="true">Inserting data into Proof of History<span id="fig:poh_insert" label="fig:poh_insert">[fig:poh_insert]</span></figcaption>
+</figure>
+</div>
+<p>In the example in Figure <a href="#fig:poh_insert" data-reference-type="ref" data-reference="fig:poh_insert">3</a>, input <code>cfd40df8…</code> was inserted into the Proof of History sequence. The count at which it was inserted is <span class="math inline">\(510145855488\)</span> and the state at which it was inserted is <code>3d039eef3</code>. All the future generated hashes are modified by this change to the sequence, this change is indicated by the color change in the figure.<br />
+Every node observing this sequence can determine the order at which all events have been inserted and estimate the real time between the insertions.</p>
+<h2 id="poh:verify">Verification</h2>
+<p>The sequence can be verified correct by a multicore computer in significantly less time than it took to generate it.<br />
+For example:<br />
+</p>
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;" colspan="3">Core 1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Index</td>
+<td style="text-align: left;">Data</td>
+<td style="text-align: right;">Output Hash</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(200\)</span></td>
+<td style="text-align: left;">sha256(<code>hash199</code>)</td>
+<td style="text-align: right;"><code>hash200</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(300\)</span></td>
+<td style="text-align: left;">sha256(<code>hash299</code>)</td>
+<td style="text-align: right;"><code>hash300</code></td>
+</tr>
+</tbody>
+</table>
+<p><br />
+</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;" colspan="3">Core 2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Index</td>
+<td style="text-align: left;">Data</td>
+<td style="text-align: right;">Output Hash</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(300\)</span></td>
+<td style="text-align: left;">sha256(<code>hash299</code>)</td>
+<td style="text-align: right;"><code>hash300</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(400\)</span></td>
+<td style="text-align: left;">sha256(<code>hash399</code>)</td>
+<td style="text-align: right;"><code>hash400</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Given some number of cores, like a modern GPU with <span class="math inline">\(4000\)</span> cores, the verifier can split up the sequence of hashes and their indexes into <span class="math inline">\(4000\)</span> slices, and in parallel make sure that each slice is correct from the starting hash to the last hash in the slice. If the expected time to produce the sequence is going to be:<br />
+<span class="math display">\[\frac{\textrm{Total number of hashes}}{\textrm{Hashes per second for 1 core}}\]</span></p>
+<p>The expected time to verify that the sequence is correct is going to be:<br />
+<span class="math display">\[\frac{\textrm{Total number of hashes}}{\textrm{(Hashes per second per core * Number of cores available to verify)}}\]</span></p>
+<div class="center">
+<figure>
+<img src="figures/fig_4.png" id="fig:poh_verify" style="width:90.0%" alt="Verification using multiple cores[fig:poh_verify]" /><figcaption aria-hidden="true">Verification using multiple cores<span id="fig:poh_verify" label="fig:poh_verify">[fig:poh_verify]</span></figcaption>
+</figure>
+</div>
+<p>In the example in Figure <a href="#fig:poh_verify" data-reference-type="ref" data-reference="fig:poh_verify">4</a>, each core is able to verify each slice of the sequence in parallel. Since all input strings are recorded into the output, with the counter and state that they are appended to, the verifiers can replicate each slice in parallel. The red colored hashes indicate that the sequence was modified by a data insertion.</p>
+<h2 id="poh:scale">Horizontal Scaling</h2>
+<p>It’s possible to synchronize multiple Proof of History generators by mixing the sequence state from each generator to each other generator, and thus achieve horizontal scaling of the Proof of History generator. This scaling is done without sharding. The output of both generators is necessary to reconstruct the full order of events in the system.</p>
+<div class="center">
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;" colspan="3">PoH Generator A</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Index</td>
+<td style="text-align: center;">Hash</td>
+<td style="text-align: right;">Data</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(1\)</span></td>
+<td style="text-align: center;"><code>hash1a</code></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(2\)</span></td>
+<td style="text-align: center;"><code>hash2a</code></td>
+<td style="text-align: right;"><code>hash1b</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(3\)</span></td>
+<td style="text-align: center;"><code>hash3a</code></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(4\)</span></td>
+<td style="text-align: center;"><code>hash4a</code></td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;" colspan="3">PoH Generator B</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Index</td>
+<td style="text-align: center;">Hash</td>
+<td style="text-align: right;">Data</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(1\)</span></td>
+<td style="text-align: center;"><code>hash1b</code></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(2\)</span></td>
+<td style="text-align: center;"><code>hash2b</code></td>
+<td style="text-align: right;"><code>hash1a</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(3\)</span></td>
+<td style="text-align: center;"><code>hash3b</code></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(4\)</span></td>
+<td style="text-align: center;"><code>hash4b</code></td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Given generators A and B, A receives a data packet from B (hash1b), which contains the last state from Generator B, and the last state generator B observed from Generator A. The next state hash in Generator A then depends on the state from Generator B, so we can derive that hash1b happened sometime before hash3a. This property can be transitive, so if three generators are synchronized through a single common generator <span class="math inline">\(A \leftrightarrow B \leftrightarrow C\)</span>, we can trace the dependency between A and C even though they were not synchronized directly.</p>
+<p>By periodically synchronizing the generators, each generator can then handle a portion of external traffic, thus the overall system can handle a larger amount of events to track at the cost of true time accuracy due to network latencies between the generators. A global order can still be achieved by picking some deterministic function to order any events that are within the synchronization window, such as by the value of the hash itself.</p>
+<div class="center">
+<figure>
+<img src="figures/fig_5.png" id="fig:poh_scale" style="width:90.0%" alt="Two generators synchronizing[fig:poh_scale]" /><figcaption aria-hidden="true">Two generators synchronizing<span id="fig:poh_scale" label="fig:poh_scale">[fig:poh_scale]</span></figcaption>
+</figure>
+</div>
+<p>In Figure <a href="#fig:poh_scale" data-reference-type="ref" data-reference="fig:poh_scale">5</a>, the two generators insert each other’s output state and record the operation. The color change indicates that data from the peer had modified the sequence. The generated hashes that are mixed into each stream are highlighted in bold.</p>
+<p>The synchronization is transitive. <span class="math inline">\(A \leftrightarrow B \leftrightarrow C\)</span> There is a provable order of events between A and C through B.</p>
+<p>Scaling in this way comes at the cost of availability. <span class="math inline">\(10 \times 1\)</span> gbps connections with availability of 0.999 would have <span class="math inline">\(0.999^{10} = 0.99\)</span> availability.</p>
+<h2 id="consistency">Consistency</h2>
+<p>Users are expected to be able to enforce consistency of the generated sequence and make it resistant to attacks by inserting the last observed output of the sequence they consider valid into their input.<br />
+</p>
+<div class="center">
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;" colspan="3">PoH Sequence A</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Index</td>
+<td style="text-align: center;">Data</td>
+<td style="text-align: right;">Output Hash</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(10\)</span></td>
+<td style="text-align: center;"></td>
+<td style="text-align: right;"><code>hash10a</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(20\)</span></td>
+<td style="text-align: center;">Event1</td>
+<td style="text-align: right;"><code>hash20a</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(30\)</span></td>
+<td style="text-align: center;">Event2</td>
+<td style="text-align: right;"><code>hash30a</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(40\)</span></td>
+<td style="text-align: center;">Event3</td>
+<td style="text-align: right;"><code>hash40a</code></td>
+</tr>
+</tbody>
+</table>
+<table>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;" colspan="3">PoH Hidden Sequence B</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Index</td>
+<td style="text-align: center;">Data</td>
+<td style="text-align: right;">Output Hash</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(10\)</span></td>
+<td style="text-align: center;"></td>
+<td style="text-align: right;"><code>hash10b</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(20\)</span></td>
+<td style="text-align: center;">Event3</td>
+<td style="text-align: right;"><code>hash20b</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(30\)</span></td>
+<td style="text-align: center;">Event2</td>
+<td style="text-align: right;"><code>hash30b</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(40\)</span></td>
+<td style="text-align: center;">Event1</td>
+<td style="text-align: right;"><code>hash40b</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>A malicious PoH generator could produce a second hidden sequence with the events in reverse order, if it has access to all the events at once, or is able to generate a faster hidden sequence.<br />
+To prevent this attack, each client-generated Event should contain within itself the latest hash that the client observed from what it considers to be a valid sequence. So when a client creates the "Event1" data, they should append the last hash they have observed.<br />
+</p>
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;" colspan="3">PoH Sequence A</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Index</td>
+<td style="text-align: center;">Data</td>
+<td style="text-align: left;">Output Hash</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(10\)</span></td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;"><code>hash10a</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(20\)</span></td>
+<td style="text-align: center;">Event1 = append(event1 data, <code>hash10a</code>)</td>
+<td style="text-align: left;"><code>hash20a</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(30\)</span></td>
+<td style="text-align: center;">Event2 = append(event2 data, <code>hash20a</code>)</td>
+<td style="text-align: left;"><code>hash30a</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(40\)</span></td>
+<td style="text-align: center;">Event3 = append(event3 data, <code>hash30a</code>)</td>
+<td style="text-align: left;"><code>hash40a</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>When the sequence is published, Event3 would be referencing hash30a, and if it’s not in the sequence prior to this Event, the consumers of the sequence know that it’s an invalid sequence. The partial reordering attack would then be limited to the number of hashes produced while the client has observed an event and when the event was entered. Clients should then be able to write software that does not assume the order is correct for the short period of hashes between the last observed and inserted hash.</p>
+<p>To prevent a malicious PoH generator from rewriting the client Event hashes, the clients can submit a signature of the event data and the last observed hash instead of just the data.<br />
+</p>
+<div class="center">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;" colspan="3">PoH Sequence A</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Index</td>
+<td style="text-align: left;">Data</td>
+<td style="text-align: right;">Output Hash</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(10\)</span></td>
+<td style="text-align: left;"></td>
+<td style="text-align: right;">hash10a</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(20\)</span></td>
+<td style="text-align: left;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Client Private Key)</td>
+<td style="text-align: left;">hash20a</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(30\)</span></td>
+<td style="text-align: left;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Client Private Key)</td>
+<td style="text-align: left;">hash30a</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(40\)</span></td>
+<td style="text-align: left;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Client Private Key)</td>
+<td style="text-align: left;">hash40a</td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Verification of this data requires a signature verification, and a lookup of the hash in the sequence of hashes prior to this one.<br />
+Verify:<br />
+<code>(Signature, PublicKey, hash30a, event3 data) = Event3</code><br />
+<code>Verify(Signature, PublicKey, Event3)</code><br />
+<code>Lookup(hash30a, PoHSequence)</code><br />
+</p>
+<div class="center">
+<figure>
+<img src="figures/fig_6.png" id="fig:poh_consistency" style="width:90.0%" alt="Input with a back reference.[fig:poh_consistency]" /><figcaption aria-hidden="true">Input with a back reference.<span id="fig:poh_consistency" label="fig:poh_consistency">[fig:poh_consistency]</span></figcaption>
+</figure>
+</div>
+<p>In Figure <a href="#fig:poh_consistency" data-reference-type="ref" data-reference="fig:poh_consistency">6</a>, the user-supplied input is dependent on hash <code>0xdeadbeef…</code> existing in the generated sequence sometime before it’s inserted. The blue top left arrow indicates that the client is referencing a previously produced hash. The client’s message is only valid in a sequence that contains the hash <code>0xdeadbeef…</code>. The red color in the sequence indicates that the sequence has been modified by the clients data.</p>
+<h2 id="overhead">Overhead</h2>
+<p>4000 hashes per second would generate an additional 160 kilobytes of data, and would require access to a GPU with 4000 cores and roughly 0.25-0.75 milliseconds of time to verify.</p>
+<h2 id="attacks">Attacks</h2>
+<h3 id="reversal">Reversal</h3>
+<p>Generating a reverse order would require an attacker to start the malicious sequence after the second event. This delay should allow any non malicious peer to peer nodes to communicate about the original order.</p>
+<h3 id="speed">Speed</h3>
+<p>Having multiple generators may make deployment more resistant to attacks. One generator could be high bandwidth, and receive many events to mix into its sequence, another generator could be high speed low bandwidth that periodically mixes with the high bandwidth generator.</p>
+<p>The high speed sequence would create a secondary sequence of data that an attacker would have to reverse.</p>
+<h3 id="long-range-attacks">Long Range Attacks</h3>
+<p>Long range attacks involve acquiring old discarded client Private Keys, and generating a falsified ledger <span class="citation" data-cites="casper"></span>. Proof of History provides some protection against long range attacks. A malicious user that gains access to old private keys would have to recreate a historical record that takes as much time as the original one they are trying to forge. This would require access to a faster processor than the network is currently using, otherwise the attacker would never catch up in history length.</p>
+<p>Additionally, a single source of time allows for construction of a simpler Proof of Replication (more on that in Section <a href="#porep" data-reference-type="ref" data-reference="porep">6</a>). Since the network is designed so that all participants in the network will rely on a single historical record of events.</p>
+<p>PoRep and PoH together should provide a defense of both space and time against a forged ledger.</p>
+<h1 id="proof_of_stake">Proof of Stake Consensus</h1>
+<h2 id="description-1">Description</h2>
+<p>This specific instance of Proof of Stake is designed for quick confirmation of the current sequence produced by the Proof of History generator, for voting and selecting the next Proof of History generator, and for punishing any misbehaving validators. This algorithm depends on messages eventually arriving to all participating nodes within a certain timeout.</p>
+<h2 id="terminology">Terminology</h2>
+<dl>
+<dt>bonds</dt>
+<dd><p>Bonds are equivalent to a capital expense in Proof of Work. A miner buys hardware and electricity, and commits it to a single branch in a Proof of Work blockchain. A bond is coin that the validator commits as collateral while they are validating transactions.</p>
+</dd>
+<dt>slashing</dt>
+<dd><p>The proposed solution to the nothing at stake problem in Proof of Stake systems <span class="citation" data-cites="slasher"></span>. When a proof of voting for a different branch is published, that branch can destroy the validator’s bond. This is an economic incentive designed to discourage validators from confirming multiple branches.</p>
+</dd>
+<dt>super majority</dt>
+<dd><p>A super majority is <span class="math inline">\(\frac{2}{3}\)</span>rds of the validators weighted by their bonds. A super majority vote indicates that the network has reached consensus, and at least <span class="math inline">\(\frac{1}{3}\)</span>rd of the network would have had to vote maliciously for this branch to be invalid. This would put the economic cost of an attack at <span class="math inline">\(\frac{1}{3}\)</span>rd of the market cap of the coin.</p>
+</dd>
+</dl>
+<h2 id="bonding">Bonding</h2>
+<p>A bonding transaction takes a amount of coin and moves it to a bonding account under the user’s identity. Coins in the bonding account cannot be spent and have to remain in the account until the user removes them. The user can only remove stale coins that have timed out. Bonds are valid after super majority of the current stakeholders have confirmed the sequence.</p>
+<h2 id="voting">Voting</h2>
+<p>It is anticipated that the Proof of History generator will be able to publish a signature of the state at a predefined period. Each bonded identity must confirm that signature by publishing their own signed signature of the state. The vote is a simple yes vote, without a no. If super majority of the bonded identities have voted within a timeout, then this branch would be accepted as valid.</p>
+<h2 id="unbonding">Unbonding</h2>
+<p>Missing N number of votes marks the coins as stale and no longer eligible for voting. The user can issue an unbonding transaction to remove them.</p>
+<p>N is a dynamic value based on the ratio of stale to active votes. N increases as the number of stale votes increases. In an event of a large network partition, this allows the larger branch to recover faster than the smaller branch.</p>
+<h2 id="subsec:elections">Elections</h2>
+<p>Election for a new PoH generator occur when the PoH generator failure is detected. The validator with the largest voting power, or highest public key address if there is a tie is picked as the new PoH generator.</p>
+<p>A super majority of confirmations are required on the new sequence. If the new leader fails before a super majority confirmations are available, the next highest validator is selected, and a new set of confirmations is required.</p>
+<p>To switch votes, a validator needs to vote at a higher PoH sequence counter, and the new vote needs to contain the votes it wants to switch. Otherwise the second vote will be slashable. Vote switching is expected to be designed so that it can only occur at a height that does not have a super majority.</p>
+<p>Once a PoH generator is established, a Secondary can be elected to take over the transactional processing duties. If a Secondary exists, it will be considered as the next leader during a Primary failure.</p>
+<p>The platform is designed so that the Secondary becomes Primary and lower rank generators are promoted if an exception is detected or on a predefined schedule.</p>
+<h2 id="election-triggers">Election Triggers</h2>
+<h3 id="forked-proof-of-history-generator">Forked Proof of History generator</h3>
+<p>PoH generators are designed with an identity that signs the generated sequence. A fork can only occur in case the PoH generator’s identity has been compromised. A fork is detected because two different historical records have been published on the same PoH identity.</p>
+<h3 id="runtime-exceptions">Runtime Exceptions</h3>
+<p>A hardware failure or a bug, or a intentional error in the PoH generator could cause it to generate an invalid state and publish a signature of the state that does not match the local validator’s result. Validators will publish the correct signature via gossip and this event would trigger a new round of elections. Any validators who accept an invalid state will have their bonds slashed.</p>
+<h3 id="network-timeouts">Network Timeouts</h3>
+<p>A network timeout would trigger an election.</p>
+<h2 id="slashing">Slashing</h2>
+<p>Slashing occurs when a validator votes two separate sequences. A proof of malicious vote will remove the bonded coins from circulation and add them to the mining pool.</p>
+<p>A vote that includes a previous vote on a contending sequence is not eligible as proof of malicious voting. Instead of slashing the bonds, this vote removes the currently cast vote on the contending sequence.</p>
+<p>Slashing also occurs if a vote is cast for an invalid hash generated by the PoH generator. The generator is expected to randomly generate an invalid state, which would trigger a fallback to Secondary.</p>
+<h2 id="secondary-elections">Secondary Elections</h2>
+<p>Secondary and lower ranked Proof of History generators can be proposed and approved. A proposal is cast on the primary generator’s sequence. The proposal contains a timeout, if the motion is approved by a super majority of the vote before the timeout, the Secondary is considered elected, and will take over duties as scheduled. Primary can do a soft handover to Secondary by inserting a message into the generated sequence indicating that a handover will occur, or inserting an invalid state and forcing the network to fallback to Secondary.</p>
+<p>If a Secondary is elected, and the primary fails, the Secondary will be considered as the first fallback during an election.</p>
+<h2 id="availability">Availability</h2>
+<p>CAP systems that deal with partitions have to pick Consistency or Availability. Our approach eventually picks Availability, but because we have an objective measure of time, Consistency is picked with reasonable human timeouts.</p>
+<p>Proof of Stake verifiers lock up some amount of coin in a “stake”, which allows them to vote for a particular set of transactions. Locking up coin is a transaction that is entered into a PoH stream, just like any other transaction. To vote, a PoS verifier has to sign the hash of the state, as it was computed after processing all the transactions to a specific position in the PoH ledger. This vote is also entered as a transaction into the PoH stream. Looking at the PoH ledger, we can then infer how much time passed between each vote, and if a partition occurs, for how long each verifier has been unavailable.</p>
+<p>To deal with partitions with reasonable human timeframes, we propose a dynamic approach to “unstake” unavailable verifiers. When the number of verifiers is high and above <span class="math inline">\(\frac{2}{3}\)</span>, the “unstaking” process can be fast. The number of hashes that must be generated into the ledger is low before the unavailable verifiers stake is fully unstaked and they are no longer counted for consensus. When the number of verifiers is below <span class="math inline">\(\frac{2}{3}\)</span>rds but above <span class="math inline">\(\frac{1}{2}\)</span>, the unstaking timer is slower, requiring a larger number of hashes to be generated before the missing verifiers are unstaked. In a large partition, like a partition that is missing <span class="math inline">\(\frac{1}{2}\)</span> or more of the verifiers, the unstaking process is very very slow. Transactions can still be entered into the stream, and verifiers can still vote, but full <span class="math inline">\(\frac{2}{3}\)</span>rds consensus will not be achieved until a very large amount of hashes have been generated and the unavailable verifiers have been unstaked. The difference in time for a network to regain liveness allows us as customers of the network human timeframes to pick a partition that we want to continue using.</p>
+<h2 id="availability">Recovery</h2>
+<p>In the system we propose, the ledger can be fully recovered from any failure. That means, anyone in the world can pick any random spot in the ledger and create a valid fork by appending newly generated hashes and transactions. If all the verifiers are missing from this fork, it would take a very very long time for any additional bonds to become valid and for this branch to achieve <span class="math inline">\(\frac{2}{3}\)</span>rds super majority consensus. So full recovery with zero available validators would require a very large amount of hashes to be appended to the ledger, and only after all the unavailable validators have been unstaked will any new bonds be able to validate the ledger.</p>
+<h2 id="availability">Finality</h2>
+<p>PoH allows verifiers of the network to observe what happened in the past with some degree of certainty of the time of those events. As the PoH generator is producing a stream of messages, all the verifiers are required to submit their signatures of the state within 500ms. This number can be reduced further depending on network conditions. Since each verification is entered into the stream, everyone in the network can validate that every verifier submitted their votes within the required timeout without actually observing the voting directly.</p>
+<h2 id="attacks-1">Attacks</h2>
+<h3 id="tragedy-of-commons">Tragedy of Commons</h3>
+<p>The PoS verifiers simply confirm the state hash generated by the PoH generator. There is an economic incentive for them to do no work and simply approve every generated state hash. To avoid this condition, the PoH generator should inject an invalid hash at a random interval. Any voters for this hash should be slashed. When the hash is generated, the network should immediately promote the Secondary elected PoH generator.</p>
+<p>Each verifier is required to respond within a small timeout - 500ms for example. The timeout should be set low enough that a malicious verifier has a low probability of observing another verifiers vote and getting their votes into the stream fast enough.</p>
+<h3 id="subsubsec:collusion">Collusion with the PoH generator</h3>
+<p>A verifier that is colluding with the PoH generator would know in advance when the invalid hash is going to be produced and not vote for it. This scenario is really no different than the PoH identity having a larger verifier stake. The PoH generator still has to do all the work to produce the state hash.</p>
+<h3 id="censorship">Censorship</h3>
+<p>Censorship or denial of service could occur when a <span class="math inline">\(\frac{1}{3}\)</span>rd of the bond holders refuse to validate any sequences with new bonds. The protocol can defend against this form of attack by dynamically adjusting how fast bonds become stale. In the event of a denial of service, the larger partition will be designed to fork and censor the Byzantine bond holders. The larger network will recover as the Byzantine bonds become stale with time. The smaller Byzantine partition would not be able to move forward for a longer period of time.</p>
+<p>The algorithm would work as follows. A majority of the network would elect a new Leader. The Leader would then censor the Byzantine bond holders from participating. Proof of History generator would have to continue generating a sequence, to prove the passage of time, until enough Byzantine bonds have become stale so the bigger network has a super majority. The rate at which bonds become stale would be dynamically based on what percentage of bonds are active. So the Byzantine minority fork of the network would have to wait much longer than the majority fork to recover a super majority. Once a super majority has been established, slashing could be used to permanently punish the Byzantine bond holders.</p>
+<h3 id="censorship">Long Range Attacks</h3>
+<p>PoH provides a natural defense against long range attacks. Recovering the ledger from any point in the past would require the attacker to overtake the valid ledger in time by outpacing the speed of the PoH generator.</p>
+<p>The consensus protocol provides a second layer of defense, as any attack would have to take longer than the time it takes to unstake all the valid validators. It also creates an availability “gap” in the history of the ledger. When comparing two ledgers of the same height, the one with the smallest maximum partition can be objectively considered as valid.</p>
+<h3 id="censorship">ASIC Attacks</h3>
+<p>Two opportunities for ASIC attacks exist in this protocol - during partition, and cheating timeouts in Finality.</p>
+<p>For ASIC attacks during Partitions, the Rate at which bonds are unstaked is non-linear, and for networks with large partitions the rate is orders of magnitude slower than expected gains from an ASIC attack.</p>
+<p>For ASIC attacks during Finality, the vulnerability allows for byzantine validators who have a bonded stake to wait for confirmations from other nodes and inject their votes with a collaborating PoH generator. The PoH generator can then use its faster ASIC to generate 500ms worth of hashes in less time, and allow for network communication between PoH generator and the collaborating nodes. But, if the PoH generator is also byzantine, there is no reason why the byzantine generator wouldn’t have communicated the exact counter when they expect to insert the failure. This scenario is no different than a PoH generator and all the collaborators sharing the same identity vs. having a single combined stake and only using 1 set of hardware.</p>
+<h1 id="porep">Streaming Proof of Replication</h1>
+<h2 id="description-2">Description</h2>
+<p>Filecoin proposed a version of Proof of Replication <span class="citation" data-cites="filecoinporep"></span>. The goal of this version is to have fast and streaming verifications of Proof of Replication, which are enabled by keeping track of time in a Proof of History generated sequence. Replication is not used as a consensus algorithm, but is a useful tool to account for the cost of storing the blockchain history or state at a high availability.</p>
+<h2 id="algorithm">Algorithm</h2>
+<p>As shown in Figure <a href="#fig:encrypt" data-reference-type="ref" data-reference="fig:encrypt">7</a> CBC encryption encrypts each block of data in sequence, using the previously encrypted block to XOR the input data.</p>
+<div class="center">
+<figure>
+<img src="figures/cbc_encryption_001.png" id="fig:encrypt" style="width:90.0%" alt="Sequential CBC encryption[fig:encrypt]" /><figcaption aria-hidden="true">Sequential CBC encryption<span id="fig:encrypt" label="fig:encrypt">[fig:encrypt]</span></figcaption>
+</figure>
+</div>
+<p>Each replication identity generates a key by signing a hash that has been generated via a Proof of History sequence. This ties the key to a replicator’s identity, and to a specific Proof of History sequence. Only specific hashes can be selected. (See Section <a href="#hashselection" data-reference-type="ref" data-reference="hashselection">6.5</a> on Hash Selection)</p>
+<p>The data set is fully encrypted block by block. Then to generate a proof, the key is used to seed a pseudorandom number generator that selects a random 32 bytes from each block.</p>
+<p>A merkle hash is computed with the selected PoH hash prepended to the each slice.</p>
+<div class="center">
+<figure>
+<img src="figures/por_001.png" id="fig_8" style="width:90.0%" alt="Fast Proof of Replication[fig_8]" /><figcaption aria-hidden="true">Fast Proof of Replication<span id="fig_8" label="fig_8">[fig_8]</span></figcaption>
+</figure>
+</div>
+<p>The root is published, along with the key, and the selected hash that was generated. The replication node is required to publish another proof in N hashes as they are generated by Proof of History generator, where N is approximately <span class="math inline">\(\frac{1}{2}\)</span> the time it takes to encrypt the data. The Proof of History generator will publish specific hashes for Proof of Replication at predefined periods. The replicator node must select the next published hash for generating the proof. Again, the hash is signed, and random slices are selected from the blocks to create the merkle root.</p>
+<p>After a period of N proofs, the data is re-encrypted with a new CBC key.</p>
+<h2 id="verification">Verification</h2>
+<p>With N cores, each core can stream encryption for each identity. Total space required is <span class="math inline">\(2 blocks * N cores\)</span>, since the previous encrypted block is necessary to generate the next one. Each core can then be used to generate all the proofs that were derived from the current encrypted block.</p>
+<p>Total time to verify proofs is expected to be equal to the time it takes to encrypt. The proofs themselves consume few random bytes from the block, so the amount of data to hash is significantly lower than the encrypted block size. The number of replication identities that can be verified at the same time is equal to the number of available cores. Modern GPUs have 3500+ cores available to them, albeit at <span class="math inline">\(\frac{1}{2}\)</span>-<span class="math inline">\(\frac{1}{3}\)</span> the clock speed of a CPU.</p>
+<h2 id="key-rotation">Key Rotation</h2>
+<p>Without key rotation the same encrypted replication can generate cheap proofs for multiple Proof of History sequences. Keys are rotated periodically and each replication is re-encrypted with a new key that is tied to a unique Proof of History sequence.</p>
+<p>Rotation needs to be slow enough that it’s practical to verify replication proofs on GPU hardware, which is slower per core than CPUs.</p>
+<h2 id="hashselection">Hash Selection</h2>
+<p>The Proof of History generator publishes a hash to be used by the entire network for encrypting Proofs of Replication, and for using as the pseudorandom number generator for byte selection in fast proofs.</p>
+<p>The hash is published at a periodic counter that is roughly equal to <span class="math inline">\(\frac{1}{2}\)</span> the time it takes to encrypt the data set. Each replication identity must use the same hash, and use the signed result of the hash as the seed for byte selection, or the encryption key.</p>
+<p>The period that each replicator must provide a proof must be smaller than the encryption time. Otherwise the replicator can stream the encryption and delete it for each proof.</p>
+<p>A malicious generator could inject data into the sequence prior to this hash to generate a specific hash. This attack is discussed more in <a href="#subsubsec:collusion" data-reference-type="ref" data-reference="subsubsec:collusion">5.13.2</a>.</p>
+<h2 id="proof-validation">Proof Validation</h2>
+<p>The Proof of History node is not expected to validate the submitted Proof of Replication proofs. It is expected to keep track of the number of pending and verified proofs submitted by the replicator’s identity. A proof is expected to be verified when the replicator is able to sign the proof by a super majority of the validators in the network.</p>
+<p>The verifications are collected by the replicator via p2p gossip network, and submitted as one packet that contains a super majority of the validators in the network. This packet verifies all the proofs prior to a specific hash generated by the Proof of History sequence, and can contain multiple replicator identities at once.</p>
+<h2 id="attacks-2">Attacks</h2>
+<h3 id="spam">Spam</h3>
+<p>A malicious user could create many replicator identities and spam the network with bad proofs. To facilitate faster verification, nodes are required to provide the encrypted data and the entire merkle tree to the rest of the network when they request verification.</p>
+<p>The Proof of Replication that is designed in this paper allows for cheap verification of any additional proofs, as they take no additional space. But each identity would consume 1 core of encryption time. The replication target should be set to a maximum size of readily available cores. Modern GPUs ship with 3500+ cores.</p>
+<h3 id="partial-erasure">Partial Erasure</h3>
+<p>A replicator node could attempt to partially erase some of the data to avoid storing the entire state. The number of proofs and the randomness of the seed should make this attack difficult.</p>
+<p>For example, a user storing 1 terabyte of data erases a single byte from each 1 megabyte block. A single proof that samples 1 byte out of every megabyte would have a likelihood of collision with any erased byte <span class="math inline">\(1 - (1- 1/1,000,0000)^{1,000,000} = 0.63\)</span>. After 5 proofs the likelihood is <span class="math inline">\(0.99\)</span>.</p>
+<h3 id="collusion-with-poh-generator">Collusion with PoH generator</h3>
+<p>The signed hash is expected to be used to seed the sample. If a replicator could select a specific hash in advance then the replicator could erase all bytes that are not going to be sampled.</p>
+<p>A replicator identity that is colluding with the Proof of History generator could inject a specific transaction at the end of the sequence before the predefined hash for random byte selection is generated. With enough cores, an attacker could generate a hash that is preferable to the replicator’s identity.</p>
+<p>This attack could only benefit a single replicator identity. Since all the identities have to use the same exact hash that is cryptographically signed with ECDSA (or equivalent), the resulting signature is unique for each replicator identity, and collision resistant. A single replicator identity would only have marginal gains.</p>
+<h3 id="denial-of-service">Denial of Service</h3>
+<p>The cost of adding an additional replicator identity is expected to be equal to the cost of storage. The cost of adding extra computational capacity to verify all the replicator identities is expected to be equal to the cost of a CPU or GPU core per replication identity.</p>
+<p>This creates an opportunity for a denial of service attack on the network by creating a large number of valid replicator identities.</p>
+<p>To limit this attack, the consensus protocol chosen for the network can select a replication target, and award the replication proofs that meet the desired characteristics, like availability on the network, bandwidth, geolocation etc...</p>
+<h3 id="tragedy-of-commons-1">Tragedy of Commons</h3>
+<p>The PoS verifiers could simply confirm PoRep without doing any work. The economic incentives should be lined up with the PoS verifiers to do work, i.e. splitting the mining payout between the PoS verifiers and the PoRep replication nodes.</p>
+<p>To further avoid this scenario, the PoRep verifiers can submit false proofs a small percentage of the time. They can prove the proof is false by providing the function that generated the false data. Any PoS verifier that confirmed a false proof would be slashed.</p>
+<h1 id="system_architecture">System Architecture</h1>
+<div class="center">
+<figure>
+<img src="figures/system_arch_001.png" id="fig_9" style="width:90.0%" alt="System Architecture [fig_9]" /><figcaption aria-hidden="true">System Architecture <span id="fig_9" label="fig_9">[fig_9]</span></figcaption>
+</figure>
+</div>
+<h2 id="components">Components</h2>
+<h3 id="leader-proof-of-history-generator">Leader, Proof of History generator</h3>
+<p>The Leader is an elected Proof of History generator. It consumes arbitrary user transactions and outputs a Proof of History sequence of all the transactions that guarantee a unique global order in the system. After each batch of transactions the Leader outputs a signature of the state that is the result of running the transactions in that order. This signature is signed with the identity of the Leader.</p>
+<h3 id="state">State</h3>
+<p>The state is a naive hash table indexed by the user’s address. Each cell contains the full user’s address and the memory required for this computation. For example,<br />
+the Transaction table contains:<br />
+<br />
+</p>
+<div class="bytefield">
+<p><span>256</span><br />
+&amp; &amp;</p>
+</div>
+<p><br />
+for a total of 32 bytes.<br />
+The Proof of Stake bond’s table contains:<br />
+<br />
+</p>
+<div class="bytefield">
+<p><span>256</span><br />
+&amp;<br />
+&amp;<br />
+&amp;</p>
+</div>
+<p><br />
+for a total of 64 bytes.</p>
+<h3 id="verifier-state-replication">Verifier, State Replication</h3>
+<p>The Verifier nodes replicate and provide high availability of the blockchain state. The replication target is selected by the consensus algorithm, and the validators in the consensus algorithm select and vote the Proof of Replication nodes they approve of based on off-chain defined criteria.</p>
+<p>The network could be configured with a minimum Proof of Stake bond size, and a requirement for a single replicator identity per bond.</p>
+<h3 id="validators">Validators</h3>
+<p>These nodes are consuming bandwidth from Verifiers. They are virtual nodes, and can run on the same machines as the Verifiers or the Leader, or on separate machines that are specific to the consensus algorithm configured for this network.</p>
+<h2 id="network-limits">Network Limits</h2>
+<div class="center">
+<figure>
+<img src="figures/generator_network_limits_001.png" id="fig_10" style="width:80.0%" alt="Generator network limits[fig_10]" /><figcaption aria-hidden="true">Generator network limits<span id="fig_10" label="fig_10">[fig_10]</span></figcaption>
+</figure>
+</div>
+<p>The leader is expected to be able to take incoming user packets, order them in the most efficient way possible, and sequence them into a Proof of History sequence that is published to downstream Verifiers. Efficiency is based on memory access patterns of the transactions, so the transactions are ordered to minimize faults and to maximize prefetching.<br />
+<br />
+<strong>Incoming packet format:</strong><br />
+<br />
+</p>
+<div class="bytefield">
+<p><span>256</span><br />
+</p>
+<div class="rightwordgroup">
+<p><span>Signed</span> &amp; &amp; &amp;<br />
+&amp;<br />
+&amp;<br />
+</p>
+</div>
+<p><br />
+&amp;<br />
+&amp;<br />
+</p>
+</div>
+<p>Size <span class="math inline">\(20 + 8 + 16 + 8 + 32 + 32 + 32 = 148\)</span> bytes.<br />
+<br />
+The minimal payload that can be supported would be 1 destination account with a minimum size of 176 bytes.<br />
+<br />
+<strong>With payload:</strong><br />
+<br />
+</p>
+<div class="bytefield">
+<p><span>256</span><br />
+</p>
+<div class="rightwordgroup">
+<p><span>Signed</span> &amp; &amp; &amp;<br />
+&amp; &amp;<br />
+&amp; &amp;<br />
+&amp;<br />
+</p>
+</div>
+<p><br />
+&amp;<br />
+&amp;<br />
+</p>
+</div>
+<p>With payload the minimum size: 176 bytes<br />
+<br />
+The Proof of History sequence packet contains the current hash, counter, and the hash of all the new messages added to the PoH sequence and the state signature after processing all the messages. This packet is sent once every N messages are broadcast.<br />
+Proof of History packet:<br />
+<br />
+</p>
+<div class="bytefield">
+<p><span>256</span><br />
+</p>
+<div class="rightwordgroup">
+<p><span>Signed</span> &amp;<br />
+<br />
+<br />
+</p>
+</div>
+<p><br />
+&amp;<br />
+&amp;<br />
+</p>
+</div>
+<p>Minimum size of the output packet is: 132 bytes<br />
+<br />
+On a 1gbps network connection the maximum number of transactions possible is <span class="math inline">\(1\)</span> gigabit per second / <span class="math inline">\(176\)</span> bytes = <span class="math inline">\(710\)</span>k tps max. Some loss (<span class="math inline">\(1-4\%\)</span>) is expected due to Ethernet framing. The spare capacity over the target amount for the network can be used to increase availability by coding the output with Reed-Solomon codes, and striping it to the available downstream Verifiers.</p>
+<h2 id="computational-limits">Computational Limits</h2>
+<p>Each transaction requires a digest verification. This operation does not use any memory outside of the transaction message itself and can be parallelized independently. Thus throughput is expected to be limited by the number of cores available on the system.</p>
+<p>GPU based ECDSA verification servers have had experimental results of 900k operations per second <span class="citation" data-cites="gpuecc"></span>.</p>
+<h2 id="memory-limits">Memory Limits</h2>
+<p>A naive implementation of the state as a <span class="math inline">\(50\%\)</span> full hashtable with 32 byte entries for each account, would theoretically fit 10 billion accounts into 640GB. Steady state random access to this table is measured at <span class="math inline">\(1.1 * 10^7\)</span> writes or reads per second. Based on 2 reads and two writes per transaction, memory throughput can handle 2.75m transactions per second. This was measured on an Amazon Web Services 1TB x1.16xlarge instance.</p>
+<h2 id="sec:smartcontracts">High Performance Smart Contracts</h2>
+<p>Smart contracts are a generalized form of transactions. These are programs that run on each node and modify the state. This design leverages extended Berkeley Packet Filter bytecode, which is fast and easy to analyze, and JIT bytecode as the smart contracts language.</p>
+<p>One of its main advantages is a zero cost Foreign Function Interface. Intrinsics, or functions that are implemented on the platform directly, are callable by programs. Calling the intrinsics suspends that program and schedules the intrinsic on a high performance server. Intrinsics are batched together to execute in parallel on the GPU.</p>
+<div class="center">
+<figure>
+<img src="figures/bpf_programs_001.png" id="fig_11" style="width:90.0%" alt="Executing BPF programs.[fig_11]" /><figcaption aria-hidden="true">Executing BPF programs.<span id="fig_11" label="fig_11">[fig_11]</span></figcaption>
+</figure>
+</div>
+<p>In the above example, two different user programs call the same intrinsic. Each program is suspended until the batch execution of the intrinsics is complete. An example intrinsic is ECDSA verification. Batching these calls to execute on the GPU can increase throughput by thousands of times.</p>
+<p>This trampoline requires no native operating system thread context switches, since the BPF bytecode has a well defined context for all the memory that it is using.</p>
+<p>eBPF backend has been included in LLVM since 2015, so any LLVM frontend language can be used to write smart contracts. It’s been in the Linux kernel since 2015, and the first iterations of the bytecode have been around since 1992. A single pass can check eBPF for correctness, ascertain its runtime and memory requirements and convert it to x86 instructions.</p>
+<div class="thebibliography">
+<p><span>9</span> Liskov, Practical use of Clocks<br />
+<code> http://www.dainf.cefetpr.br/ tacla/SDII/PracticalUseOfClocks.pdf</code></p>
+<p>Google Spanner TrueTime consistency<br />
+<code> https://cloud.google.com/spanner/docs/true-time-external-consistency</code></p>
+<p>Solving Agreement with Ordering Oracles<br />
+<code> http://www.inf.usi.ch/faculty/pedone/Paper/2002/2002EDCCb.pdf</code></p>
+<p>Tendermint: Consensus without Mining<br />
+<code>https://tendermint.com/static/docs/tendermint.pdf</code></p>
+<p>Hedera: A Governing Council &amp; Public Hashgraph Network<br />
+<code>https://s3.amazonaws.com/hedera-hashgraph/hh-whitepaper-v1.0-180313.pdf</code></p>
+<p>Filecoin, proof of replication,<br />
+<code>https://filecoin.io/proof-of-replication.pdf</code></p>
+<p>Slasher, A punative Proof of Stake algorithm<br />
+<code>https://blog.ethereum.org/2014/01/15/slasher-a-punitive-proof-of-stake-algorithm/</code></p>
+<p>BitShares Delegated Proof of Stake<br />
+<code>https://github.com/BitShares/bitshares/wiki/Delegated-Proof-of-Stake</code></p>
+<p>An Efficient Elliptic Curve Cryptography Signature Server With GPU Acceleration<br />
+<code>http://ieeexplore.ieee.org/document/7555336/</code></p>
+<p>Casper the Friendly Finality Gadget<br />
+<code>https://arxiv.org/pdf/1710.09437.pdf</code></p>
+</div>
+</body>
+</html>
